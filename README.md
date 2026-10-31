@@ -1,1 +1,2 @@
-Minha Biblioteca v4.3 — correções de progresso, filtros, leitor, destaques e cartões. Atualize os arquivos no GitHub Pages sem apagar os dados locais.
+Minha Biblioteca v4.4 — estrelas vazias, alinhamento dos cartões, capas agrupadas maiores e revisão da reinicialização do cálculo de progresso.
+Não apague dados do aplicativo ou do navegador.
