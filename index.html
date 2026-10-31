@@ -439,7 +439,7 @@ function renderHome(){
   return `<div class="reading-feature">
    <div class="reading-item" data-id="${esc(b.id)}" role="button" tabindex="0" aria-label="Continuar lendo ${esc(b.title)}">
     <div class="reading-cover">${b.cover?`<img src="${esc(b.cover)}" loading="lazy" alt="">`:'📖'}</div>
-    <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(readingPositionText(b))} · Toque para continuar →</small></div>
+    <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(readingPositionText(b))}</small></div>
    </div>
    ${`<div class="reading-insights"><button type="button" onclick="showHomeRecords('highlights','${esc(b.id)}')">✎ ${hs.length} destaque${hs.length===1?'':'s'}</button><button type="button" onclick="showHomeRecords('notes','${esc(b.id)}')">▤ ${notes} anotaç${notes===1?'ão':'ões'}</button><button type="button" onclick="showHomeRecords('bookmarks','${esc(b.id)}')">♧ ${(b.bookmarks||[]).length} marcador${(b.bookmarks||[]).length===1?'':'es'}</button></div>`}
    ${recent?`<button class="recent-highlight" type="button" data-highlight-book="${esc(b.id)}" data-highlight-cfi="${esc(recent.cfi)}"><span>ÚLTIMO DESTAQUE</span><strong>“${esc(recent.text.slice(0,125))}${recent.text.length>125?'…':''}”</strong><em>Ir para o trecho ↗</em></button>`:`<div class="recent-highlight reading-placeholder"><span>ÚLTIMO DESTAQUE</span><strong>Seus trechos destacados aparecerão aqui.</strong><em>Continue lendo para descobrir novos trechos.</em></div>`}
@@ -452,6 +452,13 @@ function renderHome(){
  el.querySelectorAll('[data-highlight-book]').forEach(x=>x.onclick=()=>openHomeHighlight(x.dataset.highlightBook,x.dataset.highlightCfi));
  const dots=$('reading-dots');dots.innerHTML=reading.length>1?reading.map((_,i)=>`<button class="${i===0?'active':''}" aria-label="Leitura ${i+1} de ${reading.length}" onclick="document.getElementById('currently-reading')?.scrollTo({left:document.getElementById('currently-reading').clientWidth*${i},behavior:'smooth'})"></button>`).join(''):'';
  el.onscroll=()=>{const i=Math.round(el.scrollLeft/Math.max(1,el.clientWidth));dots.querySelectorAll('button').forEach((d,j)=>d.classList.toggle('active',i===j))};
+ // Após reordenar os livros por última leitura, mostrar o primeiro cartão.
+ // O scroll-snap pode restaurar a posição antiga durante o layout: redefinir após renderização.
+ el.scrollLeft=0;
+ requestAnimationFrame(()=>{
+  el.scrollLeft=0;
+  dots.querySelectorAll('button').forEach((d,j)=>d.classList.toggle('active',j===0));
+ });
  syncHomeDiscovery();
 }
 // Recomendações consultadas diretamente no Google Books, sem servidor próprio.
