@@ -1,0 +1,22 @@
+Minha Biblioteca 4.0 — pacote de avaliação
+
+Antes de publicar:
+- Faça backup em Configurações > Exportar dados. O backup NÃO contém arquivos EPUB.
+- Preserve os arquivos EPUB originais em seu aparelho.
+- Não desinstale a PWA instalada no Samsung Internet.
+- A estrutura IndexedDB existente permanece com o mesmo nome e versão.
+- Teste especialmente abertura de EPUB, seleção de texto, destaques, notas, marcadores e rolagem.
+
+Incluído neste pacote:
+- Continue lendo com vários livros e opção pausar/retomar;
+- Barrinha indicadora no carrossel de recomendações;
+- Atalho externo configurável;
+- Grade grande, estrelas, filtros por disponibilidade e por status em grupos;
+- Busca por gênero em editor de coleções e organização de séries nos detalhes;
+- Cabeçalho de leitura com título e autor;
+- Ajustes de margens, tema sépia, fonte e escurecimento da página;
+- Destaques coloridos, significados configuráveis e filtro de destaques;
+- Correção do índice do EPUB para abrir sobre o leitor;
+- Cache offline atualizado para v4.
+
+Atenção: o novo ícone visual anteriormente aprovado não está incluído neste ZIP; os ícones atuais foram preservados. Esta versão foi validada sintaticamente, mas não testada no Samsung Internet com EPUB real. Faça testes antes de substituir sua instalação em uso.
