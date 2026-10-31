@@ -1,2 +1,1 @@
-# minha-biblioteca
-Meu aplicativo pessoal de leitura.
+Minha Biblioteca v4.1 — correção de largura da tela, contenção do carrossel, diferenciação de Grade/Capas grandes, ícone aprovado. Atualize os arquivos na raiz do GitHub Pages. Não desinstale o PWA nem limpe os dados do Samsung Internet. A navegação nativa Voltar requer validação no dispositivo.
