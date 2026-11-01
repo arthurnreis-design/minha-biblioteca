@@ -442,6 +442,72 @@ html{width:100%;max-width:100%;overflow-x:clip}body{width:100%;max-width:100%;ov
 .detail-carousel-stack{width:164px;height:208px}
 .detail-carousel-item{width:144px;height:204px}
 </style>
+
+<style id="mb693-tablet-10-inch">
+/* Tablet 10″: ampliação visual sem alterar lógica, dados ou EPUB. */
+@media (min-width: 720px) and (pointer: coarse) {
+  body{font-size:16px}
+  .app{max-width:1180px!important;padding:26px 30px 120px!important}
+  .top{margin-bottom:32px!important}
+  .top h1{font-size:34px!important}
+  .top-settings{width:48px;height:48px;font-size:23px}
+  .eyebrow{font-size:12px!important}
+  .section-head h2,#tab-home>.section-head:first-child h2{font-size:27px!important}
+  .section-head{margin-bottom:18px!important}
+  .section h2{font-size:23px}
+  .btn,.library-header-actions .add-book{font-size:15px!important;padding:12px 16px!important;min-height:46px}
+  .library-modes button{font-size:15px!important;padding:15px 18px!important}
+  .search,.library-tools select,.field input,.field select{font-size:16px!important;padding:15px!important;min-height:50px}
+  .library-tools{gap:14px!important}
+  .stats{gap:16px}.stat{padding:21px!important}.stat strong{font-size:30px!important}.stat span{font-size:13px!important}
+  /* Mais área útil e capas proporcionais, sem cinco miniaturas apertadas. */
+  #library-grid.grid:not(.large-view):not(.list-view):not(.library-group-list){grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:23px 18px!important}
+  #library-grid.grid:not(.large-view):not(.list-view) .book-body{padding:15px!important}
+  #library-grid.grid:not(.large-view):not(.list-view) .book-body strong{font-size:16px!important}
+  #library-grid.grid:not(.large-view):not(.list-view) .book-body .muted{font-size:13px!important}
+  #library-grid.library-group-list.group-grid-mode{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;padding:12px 0!important}
+  #library-grid.group-grid-mode .library-group-tile{min-height:285px!important;padding:18px 12px!important;border-radius:15px!important}
+  #library-grid.group-grid-mode .group-tile-info strong{font-size:17px!important;min-height:44px!important}
+  #library-grid.group-grid-mode .group-tile-info small{font-size:14px!important}
+  #library-grid.group-grid-mode .group-cover-stack{height:185px!important;width:100%!important}
+  #library-grid.group-grid-mode .group-cover-stack[data-count="1"] img,#library-grid.group-grid-mode .group-cover-stack[data-count="1"]>span{width:124px!important;height:177px!important}
+  #library-grid.group-grid-mode .group-cover-stack[data-count="2"] img,#library-grid.group-grid-mode .group-cover-stack[data-count="2"]>span{width:113px!important;height:162px!important;margin-right:-75px!important}
+  #library-grid.group-grid-mode .group-cover-stack[data-count="3"] img,#library-grid.group-grid-mode .group-cover-stack[data-count="3"]>span{width:103px!important;height:148px!important;margin-right:-72px!important}
+  #library-grid.group-grid-mode .group-cover-stack[data-count="4"] img,#library-grid.group-grid-mode .group-cover-stack[data-count="4"]>span{width:98px!important;height:141px!important;margin-right:-70px!important}
+  #library-grid.group-grid-mode .group-cover-stack img:last-of-type,#library-grid.group-grid-mode .group-cover-stack>span:last-of-type{margin-right:0!important}
+  #library-grid.library-group-list.group-grid-mode:has(> .library-group-tile:only-child){width:100%!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #library-grid.library-group-list:not(.group-grid-mode) .library-group-tile{min-height:145px!important;padding:17px 12px!important}
+  #library-grid.library-group-list:not(.group-grid-mode) .group-cover-stack{transform:scale(1.22)!important;transform-origin:left center;margin-right:30px!important}
+  #library-grid.library-group-list:not(.group-grid-mode) .group-tile-info strong{font-size:18px!important}
+  #library-grid.library-group-list:not(.group-grid-mode) .group-tile-info small{font-size:14px!important}
+  /* Home: destaque maior e aproveitamento de toda a largura. */
+  #tab-home .section-head h2{font-size:25px!important}
+  #tab-home .home-discovery-heading h2{font-size:25px!important}
+  #tab-home .home-choice{font-size:16px!important;padding-bottom:14px!important}
+  #tab-home .reading-feature{border-radius:23px!important}
+  #tab-home .reading-feature .reading-item{padding:24px 55px 24px 24px!important}
+  #tab-home .reading-feature .reading-item img{max-height:260px}
+  #tab-home .reading-feature .reading-item strong{font-size:18px}
+  #tab-home .reading-feature .reading-item .muted{font-size:14px}
+  #tab-home .reading-strip{gap:20px!important}
+  #tab-home .reading-strip .book{min-width:180px}
+  #tab-home .reading-strip .cover{height:250px}
+  #tab-home #currently-reading>.reading-feature{flex:0 0 min(78%,650px)!important;width:min(78%,650px)!important;max-width:min(78%,650px)!important}
+  /* Detalhes e navegação: áreas de toque maiores. */
+  .sheet{width:min(800px,92vw)!important;padding:30px!important}
+  .sheet.book-detail-sheet{height:min(82dvh,850px)!important;min-height:min(82dvh,850px)!important}
+  .detail-top-unified h2{font-size:27px!important}
+  .detail-carousel{height:250px!important}
+  .detail-carousel-stack{transform:scale(1.24);transform-origin:center center}
+  .detail-carousel-wrap .detail-carousel{width:min(100%,360px)!important}
+  .detail-carousel-arrow{width:45px!important;flex-basis:45px!important;height:55px!important}
+  .detail-actions button{min-height:49px!important}
+  .nav-inner{width:min(760px,100%)!important}.nav button{padding:16px 8px!important;font-size:14px!important}.nav button .nav-symbol{font-size:25px!important}
+  .reader-head{height:65px!important;padding:0 24px!important}.reader-foot{height:55px!important;font-size:13px!important}
+  .reader-head .title{font-size:16px!important}.reader button{font-size:17px!important;padding:12px!important}
+  .reader #epub-view{inset:0 44px!important}
+}
+</style>
 </head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
