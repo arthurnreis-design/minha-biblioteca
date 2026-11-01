@@ -508,6 +508,98 @@ html{width:100%;max-width:100%;overflow-x:clip}body{width:100%;max-width:100%;ov
   .reader #epub-view{inset:0 44px!important}
 }
 </style>
+
+<style id="mb695-tablet-carousel-search">
+/* Busca: limpeza imediata, inclusive nos modos Autores, Séries e Coleções. */
+.library-search-wrap{position:relative;width:100%}
+.library-search-wrap .search{display:block;padding-right:54px!important}
+.library-search-clear{position:absolute;right:10px;top:calc((100% - 34px)/2 - 7px);width:34px;height:34px;display:none;align-items:center;justify-content:center;border:0;border-radius:50%;background:#e9e2e9;color:#61566b;font-size:25px;line-height:1;cursor:pointer;z-index:1}
+.library-search-wrap:has(.search:not(:placeholder-shown)) .library-search-clear{display:flex}
+@media (min-width:720px) and (pointer:coarse){
+  /* Carrossel ampliado, sem interferir na miniatura dos agrupamentos. */
+  .sheet.book-detail-sheet .detail-carousel{height:395px!important}
+  .sheet.book-detail-sheet .detail-carousel-stack{transform:scale(1.85)!important;transform-origin:center center}
+  .sheet.book-detail-sheet .detail-carousel-wrap .detail-carousel{width:min(100%,500px)!important}
+  .sheet.book-detail-sheet .detail-carousel-arrow{width:52px!important;flex-basis:52px!important;height:64px!important}
+  .sheet.book-detail-sheet .detail-carousel-counter{margin-top:4px!important}
+  .sheet.book-detail-sheet .detail-single-cover .detail-cover{width:245px!important;height:350px!important}
+  .sheet.book-detail-sheet .detail-single-cover{min-height:350px}
+  .library-search-clear{width:40px;height:40px;right:9px;top:calc((100% - 40px)/2 - 7px)}
+}
+</style>
+
+<style id="mb696-tablet-layout-refinement">
+/* Tablet: independent, consistently outlined group cards; no positional borders. */
+@media (min-width:720px) and (pointer:coarse){
+ #library-grid.library-group-list.group-grid-mode{
+  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:14px!important;padding:0!important;background:transparent!important;
+  border:0!important;border-radius:0!important;overflow:visible!important;
+ }
+ #library-grid.library-group-list.group-grid-mode>.library-group-tile{
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;
+  min-height:0!important;margin:0!important;padding:17px 10px 15px!important;
+  border:1px solid #e6dfe7!important;border-radius:17px!important;
+  background:rgba(255,255,255,.78)!important;box-shadow:0 4px 14px #5146590b!important;
+  gap:7px!important;align-self:stretch!important;
+ }
+ #library-grid.library-group-list.group-grid-mode>.library-group-tile:after{display:none!important}
+ #library-grid.library-group-list.group-grid-mode>.library-group-tile:nth-child(odd),
+ #library-grid.library-group-list.group-grid-mode>.library-group-tile:last-child:nth-child(odd){border:1px solid #e6dfe7!important}
+ #library-grid.group-grid-mode .group-tile-info strong{
+  min-height:0!important;max-height:3.6em!important;font-size:17px!important;
+  line-height:1.2!important;overflow-wrap:anywhere!important;
+ }
+ #library-grid.group-grid-mode .group-tile-info small{font-size:14px!important}
+ #library-grid.group-grid-mode .group-cover-stack{
+  height:207px!important;min-height:207px!important;max-width:100%!important;
+  margin:3px auto!important;justify-content:center!important;
+ }
+ #library-grid.group-grid-mode .group-cover-stack[data-count="1"] img,
+ #library-grid.group-grid-mode .group-cover-stack[data-count="1"]>span{width:142px!important;height:201px!important}
+ #library-grid.group-grid-mode .group-cover-stack[data-count="2"] img,
+ #library-grid.group-grid-mode .group-cover-stack[data-count="2"]>span{width:130px!important;height:185px!important;margin-right:-87px!important}
+ #library-grid.group-grid-mode .group-cover-stack[data-count="3"] img,
+ #library-grid.group-grid-mode .group-cover-stack[data-count="3"]>span{width:120px!important;height:171px!important;margin-right:-82px!important}
+ #library-grid.group-grid-mode .group-cover-stack[data-count="4"] img,
+ #library-grid.group-grid-mode .group-cover-stack[data-count="4"]>span{width:113px!important;height:161px!important;margin-right:-79px!important}
+ #library-grid.group-grid-mode .group-cover-stack img:last-of-type,
+ #library-grid.group-grid-mode .group-cover-stack>span:last-of-type{margin-right:0!important}
+ #library-grid.library-group-list.group-grid-mode:has(>.library-group-tile:only-child){
+  width:100%!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ }
+ /* Home: truly tablet-sized reading covers, text, and discovery recommendations. */
+ #tab-home>.section-head:first-child h2{font-size:31px!important}
+ #tab-home .reading-feature .reading-item{gap:26px!important;padding:25px 30px!important;align-items:center!important}
+ #tab-home .reading-cover{width:172px!important;height:247px!important;flex:0 0 172px!important;border-radius:12px!important}
+ #tab-home .reading-meta strong{font-size:23px!important;line-height:1.3!important}
+ #tab-home .reading-meta>span{font-size:16px!important;margin:11px 0 15px!important}
+ #tab-home .reading-meta small{font-size:14px!important}
+ #tab-home .reading-kicker{font-size:12px!important}
+ #tab-home .reading-insights{font-size:14px!important;padding:15px 23px!important;gap:12px 20px!important}
+ #tab-home .recent-highlight{padding:14px 23px!important}
+ #tab-home .recent-highlight span{font-size:11px!important}
+ #tab-home .recent-highlight strong{font-size:15px!important}
+ #tab-home .recent-highlight em{font-size:13px!important}
+ #tab-home #currently-reading>.reading-feature{
+  flex:0 0 min(85%,800px)!important;width:min(85%,800px)!important;
+  max-width:min(85%,800px)!important;
+ }
+ #tab-home .home-discovery{margin-top:30px!important;padding-top:24px!important}
+ #tab-home .home-discovery-heading h2{font-size:29px!important}
+ #tab-home .home-discover-tools{font-size:14px!important}
+ #tab-home #recommendation-strip,#tab-home #read-later-strip{gap:22px!important;padding:10px 1px 14px!important}
+ #tab-home .rec-item{flex:0 0 152px!important;max-width:152px!important}
+ #tab-home .rec-cover{height:204px!important;border-radius:11px!important}
+ #tab-home .rec-title{font-size:15px!important;line-height:1.3!important;margin-top:8px!important}
+ #tab-home .rec-author{font-size:13px!important;margin-top:5px!important}
+}
+@media (min-width:720px) and (max-width:850px) and (pointer:coarse){
+ #library-grid.library-group-list.group-grid-mode{gap:10px!important}
+ #library-grid.group-grid-mode .group-cover-stack[data-count="1"] img{width:128px!important;height:182px!important}
+ #tab-home .reading-cover{width:150px!important;height:215px!important;flex-basis:150px!important}
+}
+</style>
 </head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
@@ -531,7 +623,7 @@ html{width:100%;max-width:100%;overflow-x:clip}body{width:100%;max-width:100%;ov
  </div>
 </section>
 <section id="tab-library" class="hide"><div class="section-head"><div><div class="eyebrow">Sua coleção</div><h2>Todos os livros <span class="collection-count" id="collection-count"></span></h2></div><div class="library-header-actions"><button class="btn add-book" onclick="document.getElementById('epub-input').click()">＋ Adicionar livro</button><div class="view-switch"><button id="view-grid" onclick="setLibraryView('grid')" title="Grade">▦</button><button id="view-list" onclick="setLibraryView('list')" title="Lista">☷</button><button id="view-large" onclick="setLibraryView('large')" title="Capas grandes">▣</button></div></div></div>
- <div class="library-modes" id="library-modes"><button data-mode="all">Todos</button><button data-mode="authors">Autores</button><button data-mode="series">Séries</button><button data-mode="collections">Coleções</button></div><div id="library-group-actions"></div><input class="search" id="lib-search" placeholder="Buscar por título, autor ou gênero..." oninput="renderLibrary()"><div class="library-tools"><select id="filters" aria-label="Filtrar livros" onchange="filter=this.value;renderLibrary()"></select><select id="lib-sort" onchange="renderLibrary()" aria-label="Ordenar livros"><option value="recent">Mais recentes</option><option value="title">Título (A–Z)</option><option value="author">Autor (A–Z)</option></select></div><div id="library-select-popover" class="library-select-popover hide"></div><div class="grid" id="library-grid"></div></section>
+ <div class="library-modes" id="library-modes"><button data-mode="all">Todos</button><button data-mode="authors">Autores</button><button data-mode="series">Séries</button><button data-mode="collections">Coleções</button></div><div id="library-group-actions"></div><div class="library-search-wrap"><input class="search" id="lib-search" placeholder="Buscar por título, autor ou gênero..." oninput="renderLibrary()"><button class="library-search-clear" type="button" aria-label="Limpar busca" title="Limpar busca" onclick="const input=document.getElementById('lib-search');input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));input.focus()">×</button></div><div class="library-tools"><select id="filters" aria-label="Filtrar livros" onchange="filter=this.value;renderLibrary()"></select><select id="lib-sort" onchange="renderLibrary()" aria-label="Ordenar livros"><option value="recent">Mais recentes</option><option value="title">Título (A–Z)</option><option value="author">Autor (A–Z)</option></select></div><div id="library-select-popover" class="library-select-popover hide"></div><div class="grid" id="library-grid"></div></section>
 <section id="tab-notes" class="hide"><div class="section-head"><div><div class="eyebrow">Seus registros</div><h2>Anotações e destaques</h2></div></div><div class="citation-tabs"><button class="btn tiny" id="notes-view-records" onclick="setNotesView('records')">Anotações e destaques</button><button class="btn tiny ghost" id="notes-view-quotes" onclick="setNotesView('quotes')">Citações</button></div><div id="all-reading-notes"></div><div id="all-saved-quotes" class="hide"></div></section><section id="tab-explore" class="hide"><div class="search-intro"><div class="eyebrow">Encontre sua próxima história</div><h2 style="margin:7px 0 10px">Pesquisar livros</h2><p class="notice">Digite um título, um autor ou os dois juntos. Pesquisa no catálogo online.</p><div class="row"><input class="search" id="online-search" style="margin:0" placeholder="Ex.: Stephen King O Iluminado"><button class="btn primary" onclick="searchOnline()">Buscar</button></div></div><div id="explore-results" class="grid"></div></section>
 <section id="tab-stats" class="hide"><div class="journey">
  <div class="eyebrow">Sua jornada</div><h2>Minha Jornada de Leitura</h2><p class="notice">Um retrato das suas leituras, no seu ritmo.</p>
