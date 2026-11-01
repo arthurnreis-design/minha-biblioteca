@@ -238,6 +238,15 @@ html{width:100%;max-width:100%;overflow-x:clip}body{width:100%;max-width:100%;ov
 #library-grid.grid.list-view{display:flex!important;flex-direction:column}
 .reader{width:100%;max-width:100vw;overflow:hidden}.reader-head,.reader-foot{width:100%;min-width:0;max-width:100%;overflow:hidden}.reader-head .row{flex-shrink:0}.reader-ident{min-width:0;overflow:hidden}.reader-main{width:100%;min-width:0;max-width:100%;overflow:hidden}.reader #epub-view{max-width:100%}
 @media(min-width:600px){#library-grid.grid:not(.large-view):not(.list-view):not(.library-group-list){grid-template-columns:repeat(5,minmax(0,1fr))!important}}
+</style><style id="mb62">
+/* Menu discreto e independente do toque no cartão de Continuar lendo */
+#tab-home .reading-feature{position:relative}
+#tab-home .reading-feature .reading-item{padding-right:45px}
+.reading-card-actions{position:absolute;right:14px;top:12px;z-index:5}
+.reading-card-more{width:30px;height:30px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:#665b61;font-size:23px;line-height:1;display:grid;place-items:center;cursor:pointer;-webkit-tap-highlight-color:transparent;appearance:none;-webkit-appearance:none}.reading-card-more:hover,.reading-card-more:active,.reading-card-more:focus{background:transparent;box-shadow:none}.reading-card-more:focus-visible{outline:2px solid #bba28c;outline-offset:2px}
+.reading-card-menu{position:absolute;right:0;top:35px;min-width:165px;padding:5px;border-radius:12px;background:#fffaf6;box-shadow:0 8px 25px rgba(37,28,35,.18);border:1px solid rgba(85,60,70,.12);z-index:6}
+.reading-card-menu button{width:100%;padding:10px 12px;border:0;background:transparent;color:#554b53;text-align:left;border-radius:8px;font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.reading-card-menu button:active{background:#f3eae7}
 </style><style id="mb42">
 #library-grid.library-group-list{display:flex!important;flex-direction:column!important}
 #library-grid.grid:not(.library-group-list):not(.list-view):not(.large-view){display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
@@ -340,6 +349,93 @@ html{width:100%;max-width:100%;overflow-x:clip}body{width:100%;max-width:100%;ov
 .detail-turn-in-right{transform:translateX(14px)}
 .detail-turn-in-active{transition:opacity .18s ease,transform .18s ease;opacity:1;transform:translateX(0)}
 @media(prefers-reduced-motion:reduce){.detail-top-unified{transition:none!important;transform:none!important}}
+</style>
+<style id="mb54-stable-detail-and-motion">
+/* A book detail is a bottom-anchored viewport, not a content-sized sheet.
+   Explicit flex-basis and min/max height prevent long synopses from growing it. */
+#modal:has(> #sheet.book-detail-sheet){align-items:flex-end!important}
+#modal > #sheet.book-detail-sheet{
+  flex:0 0 auto!important;align-self:flex-end!important;
+  height:90dvh!important;min-height:90dvh!important;max-height:90dvh!important;
+  overflow-y:auto!important;overflow-x:hidden;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+@media(min-width:600px){
+ #modal:has(> #sheet.book-detail-sheet){align-items:center!important}
+ #modal > #sheet.book-detail-sheet{align-self:center!important;height:86dvh!important;min-height:86dvh!important;max-height:86dvh!important}
+}
+/* Animate opening once; replacing the contents during carousel navigation won't replay it. */
+@keyframes mb54-sheet-arrive{from{opacity:.7;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mb54-backdrop-arrive{from{background-color:transparent}to{background-color:#24223a80}}
+#modal:not(.hide){animation:mb54-backdrop-arrive .22s ease-out both}
+#modal:not(.hide)>#sheet{animation:mb54-sheet-arrive .24s cubic-bezier(.2,.7,.2,1) both}
+/* Light tactile feedback, without touching the EPUB reader or navigation logic. */
+#sheet .detail-actions button,#sheet .detail-carousel-arrow,#sheet .rating-control button{transition:transform .16s ease,background-color .16s ease,opacity .16s ease}
+#sheet .detail-actions button:active,#sheet .detail-carousel-arrow:active:not(:disabled),#sheet .rating-control button:active{transform:scale(.94)}
+@media(prefers-reduced-motion:reduce){
+ #modal:not(.hide),#modal:not(.hide)>#sheet{animation:none!important}
+ #sheet .detail-actions button,#sheet .detail-carousel-arrow,#sheet .rating-control button{transition:none!important}
+}
+</style>
+<style id="mb55-compact-metadata-and-opening">
+.detail-book-metadata{width:100%;text-align:center}
+.detail-meta-line{display:flex;align-items:baseline;justify-content:center;gap:9px;flex-wrap:wrap;line-height:1.35}
+.detail-meta-line h2{font-size:20px!important;margin:0!important;line-height:1.25}
+.detail-meta-author{font-size:13px}
+.detail-meta-secondary{margin-top:6px;font-size:12px;color:var(--muted,#827c88)}
+.detail-meta-separator{opacity:.6}
+#book-opening-overlay{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;pointer-events:none;background:rgba(22,18,30,.88);opacity:0;transition:opacity .24s ease-out}
+#book-opening-overlay.book-opening-active{opacity:1}
+#book-opening-overlay.book-opening-exit{opacity:0;transition:opacity .30s ease-in}
+.book-opening-image{width:min(58vw,270px);max-height:68dvh;display:flex;align-items:center;justify-content:center;transform:scale(.68);opacity:.6;transition:transform .40s cubic-bezier(.2,.7,.2,1),opacity .36s ease;filter:drop-shadow(0 18px 30px #0007)}
+.book-opening-image img{width:100%;max-height:68dvh;object-fit:contain;border-radius:5px}
+.book-opening-placeholder{font-size:80px;color:#f6e9db}
+.book-opening-active .book-opening-image{transform:scale(1);opacity:1}
+.book-opening-exit .book-opening-image{transform:scale(1.05);opacity:0;transition:transform .30s ease,opacity .30s ease}
+@media(prefers-reduced-motion:reduce){#book-opening-overlay,.book-opening-image{transition:none!important}}
+
+/* v5.8: expansão acelerada pela GPU desde a ficha; fundo do leitor não aparece antes da hora. */
+#book-opening-overlay{background:#19171d;opacity:1;transition:opacity .35s ease;overflow:hidden}
+#book-opening-overlay.book-opening-active{opacity:1}
+#book-opening-overlay.book-opening-exit{opacity:0;transition:opacity .35s ease}
+#book-opening-overlay .book-opening-image{position:fixed;display:flex;align-items:center;justify-content:center;transform:none;opacity:1;max-height:none;filter:drop-shadow(0 18px 35px #0009);will-change:transform;transform-origin:top left;backface-visibility:hidden;transition:transform .95s cubic-bezier(.22,.68,.18,1)}
+#book-opening-overlay .book-opening-image img{width:100%;height:100%;max-height:none;object-fit:fill;border-radius:5px}
+#book-opening-overlay.book-opening-exit .book-opening-image{opacity:1;transition:none}
+#reader.reader-opening{opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#book-opening-overlay .book-opening-image{transition:none!important}}
+#detail-carousel,.detail-cover{cursor:pointer}
+#detail-carousel:focus-visible,.detail-cover:focus-visible{outline:2px solid #b49a78;outline-offset:3px}
+</style><style id="mb60-clean-details">
+.book-detail-sheet .detail-actions{display:none!important}
+.detail-header-controls{display:flex;align-items:center;gap:9px;margin-left:auto}
+.detail-more-btn,.detail-close-btn{border:0;background:transparent;color:#786a80;border-radius:10px;width:35px;height:35px;display:grid;place-items:center;font-size:24px;line-height:1}
+.detail-close-btn{font-size:19px}
+.detail-menu-wrap{position:relative}
+.detail-menu{position:absolute;right:0;top:40px;min-width:220px;max-width:min(78vw,290px);background:#fffdfd;border:1px solid #e6dfe8;border-radius:14px;padding:6px;box-shadow:0 14px 40px #24132a30;z-index:150;display:flex;flex-direction:column;text-align:left}
+.detail-menu button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#594e61;text-align:left;padding:12px 11px;border-radius:9px;font-size:17px;white-space:nowrap}
+.detail-menu button span{font-size:13px}
+.detail-menu button:active{background:#f3eef3}
+.detail-menu .detail-menu-danger{color:#9a5d69;border-top:1px solid #eee8ee;border-radius:0;margin-top:4px}
+.detail-single-cover{position:relative;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;max-width:100%}
+.detail-carousel-stack{position:relative}
+.detail-cover-flags{position:absolute;right:9px;top:7px;z-index:105;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.detail-single-cover .detail-cover-flags{right:5px;top:6px}
+.detail-cover-flag{pointer-events:auto;display:grid;place-items:center;width:29px;height:29px;padding:5px;border:1px solid #ffffff70;border-radius:9px;background:#25202d8c;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);color:#fff9f4;box-shadow:0 1px 5px #0003;touch-action:manipulation}
+.detail-cover-flag svg{width:18px;height:18px}
+.detail-cover-flag.is-on{color:#e8cda6;background:#312533b8}
+.detail-synopsis-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.detail-ai-shortcut{border:0;background:transparent;color:#9472a1;font-size:12px;font-weight:700;padding:6px 0}
+
+/* v6.1 — controles ancorados à capa selecionada e sem flash de toque */
+.detail-carousel-item.current .detail-cover-flags{top:6px;right:6px;z-index:2}
+.detail-cover-flags{gap:5px}
+.detail-cover-flag{width:25px;height:25px;padding:4px;border-radius:8px;-webkit-tap-highlight-color:transparent!important;outline:none;transition:background-color .16s ease,color .16s ease}
+.detail-cover-flag svg{width:16px;height:16px}
+.detail-cover-flag.is-on{background:#312533b8}
+.detail-cover-flag.is-on:first-child{color:#E8CFA8}
+.detail-cover-flag.is-on:nth-child(2){color:#C77D91}
+.detail-carousel,.detail-carousel *, .detail-single-cover,.detail-single-cover *{-webkit-tap-highlight-color:transparent!important}
+.detail-cover-flag:focus-visible{outline:2px solid #E8CFA8;outline-offset:2px}
 </style></head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
@@ -393,7 +489,11 @@ try{history.replaceState({bibliotecaScreen:'tab',tab:'home'},'',location.href)}c
 function pushAppHistory(screen){try{history.pushState({bibliotecaScreen:screen,tab:currentTab},'',location.href)}catch(e){console.warn('Histórico indisponível',e)}}
 window.addEventListener('popstate',e=>{
  const state=e.state||{};
- if(!$('reader').classList.contains('hide'))closeReader(true);
+ // Ao sair da leitura, preserve a ficha/carrossel que já estava aberto.
+ if(!$('reader').classList.contains('hide')){
+  closeReader(true);
+  if(state.bibliotecaScreen==='detail'&&!$('modal').classList.contains('hide'))return;
+ }
  if(!$('modal').classList.contains('hide'))closeModal(true);
  if(state.bibliotecaScreen==='reader'||state.bibliotecaScreen==='detail')return;
  switchTab(state.tab||'home',false);
@@ -516,6 +616,7 @@ function renderHome(){
   const hs=b.highlights||[],notes=hs.filter(h=>h.note?.trim()).length+(b.notes||[]).length;
   const recent=[...hs].filter(h=>h.text&&h.cfi).sort((a,z)=>(z.date||'').localeCompare(a.date||''))[0];
   return `<div class="reading-feature">
+   <div class="reading-card-actions"><button class="reading-card-more" type="button" data-reading-more="${esc(b.id)}" aria-label="Mais opções para ${esc(b.title)}" aria-expanded="false">⋯</button><div class="reading-card-menu hide"><button type="button" data-reading-pause="${esc(b.id)}">⏸ Pausar leitura</button></div></div>
    <div class="reading-item" data-id="${esc(b.id)}" role="button" tabindex="0" aria-label="Continuar lendo ${esc(b.title)}">
     <div class="reading-cover">${b.cover?`<img src="${esc(b.cover)}" loading="lazy" alt="">`:'📖'}</div>
     <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(readingPositionText(b))}</small></div>
@@ -527,6 +628,13 @@ function renderHome(){
  el.querySelectorAll('.reading-item[data-id]').forEach(x=>{
   x.onclick=()=>{const b=books.find(b=>b.id===x.dataset.id);if(b?.hasFile)openReader(b.id);else openDetail(x.dataset.id)};
   x.onkeydown=e=>{if(e.key==='Enter')x.click()};
+ });
+ el.querySelectorAll('[data-reading-more]').forEach(button=>{
+  button.onclick=e=>{e.stopPropagation();const menu=button.nextElementSibling,open=menu.classList.contains('hide');el.querySelectorAll('.reading-card-menu').forEach(m=>m.classList.add('hide'));el.querySelectorAll('[data-reading-more]').forEach(b=>b.setAttribute('aria-expanded','false'));menu.classList.toggle('hide',!open);button.setAttribute('aria-expanded',String(open))};
+ });
+ el.querySelectorAll('[data-reading-pause]').forEach(button=>button.onclick=async e=>{
+  e.stopPropagation();const b=books.find(x=>x.id===button.dataset.readingPause);if(!b||b.status!=='reading')return;
+  b.status='paused';try{await tx('books','readwrite','put',b);await refresh();toast('Leitura pausada')}catch(err){b.status='reading';toast('Não foi possível pausar a leitura')}
  });
  el.querySelectorAll('[data-highlight-book]').forEach(x=>x.onclick=()=>openHomeHighlight(x.dataset.highlightBook,x.dataset.highlightCfi));
  const dots=$('reading-dots');dots.innerHTML=reading.length>1?reading.map((_,i)=>`<button class="${i===0?'active':''}" aria-label="Leitura ${i+1} de ${reading.length}" onclick="document.getElementById('currently-reading')?.scrollTo({left:document.getElementById('currently-reading').clientWidth*${i},behavior:'smooth'})"></button>`).join(''):'';
@@ -708,7 +816,11 @@ Se não conseguir confirmar alguma informação, diga "Não confirmado" em vez d
  if(copied){toast('✓ Prompt copiado! Cole na sua IA preferida.');return}
  openModal(`<div class="row between"><h2>Prompt para IA</h2><button class="btn tiny ghost" onclick="closeModal()">✕</button></div><p class="notice">Seu navegador não permitiu copiar automaticamente. Selecione e copie o texto abaixo:</p><textarea class="search" style="height:190px;resize:vertical" readonly>${esc(prompt)}</textarea><button class="btn primary full" onclick="this.previousElementSibling.select()">Selecionar texto</button>`);
 }
-function openDetail(id){let b=books.find(x=>x.id===id);if(!b)return;activeId=id;const group=activeGroupContext?.ids.includes(id)?activeGroupContext:null;const groupIndex=group?group.ids.indexOf(id):-1;openModal(`<div class="row between"><h2>${group?esc(group.title):'Detalhes do livro'}</h2><button class="btn tiny ghost" onclick="closeModal()">✕</button></div><div class="detail-top detail-top-unified">${group?`<div class="detail-carousel-wrap">${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Livro anterior" title="Livro anterior" onclick="navigateDetailCarousel(-1)">‹</button>`:''}<div class="detail-carousel" id="detail-carousel"><div class="detail-carousel-stack">${group.ids.map((bookId,i)=>{const item=books.find(x=>x.id===bookId);const delta=i-groupIndex;return `<div class="detail-carousel-item ${delta===0?'current':''}" style="--delta:${delta};--depth:${Math.abs(delta)};z-index:${group.ids.length-Math.abs(delta)}">${item?.cover?`<img src="${esc(item.cover)}" alt="${esc(item.title)}">`:'<span>📖</span>'}</div>`}).join('')}</div></div>${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Próximo livro" title="Próximo livro" onclick="navigateDetailCarousel(1)">›</button>`:''}</div>${group.ids.length>1?`<div class="detail-carousel-counter">${group.kind==='series'?'Volume '+(Number(libraryGroups().series.find(g=>g.id===group.key)?.items.find(i=>i.id===id)?.order)||groupIndex+1)+' · ':''}Livro ${groupIndex+1} de ${group.ids.length}</div>`:''}`:(b.cover?`<img class="detail-cover" src="${esc(b.cover)}">`:'<div class="detail-cover placeholder">📖</div>')}<div><h2>${esc(b.title)}</h2><div class="muted">${esc(b.author||'Autor desconhecido')}</div><p class="small muted">${esc(b.genre||'Gênero não informado')}</p><div class="small muted reading-position">${esc(readingPositionText(b))}</div></div></div><div class="detail-actions">${b.hasFile?'<button title="Ler agora" aria-label="Ler agora" onclick="openReader(activeId)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6c-2.8-2-5.4-2-9-1v13c3.6-1 6.2-1 9 1 2.8-2 5.4-2 9-1V5c-3.6-1-6.2-1-9 1z"/><path d="M12 6v13M15 12h5m-2-2 2 2-2 2"/></svg></button>':'<button title="Vincular EPUB" aria-label="Vincular EPUB" onclick="attachFile(activeId)">＋</button>'}<button title="Para ler depois" aria-label="Para ler depois" onclick="toggleReadLater(activeId)">${b.readLaterAt?'♥':'♡'}</button><button title="Favoritos" aria-label="Favoritos" onclick="toggleFavorite(activeId)" class="favorite-action"><svg viewBox="0 0 24 24" width="21" height="21" fill="${b.favorite?'currentColor':'none'}" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.5 2.9 6.1 6.7.9-4.8 4.7 1.2 6.7L12 17.7l-6 3.2 1.2-6.7-4.8-4.7 6.7-.9z"/></svg></button><button title="Editar ficha" aria-label="Editar ficha" onclick="editBook(activeId)">✎</button><button title="Anotações" aria-label="Anotações" onclick="showBookNotes(activeId)">☷</button><button title="Séries" aria-label="Séries" onclick="assignBookSeries(activeId)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="5" height="14" rx="1"/><rect x="9" y="3.5" width="5" height="16.5" rx="1"/><path d="M17 8h6m-3-3v6M17 16h5"/></svg></button><button title="Copiar para IA" aria-label="Copiar para IA" onclick="showSmartMetadata(activeId)">✧</button>${b.status==='reading'||b.status==='paused'?`<button title="${b.status==='reading'?'Pausar leitura':'Retomar leitura'}" aria-label="${b.status==='reading'?'Pausar leitura':'Retomar leitura'}" onclick="toggleReadingState(activeId)">${b.status==='reading'?'Ⅱ':'▶'}</button>`:''}</div><div class="rating-control" aria-label="Sua avaliação"><span>Sua avaliação</span>${[1,2,3,4,5].map(n=>`<button aria-label="${n} estrelas" title="${n} estrelas" onclick="rateBook(activeId,${n})" class="${n<=(b.rating||0)?'on':''}">${n<=(b.rating||0)?'★':'☆'}</button>`).join('')}</div><hr class="divider"><div class="small muted">Sinopse</div><p style="line-height:1.65">${esc(b.description||'Sem sinopse cadastrada.')}</p><div class="row between"><span class="muted small">Marcadores: ${(b.bookmarks||[]).length} · Destaques: ${(b.highlights||[]).length}</span><button class="btn tiny" onclick="deleteBook(activeId)">Excluir</button></div>`);$('sheet').classList.add('book-detail-sheet');initDetailCarousel()}
+function detailCoverFlags(b){return `<div class="detail-cover-flags" aria-label="Ações rápidas do livro"><button type="button" class="detail-cover-flag ${b.favorite?'is-on':''}" aria-label="${b.favorite?'Remover dos favoritos':'Adicionar aos favoritos'}" title="Favoritos" onclick="event.stopPropagation();toggleFavorite(activeId)" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="${b.favorite?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/></svg></button><button type="button" class="detail-cover-flag ${b.readLaterAt?'is-on':''}" aria-label="${b.readLaterAt?'Remover de Ler depois':'Adicionar a Ler depois'}" title="Ler depois" onclick="event.stopPropagation();toggleReadLater(activeId)" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="${b.readLaterAt?'currentColor':'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></button></div>`}
+function toggleDetailMenu(event){event.stopPropagation();const menu=$('detail-menu');if(!menu)return;const show=menu.classList.contains('hide');menu.classList.toggle('hide',!show);$('sheet').querySelector('.detail-more-btn')?.setAttribute('aria-expanded',String(show))}
+document.addEventListener('click',event=>{if(event.target.closest('.reading-card-actions'))return;document.querySelectorAll('.reading-card-menu:not(.hide)').forEach(menu=>menu.classList.add('hide'));document.querySelectorAll('[data-reading-more][aria-expanded="true"]').forEach(button=>button.setAttribute('aria-expanded','false'))});
+document.addEventListener('click',event=>{const menu=$('detail-menu');if(menu&&!event.target.closest('.detail-menu-wrap')){menu.classList.add('hide');$('sheet').querySelector('.detail-more-btn')?.setAttribute('aria-expanded','false')}});
+function openDetail(id){let b=books.find(x=>x.id===id);if(!b)return;activeId=id;const group=activeGroupContext?.ids.includes(id)?activeGroupContext:null;const groupIndex=group?group.ids.indexOf(id):-1;openModal(`<div class="row between"><h2>${group?esc(group.title):'Detalhes do livro'}</h2><div class="detail-header-controls"><div class="detail-menu-wrap"><button class="detail-more-btn" type="button" aria-label="Mais opções" aria-expanded="false" onclick="toggleDetailMenu(event)">⋯</button><div class="detail-menu hide" id="detail-menu"><button onclick="editBook(activeId)">✎ <span>Editar ficha</span></button><button onclick="showBookNotes(activeId)">☷ <span>Anotações e destaques</span></button><button onclick="assignBookSeries(activeId)">▤ <span>Organizar séries</span></button><button onclick="showSmartMetadata(activeId)">✧ <span>Preenchimento com IA</span></button>${b.status==='reading'||b.status==='paused'?`<button onclick="toggleReadingState(activeId)">${b.status==='reading'?'Ⅱ':'▶'} <span>${b.status==='reading'?'Pausar leitura':'Retomar leitura'}</span></button>`:''}<button class="detail-menu-danger" onclick="deleteBook(activeId)">⌫ <span>Excluir livro</span></button></div></div><button class="detail-close-btn" aria-label="Fechar detalhes" onclick="closeModal()">✕</button></div></div><div class="detail-top detail-top-unified">${group?`<div class="detail-carousel-wrap">${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Livro anterior" title="Livro anterior" onclick="navigateDetailCarousel(-1)">‹</button>`:''}<div class="detail-carousel" id="detail-carousel"><div class="detail-carousel-stack">${group.ids.map((bookId,i)=>{const item=books.find(x=>x.id===bookId);const delta=i-groupIndex;return `<div class="detail-carousel-item ${delta===0?'current':''}" style="--delta:${delta};--depth:${Math.abs(delta)};z-index:${group.ids.length-Math.abs(delta)}">${item?.cover?`<img src="${esc(item.cover)}" alt="${esc(item.title)}">`:'<span>📖</span>'}${delta===0?detailCoverFlags(b):''}</div>`}).join('')}</div></div>${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Próximo livro" title="Próximo livro" onclick="navigateDetailCarousel(1)">›</button>`:''}</div>${group.ids.length>1?`<div class="detail-carousel-counter">${group.kind==='series'?'Volume '+(Number(libraryGroups().series.find(g=>g.id===group.key)?.items.find(i=>i.id===id)?.order)||groupIndex+1)+' · ':''}Livro ${groupIndex+1} de ${group.ids.length}</div>`:''}`:`<div class="detail-single-cover">${b.cover?`<img class="detail-cover" src="${esc(b.cover)}">`:'<div class="detail-cover placeholder">📖</div>'}${detailCoverFlags(b)}</div>`}<div class="detail-book-metadata"><div class="detail-meta-line"><h2>${esc(b.title)}</h2><span class="muted detail-meta-author">${esc(b.author||'Autor desconhecido')}</span></div><div class="detail-meta-line detail-meta-secondary"><span>${esc(b.genre||'Gênero não informado')}</span><span class="detail-meta-separator" aria-hidden="true">·</span><span class="reading-position">${esc(readingPositionText(b))}</span></div></div></div><div class="rating-control" aria-label="Sua avaliação"><span>Sua avaliação</span>${[1,2,3,4,5].map(n=>`<button aria-label="${n} estrelas" title="${n} estrelas" onclick="rateBook(activeId,${n})" class="${n<=(b.rating||0)?'on':''}">${n<=(b.rating||0)?'★':'☆'}</button>`).join('')}</div><hr class="divider"><div class="detail-synopsis-heading"><span class="small muted">Sinopse</span>${!(b.description||'').trim()?`<button class="detail-ai-shortcut" onclick="showSmartMetadata(activeId)">✧ Gerar com IA</button>`:''}</div><p style="line-height:1.65">${esc(b.description||'Sem sinopse cadastrada.')}</p>`);$('sheet').classList.add('book-detail-sheet');$('sheet').scrollTop=0;initDetailCarousel();initDetailCoverOpen()}
 let detailCarouselChanging=false;
 function navigateDetailCarousel(direction){
  const group=activeGroupContext;
@@ -731,11 +843,26 @@ function navigateDetailCarousel(direction){
   setTimeout(()=>{incoming?.classList.remove('detail-turn-in-right','detail-turn-in-left','detail-turn-in-active');detailCarouselChanging=false},190);
  },125);
 }
+function openSelectedDetailBook(){
+ const book=books.find(b=>b.id===activeId);
+ if(!book)return;
+ if(book.hasFile)openReader(book.id);
+ else attachFile(book.id);
+}
+function initDetailCoverOpen(){
+ const target=$('detail-carousel')||$('sheet').querySelector('.detail-single-cover');
+ if(!target)return;
+ target.setAttribute('role','button');target.setAttribute('tabindex','0');
+ target.setAttribute('aria-label','Abrir livro selecionado');
+ target.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSelectedDetailBook()}});
+ if(!target.id||target.id!=='detail-carousel')target.addEventListener('click',openSelectedDetailBook);
+}
 function initDetailCarousel(){
  const el=$('detail-carousel'),group=activeGroupContext;if(!el||!group||group.ids.length<2)return;
- let startX=0,startY=0;
- el.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;startY=e.touches[0].clientY},{passive:true});
- el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;if(Math.abs(dx)<35||Math.abs(dx)<Math.abs(dy)*1.25)return;const at=group.ids.indexOf(activeId),next=at+(dx<0?1:-1);navigateDetailCarousel(dx<0?1:-1)},{passive:true});
+ let startX=0,startY=0,swiped=false;
+ el.addEventListener('click',()=>{if(swiped){swiped=false;return}openSelectedDetailBook()});
+ el.addEventListener('touchstart',e=>{swiped=false;startX=e.touches[0].clientX;startY=e.touches[0].clientY},{passive:true});
+ el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;if(Math.abs(dx)<35||Math.abs(dx)<Math.abs(dy)*1.25)return;swiped=true;setTimeout(()=>swiped=false,400);navigateDetailCarousel(dx<0?1:-1)},{passive:true});
 }
 async function toggleFavorite(id){const b=books.find(x=>x.id===id);if(!b)return;b.favorite=!b.favorite;await tx('books','readwrite','put',b);await refresh();openDetail(id);toast(b.favorite?'Adicionado aos favoritos':'Removido dos favoritos')}
 function editBook(id){let b=books.find(x=>x.id===id);if(!b)return;openModal(`<div class="row between"><h2>Editar livro</h2><button class="btn tiny ghost" onclick="openDetail(activeId)">✕</button></div><div class="field"><label>Título</label><input id="ed-title" value="${esc(b.title)}"></div><div class="field"><label>Autor</label><input id="ed-author" value="${esc(b.author||'')}"></div><div class="field"><label>Gênero</label><input id="ed-genre" value="${esc(b.genre||'')}"></div><div class="field"><label>Status</label><select id="ed-status">${['want','reading','done','paused','abandoned'].map(s=>`<option value="${s}" ${b.status===s?'selected':''}>${statusName(s)}</option>`).join('')}</select></div><div class="field"><label>Nota (0 a 5)</label><input type="number" id="ed-rating" min="0" max="5" step=".5" value="${b.rating||0}"></div><div class="field"><label>Sinopse</label><button type="button" class="btn tiny ghost" id="online-metadata-button" onclick="lookupBookMetadata()">⌕ Buscar informações online</button><textarea id="ed-description">${esc(b.description||'')}</textarea></div><div class="field"><label>Minha opinião / resumo</label><textarea id="ed-review">${esc(b.review||'')}</textarea></div><button class="btn primary full" onclick="saveBookEdit()">Salvar alterações</button>`)}
@@ -790,7 +917,52 @@ async function addFiles(fileList,attachId){
  if(attachId&&added)openDetail(attachId);
 }
 function attachFile(id){activeId=id;$('epub-input').click()}
-async function openReader(id){if(!window.ePub){toast('É preciso internet para carregar o motor EPUB nesta versão.');return}let b=books.find(x=>x.id===id);if(!b)return;let f=await tx('files','readonly','get',id);if(!f){toast('Arquivo EPUB não encontrado neste aparelho.');return}if(!$('modal').classList.contains('hide')){closeModal(true);if(history.state?.bibliotecaScreen==='detail')try{history.replaceState({bibliotecaScreen:'tab',tab:currentTab},'',location.href)}catch(e){}}activeId=id;const session=++readerSession;readerLocationsReady=false;pushAppHistory('reader');$('reader').classList.remove('hide');startReadingClock();$('reader-title').textContent=b.title;setReaderCoverColor(b.cover);$('reader-author').textContent=b.author||'';$('reader-theme').value=settings.theme;$('font-size').value=settings.font;$('reader-font-family').value=settings.family||'original';$('reader-dim').value=100-(settings.dim||0);settings.paragraph=b.paragraphSpacing||'original';try{epubBook=ePub(f.data instanceof ArrayBuffer?f.data.slice(0):f.data);rendition=epubBook.renderTo('epub-view',{width:'100%',height:'100%',flow:'paginated',spread:'none'});initReaderSwipe();applyReaderSettings();await rendition.display(b.cfi||undefined);renderReaderHighlights();const openedBook=epubBook,openedId=id;
+// Transição de capa para leitura: a capa parte da posição real na ficha.
+let bookOpeningTimer=null,bookOpeningExitTimer=null,bookOpeningStarted=0;
+const BOOK_OPEN_MIN_MS=1150;
+function showBookOpening(book){
+ finishBookOpening(true);
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const source=document.querySelector('#detail-carousel .detail-carousel-item.current img') || document.querySelector('#sheet .detail-cover');
+ const rect=source?.getBoundingClientRect();
+ const overlay=document.createElement('div');overlay.id='book-opening-overlay';overlay.setAttribute('aria-hidden','true');
+ const frame=document.createElement('div');frame.className='book-opening-image';
+ if(book.cover){const img=document.createElement('img');img.src=book.cover;img.alt='';frame.appendChild(img)}
+ else{const placeholder=document.createElement('div');placeholder.className='book-opening-placeholder';placeholder.textContent='📖';frame.appendChild(placeholder)}
+ overlay.appendChild(frame);document.body.appendChild(overlay);
+ const w=rect?.width>10?rect.width:Math.min(innerWidth*.38,150);
+ const h=rect?.height>10?rect.height:w*1.48;
+ const x=rect?.width>10?rect.left:(innerWidth-w)/2;
+ const y=rect?.height>10?rect.top:(innerHeight-h)/2;
+ frame.style.left=x+'px';frame.style.top=y+'px';frame.style.width=w+'px';frame.style.height=h+'px';
+ bookOpeningStarted=performance.now();
+ const targetScale=Math.min((innerWidth*.86)/w,(innerHeight*.76)/h,3.8);
+ const finalW=w*targetScale,finalH=h*targetScale;
+ // A animação começa onde o livro estava, cresce e termina centralizada.
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  if(!overlay.isConnected)return;
+  overlay.classList.add('book-opening-active');
+  frame.style.transform=`translate3d(${(innerWidth-finalW)/2-x}px,${(innerHeight-finalH)/2-y}px,0) scale(${targetScale})`;
+ }));
+ if(reduced){frame.style.transition='none';overlay.style.transition='none'}
+ // Apenas proteção de emergência: nunca deixar a interface bloqueada.
+ bookOpeningTimer=setTimeout(()=>finishBookOpening(),12000);
+}
+function finishBookOpening(immediate=false){
+ const overlay=document.getElementById('book-opening-overlay');
+ clearTimeout(bookOpeningExitTimer);
+ if(!overlay){clearTimeout(bookOpeningTimer);bookOpeningTimer=null;return}
+ if(immediate){clearTimeout(bookOpeningTimer);bookOpeningTimer=null;overlay.remove();$('reader')?.classList.remove('reader-opening');return}
+ const remaining=Math.max(0,BOOK_OPEN_MIN_MS-(performance.now()-bookOpeningStarted));
+ bookOpeningExitTimer=setTimeout(()=>{
+  if(!overlay.isConnected)return;
+  // O texto só aparece após a expansão, nunca por trás da capa pequena.
+  $('reader')?.classList.remove('reader-opening');
+  overlay.classList.add('book-opening-exit');
+  bookOpeningExitTimer=setTimeout(()=>{overlay.remove();clearTimeout(bookOpeningTimer);bookOpeningTimer=null},370);
+ },remaining);
+}
+async function openReader(id){if(!window.ePub){toast('É preciso internet para carregar o motor EPUB nesta versão.');return}let b=books.find(x=>x.id===id);if(!b)return;let f=await tx('files','readonly','get',id);if(!f){toast('Arquivo EPUB não encontrado neste aparelho.');return}showBookOpening(b);activeId=id;const session=++readerSession;readerLocationsReady=false;pushAppHistory('reader');$('reader').classList.add('reader-opening');$('reader').classList.remove('hide');startReadingClock();$('reader-title').textContent=b.title;setReaderCoverColor(b.cover);$('reader-author').textContent=b.author||'';$('reader-theme').value=settings.theme;$('font-size').value=settings.font;$('reader-font-family').value=settings.family||'original';$('reader-dim').value=100-(settings.dim||0);settings.paragraph=b.paragraphSpacing||'original';try{epubBook=ePub(f.data instanceof ArrayBuffer?f.data.slice(0):f.data);rendition=epubBook.renderTo('epub-view',{width:'100%',height:'100%',flow:'paginated',spread:'none'});initReaderSwipe();applyReaderSettings();await rendition.display(b.cfi||undefined);finishBookOpening();renderReaderHighlights();const openedBook=epubBook,openedId=id;
  // Um mapa de posições por arquivo EPUB, guardado separadamente dos livros.
  // Reutilizá-lo evita recalcular posições em cada sessão do leitor.
  (async()=>{try{
@@ -815,7 +987,7 @@ async function openReader(id){if(!window.ePub){toast('É preciso internet para c
    setTimeout(renderReaderHighlights,30);setTimeout(applyParagraphSpacing,35);contents.document.documentElement.style.webkitTapHighlightColor='transparent';contents.document.body.style.webkitTapHighlightColor='transparent';// Preserva o menu nativo de seleção do Samsung Internet.
   }catch(e){}
  });
- rendition.on('selected',(cfi,contents)=>{selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();await tx('books','readwrite','put',b);await refresh()}catch(e){console.error(e);toast('Falha ao abrir o EPUB');closeReader()}}
+ rendition.on('selected',(cfi,contents)=>{selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();await tx('books','readwrite','put',b);await refresh()}catch(e){finishBookOpening(true);console.error(e);toast('Falha ao abrir o EPUB');closeReader()}}
 let footnoteReturnCfi=null;
 function handleEpubFootnote(event,contents){const link=event.target?.closest?.('a[href]');if(!link||!rendition)return;const href=link.getAttribute('href')||'';if(!href||/^https?:|^mailto:/i.test(href))return;const targetId=decodeURIComponent(href.split('#')[1]||'');if(!targetId)return;const label=(link.textContent||'').trim();const isNote=/^(\[?\d{1,3}\]?|[¹²³⁴⁵⁶⁷⁸⁹⁰]+)$/.test(label)||/noteref|footnote/i.test(link.getAttribute('epub:type')||link.getAttribute('role')||link.className||'');if(!isNote)return;const target=contents.document.getElementById(targetId);if(!target)return;event.preventDefault();event.stopPropagation();const text=(target.innerText||target.textContent||'').trim();if(!text)return;showReaderPopup(`<h3>Nota ${esc(label)}</h3><div class="footnote-text">${esc(text)}</div><div class="popup-actions"><button class="btn" onclick="closeReaderPopup()">Voltar à leitura</button></div>`)}
 function updateLocation(loc){
@@ -901,7 +1073,7 @@ function attachReaderSwipe(doc){
 }
 function clearReaderSwipe(){for(const l of swipeListeners){l.doc.removeEventListener('touchstart',l.start);l.doc.removeEventListener('touchend',l.end);l.doc.removeEventListener('touchcancel',l.cancel);l.doc.removeEventListener('click',l.click);l.doc.removeEventListener('selectionchange',l.selectionChange);if(l.doc!==document)l.doc.removeEventListener('pointerdown',dismissReaderSettings);l.doc.removeEventListener('pointerup',l.dismissSelection)}swipeListeners=[]}
 function initReaderSwipe(){clearReaderSwipe();attachReaderSwipe(document.querySelector('.reader-main'));if(rendition){rendition.hooks.content.register(c=>attachReaderSwipe(c.document));for(const c of rendition.getContents?.()||[])attachReaderSwipe(c.document)}}
-function closeReader(fromHistory=false){if(!fromHistory&&history.state?.bibliotecaScreen==='reader'){history.back();return}readerSession++;readerLocationsReady=false;stopReadingClock();closeReaderPopup();clearReaderSwipe();clearTimeout(saveTimer);let b=books.find(x=>x.id===activeId);if(b)tx('books','readwrite','put',b).catch(console.error);try{rendition?.destroy()}catch(e){}try{epubBook?.destroy()}catch(e){}rendition=null;epubBook=null;$('epub-view').innerHTML='';$('reader').classList.add('hide');$('reader-settings').classList.add('hide');hideSelection();refresh()}
+function closeReader(fromHistory=false){finishBookOpening(true);if(!fromHistory&&history.state?.bibliotecaScreen==='reader'){history.back();return}readerSession++;readerLocationsReady=false;stopReadingClock();closeReaderPopup();clearReaderSwipe();clearTimeout(saveTimer);let b=books.find(x=>x.id===activeId);if(b)tx('books','readwrite','put',b).catch(console.error);try{rendition?.destroy()}catch(e){}try{epubBook?.destroy()}catch(e){}rendition=null;epubBook=null;$('epub-view').innerHTML='';$('reader').classList.add('hide');$('reader-settings').classList.add('hide');hideSelection();refresh()}
 function toggleReaderSettings(){$('reader-settings').classList.toggle('hide')}
 function dismissReaderSettings(){const panel=$('reader-settings');if(panel&&!panel.classList.contains('hide'))panel.classList.add('hide')}
 document.addEventListener('pointerdown',e=>{const panel=$('reader-settings');if(panel&&!panel.classList.contains('hide')&&!panel.contains(e.target)&&!e.target.closest('[onclick*="toggleReaderSettings"]'))panel.classList.add('hide')});
