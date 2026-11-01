@@ -1,7 +1,7 @@
-Minha Biblioteca v6.6 — Zerar leitura.
+Minha Biblioteca v6.9.2 — correção de atualização do aplicativo.
 
-Novidade: opção “Zerar leitura” no menu ⋯ de Continuar lendo e na ficha do livro. A confirmação avisa sobre a exclusão definitiva de anotações, destaques, marcadores e citações do livro. O progresso volta a zero e o status passa a Não iniciado. EPUB, sinopse, avaliação e dados de catálogo são preservados.
-
-Base: v6.5. Sem mudanças intencionais nas sinopses.
-
-Antes de atualizar, exporte um backup. Use o mesmo endereço/origem do aplicativo para preservar o IndexedDB.
+O index.html exibe no máximo quatro capas nas miniaturas dos agrupamentos (Autores, Séries, Coleções) e mantém o indicador +N.
+O sw.js agora tem uma nova versão de cache para que o navegador não continue servindo o HTML antigo.
+IMPORTANTE: substitua index.html E sw.js no mesmo repositório; preserve o endereço do GitHub Pages.
+Não apague dados do navegador. Faça backup atualizado antes de publicar.
+A validação de sintaxe não substitui teste funcional no Samsung Internet.
