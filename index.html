@@ -697,6 +697,42 @@ body{background:#e9e9e7!important;color:#292929}
 #tab-home .reading-feature.reading-dynamic .reading-cover img{filter:drop-shadow(0 4px 7px #0006)}
 /* O leitor EPUB mantém sua própria cor de página e configurações. */
 </style>
+
+<style id="mb699-detail-polish">
+/* A ficha nunca deixa a biblioteca aparecer através do conteúdo rolável. */
+#sheet.book-detail-sheet.detail-dynamic{
+ background:var(--detail-solid-bg,#202b29)!important;
+ background-image:var(--dynamic-cover-bg)!important;
+ background-attachment:local!important;
+ color:var(--dynamic-ink,#fff)!important;
+ --muted:var(--dynamic-ink,#fff);
+}
+/* A camada desfocada é decorativa; o fundo sólido/gradiente cobre toda a rolagem. */
+#sheet.book-detail-sheet.detail-dynamic::before{opacity:.7}
+#modal:has(> #sheet.book-detail-sheet){background:rgba(10,13,17,.64)!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#sheet.book-detail-sheet.detail-dynamic .sheet-back,
+#sheet.book-detail-sheet.detail-dynamic .reading-position,
+#sheet.book-detail-sheet.detail-dynamic .detail-meta-secondary span,
+#sheet.book-detail-sheet.detail-dynamic .detail-meta-separator,
+#sheet.book-detail-sheet.detail-dynamic .detail-meta-author,
+#sheet.book-detail-sheet.detail-dynamic .detail-meta-series,
+#sheet.book-detail-sheet.detail-dynamic .small,
+#sheet.book-detail-sheet.detail-dynamic .muted,
+#sheet.book-detail-sheet.detail-dynamic .detail-synopsis-heading,
+#sheet.book-detail-sheet.detail-dynamic .rating-control span{
+ color:var(--dynamic-ink,#fff)!important;opacity:1!important;
+ text-shadow:var(--detail-text-shadow,0 1px 3px #0009)!important;
+}
+#sheet.book-detail-sheet.detail-dynamic .sheet-back{font-weight:750!important;font-size:14px!important}
+#sheet.book-detail-sheet.detail-dynamic .detail-meta-secondary .reading-position{display:inline!important;margin:0!important;font-size:inherit!important;font-weight:650!important}
+#sheet.book-detail-sheet.detail-dynamic .detail-close-btn,
+#sheet.book-detail-sheet.detail-dynamic .detail-more-btn,
+#sheet.book-detail-sheet.detail-dynamic .detail-ai-shortcut{opacity:1!important;text-shadow:var(--detail-text-shadow,0 1px 3px #0009)!important}
+/* As faixas claras eram o background do img visível com object-fit:contain. */
+#sheet.book-detail-sheet .detail-single-cover .detail-cover{background:transparent!important;object-fit:cover!important;display:block}
+/* Moldura somente na capa do Continue lendo. */
+#tab-home .reading-feature .reading-cover{border:1px solid rgba(255,255,255,.72)!important;box-shadow:0 5px 16px #0005,0 0 0 1px #0002!important;overflow:hidden}
+</style>
 </head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
@@ -839,7 +875,9 @@ async function applyDetailCoverColors(book,group){
  const colors=(await Promise.all(sources.filter(Boolean).map(sampleCoverColor))).filter(Boolean);
  if(!colors.length||!sheet.isConnected||activeId!==id||!sheet.classList.contains('book-detail-sheet'))return;
  sheet.style.setProperty('--dynamic-cover-bg',visualCoverBackground(colors));
+ sheet.style.setProperty('--detail-solid-bg',`rgb(${colors[0].join(',')})`);
  sheet.style.setProperty('--dynamic-ink',visualInk(colors));
+ sheet.style.setProperty('--detail-text-shadow',visualInk(colors)==='#fff'?'0 1px 3px rgba(0,0,0,.85)':'0 1px 2px rgba(255,255,255,.8)');
  sheet.classList.add('detail-dynamic');
 }
 async function applyReadingFeatureColors(){
