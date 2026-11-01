@@ -879,7 +879,7 @@ function initDetailCoverOpen(){
  target.setAttribute('role','button');target.setAttribute('tabindex','0');
  target.setAttribute('aria-label','Abrir livro selecionado');
  target.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openSelectedDetailBook()}});
- if(!target.id||target.id!=='detail-carousel')target.addEventListener('click',openSelectedDetailBook);
+ if(target.id!=='detail-carousel'||(activeGroupContext?.ids.length===1))target.addEventListener('click',openSelectedDetailBook);
 }
 function initDetailCarousel(){
  const el=$('detail-carousel'),group=activeGroupContext;if(!el||!group||group.ids.length<2)return;
