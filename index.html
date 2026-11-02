@@ -220,18 +220,23 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 
 .narrative-reading-all{max-height:65dvh;overflow-y:auto}.narrative-all-section+ .narrative-all-section{margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}.narrative-all-section h3{font:600 17px/1.4 inherit;margin:0 0 18px;color:var(--text)}.narrative-reading-all p{margin-bottom:1em}
 
-/* v6.9.22 — ferramentas de seleção dos resumos, visíveis mesmo com rolagem. */
-.reader-popup-card:has(#narrative-text-content) .narrative-panel{position:relative}
+/* v6.9.23 — menu de seleção compacto, no padrão do leitor EPUB. */
+.reader-popup-card:has(#narrative-text-content){position:relative}
 .reader-popup-card #narrative-selection-menu{
- position:absolute;z-index:40;left:12px;right:12px;bottom:65px;
- display:flex;justify-content:center;flex-wrap:wrap;gap:6px;
- margin:0;padding:9px;border-radius:13px;
- background:var(--reader,#f8f9fc);color:var(--ink,#242424);
- border:1px solid rgba(128,128,128,.35);
- box-shadow:0 8px 28px rgba(0,0,0,.25);
+ position:absolute;z-index:40;left:12px;top:90px;right:auto;bottom:auto;
+ width:max-content;max-width:calc(100% - 24px);display:flex;flex-wrap:nowrap;
+ align-items:center;justify-content:center;gap:0;margin:0;padding:4px 5px;
+ border-radius:14px;background:#fff;color:#34334b;
+ border:1px solid #e5e4ee;box-shadow:0 8px 24px #39324d30;
 }
 .reader-popup-card #narrative-selection-menu.hide{display:none!important}
-.reader-popup-card #narrative-selection-menu .btn{min-width:0;flex:1 1 95px}
+.reader-popup-card #narrative-selection-menu button.btn{
+ flex:0 0 auto;min-width:0!important;margin:0!important;padding:8px 9px;
+ font-size:11px;font-weight:650;white-space:nowrap;border:0;
+ border-radius:9px;background:transparent;color:#5e5273;
+}
+.reader-popup-card #narrative-selection-menu button.btn:active{background:#f4f0fa}
+@media(max-width:420px){.reader-popup-card #narrative-selection-menu button.btn{padding:8px 6px;font-size:10px}}
 #narrative-text-content{-webkit-user-select:text;user-select:text}
 </style><style>
 .reader-consult{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px;background:#e8e4dd;color:#35332f;border-top:1px solid #bbb4a8;font-size:12px;z-index:3}
@@ -2057,7 +2062,25 @@ function narrativeCaptureSelection(){
  const pre=range.cloneRange();pre.selectNodeContents(article);pre.setEnd(range.startContainer,range.startOffset);
  const start=pre.toString().length,text=range.toString();if(!text.trim())return;
  narrativeSelection={start,end:start+text.length,text};
- const toolbar=$('narrative-selection-menu');if(toolbar)toolbar.classList.remove('hide');
+ const toolbar=$('narrative-selection-menu');
+ if(toolbar){
+  toolbar.classList.remove('hide');
+  // O menu acompanha o trecho selecionado e permanece dentro do modal.
+  const card=toolbar.closest('.reader-popup-card');
+  if(card){
+   const bounds=card.getBoundingClientRect();
+   const selected=range.getBoundingClientRect();
+   const menuWidth=toolbar.offsetWidth,menuHeight=toolbar.offsetHeight;
+   const center=selected.left+selected.width/2-bounds.left;
+   const left=Math.max(10,Math.min(center-menuWidth/2,bounds.width-menuWidth-10));
+   const below=selected.bottom-bounds.top+12;
+   const above=selected.top-bounds.top-menuHeight-12;
+   const top=below+menuHeight<=bounds.height-12?below:
+    above>=12?above:Math.max(12,Math.min(below,bounds.height-menuHeight-12));
+   toolbar.style.left=Math.round(left+card.scrollLeft)+'px';
+   toolbar.style.top=Math.round(top+card.scrollTop)+'px';
+  }
+ }
 }
 function narrativeClearSelection(){narrativeSelection=null;$('narrative-selection-menu')?.classList.add('hide');try{window.getSelection()?.removeAllRanges()}catch(e){}}
 async function narrativeAddMark(kind){
@@ -2076,7 +2099,7 @@ async function narrativeDictionary(){const sel=narrativeSelection;if(!sel)return
  try{const response=await fetch('https://api.dicionario-aberto.net/word/'+encodeURIComponent(word),{signal:AbortSignal.timeout(9000)});if(!response.ok)throw Error();const data=await response.json();const raw=(Array.isArray(data)?data:[]).map(x=>String(x.xml||'')).join('\n');const parsed=new DOMParser().parseFromString('<root>'+raw+'</root>','text/xml');const definitions=[...parsed.querySelectorAll('def')].map(x=>x.textContent.trim()).filter(Boolean).slice(0,4);narrativePresent(`<h2>Dicionário · ${esc(word)}</h2><p style="white-space:pre-wrap">${esc(definitions.join('\n\n')||'Definição não encontrada.')}</p><button class="btn" onclick="narrativeRead()">Voltar ao resumo</button>`)}catch(e){narrativePresent(`<h2>Dicionário · ${esc(word)}</h2><p class="notice">Consulta indisponível. Verifique a conexão.</p><button class="btn" onclick="narrativeRead()">Voltar ao resumo</button>`)}}
 
 function narrativeWiki(){const sel=narrativeSelection;if(!sel)return;const word=sel.text.trim();narrativeClearSelection();window.open('https://pt.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(word),'_blank','noopener')}
-function narrativeRead(){const c=narrativeContext;if(!c)return;c.view='read';const item=narrativeSaved()[narrativeKey(c.index)];if(!item)return narrativeEdit();narrativePresent(`<div class="row between"><div><h2>${esc(c.chapters[c.index].label)}</h2><small>${esc(books.find(x=>x.id===c.id)?.title||'')}</small></div><div class="row"><button class="btn tiny ghost" title="Marcações" onclick="narrativeShowMarks()">▤</button><button class="btn tiny ghost" title="Voltar à lista de resumos" onclick="narrativeDraw()">✕</button></div></div><article class="narrative-reading"><div id="narrative-text-content" style="white-space:pre-wrap" onmouseup="narrativeCaptureSelection()" ontouchend="setTimeout(narrativeCaptureSelection,350)">${narrativeMarkedHTML(item.text)}</div></article><div id="narrative-selection-menu" class="narrative-actions hide" onmousedown="event.preventDefault()"><button class="btn tiny" onclick="narrativeDictionary()">Dicionário</button><button class="btn tiny" onclick="narrativeAddMark('highlight')">Destacar</button><button class="btn tiny" onclick="narrativeAddMark('note')">Anotar</button><button class="btn tiny" onclick="narrativeWiki()">Wikipédia</button></div><div class="narrative-actions"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeEdit()">Editar</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`)}
+function narrativeRead(){const c=narrativeContext;if(!c)return;c.view='read';const item=narrativeSaved()[narrativeKey(c.index)];if(!item)return narrativeEdit();narrativePresent(`<div class="row between"><div><h2>${esc(c.chapters[c.index].label)}</h2><small>${esc(books.find(x=>x.id===c.id)?.title||'')}</small></div><div class="row"><button class="btn tiny ghost" title="Marcações" onclick="narrativeShowMarks()">▤</button><button class="btn tiny ghost" title="Voltar à lista de resumos" onclick="narrativeDraw()">✕</button></div></div><article class="narrative-reading"><div id="narrative-text-content" style="white-space:pre-wrap" onmouseup="narrativeCaptureSelection()" ontouchend="setTimeout(narrativeCaptureSelection,350)">${narrativeMarkedHTML(item.text)}</div></article><div id="narrative-selection-menu" class="narrative-actions hide" onmousedown="event.preventDefault()"><button class="btn tiny" onclick="narrativeDictionary()">Dicionário</button><button class="btn tiny" onclick="narrativeWiki()">Wikipédia</button><button class="btn tiny" onclick="narrativeAddMark('highlight')">Destacar</button><button class="btn tiny" onclick="narrativeAddMark('note')">Anotar</button></div><div class="narrative-actions"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeEdit()">Editar</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`)}
 function narrativeStep(delta){const c=narrativeContext;if(!c)return;const saved=narrativeSavedIndices();const pos=saved.indexOf(c.index);const idx=saved[pos+delta];if(idx===undefined)return toast('Não há outro resumo nesta direção.');c.index=idx;narrativeRead()}
 
 async function exportBackup(){let data={format:'minha_biblioteca_v1',exported:new Date().toISOString(),books:await tx('books','readonly','getAll')};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='minha-biblioteca-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);toast('Backup exportado (sem EPUBs)')}
