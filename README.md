@@ -1,5 +1,3 @@
-Minha Biblioteca v6.9.29
+Minha Biblioteca v6.9.30 — Escolha de estilo ao copiar para IA
 
-Melhorias: gesto de deslizar nos resumos com navegação por página inteira; total de posições calculado antecipadamente nos detalhes do EPUB; percentual de redução dos resumos e redução geral estimada exclusivamente na área de resumos.
-
-O percentual geral é estimado a partir dos capítulos identificados no índice do EPUB. Em livros com índice incompleto ou estrutura incomum, a contagem pode ficar indisponível. Resumos já existentes podem obter a comparação após a análise do EPUB.
+O botão Copiar para IA abre duas opções: Narrativo aprofundado (prompt original inalterado) e Narrativo condensado (novo prompt com foco em economia de leitura). A seleção não é salva. Extração do capítulo, registro de palavras originais, salvamento/edição de resumos, percentuais, posições e navegação permanecem como na v6.9.29.

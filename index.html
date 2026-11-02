@@ -264,6 +264,15 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 .narrative-missing h3{font-size:17px;font-weight:650}.narrative-missing p{font-size:13px;opacity:.75;margin:0}
 .narrative-missing-icon{font-size:29px;opacity:.55}.narrative-missing-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
 .narrative-missing-actions button{background:transparent!important;border:1px solid #8887!important;border-radius:10px!important;padding:10px 14px!important;color:var(--ink)!important}
+
+/* Escolha pontual de estilo ao copiar capítulos para IA */
+.narrative-copy-options{display:grid;gap:10px;margin:16px 0}
+.narrative-copy-option{display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%;padding:15px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);color:var(--text);text-align:left;cursor:pointer;font:inherit}
+.narrative-copy-option strong{font-size:14px;font-weight:650}
+.narrative-copy-option small{font-size:12px;line-height:1.5;color:var(--muted)}
+.narrative-copy-option:active{transform:scale(.995)}
+.reader-popup-card .narrative-copy-option{background:#f5f1f8;border-color:#e4e0ea;color:#34334b}
+.reader-popup-card .narrative-copy-option small{color:#777084}
 </style><style>
 .reader-consult{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px;background:#e8e4dd;color:#35332f;border-top:1px solid #bbb4a8;font-size:12px;z-index:3}
 .reader-consult button{font-size:12px!important;padding:8px 10px!important;background:#fff!important;border:1px solid #bdb5a9!important;border-radius:9px!important;color:#35332f!important}
@@ -1913,6 +1922,17 @@ Reconte os acontecimentos em narrativa contínua, fluida, natural e envolvente. 
 Preserve todos os fatos relevantes, inclusive detalhes aparentemente pequenos que possam ter importância posteriormente, as relações entre personagens, decisões, pistas, informações históricas e científicas necessárias à compreensão, mudanças de cena, reações e consequências. Condense descrições excessivas, repetições e digressões sem eliminar a complexidade narrativa. Use diálogos diretos apenas quando melhorarem a experiência; caso contrário, integre seu conteúdo à narração de maneira natural.
 
 Não invente acontecimentos, não acrescente spoilers de capítulos seguintes, não interprete simbolismos nem inclua comentários, títulos explicativos, tópicos, análises ou conclusões externas. O tamanho deve acompanhar a densidade do capítulo: reduza o texto sem sacrificar a experiência literária. Entregue somente a narrativa condensada.`;
+const NARRATIVE_CONDENSED_PROMPT=`# RESUMO NARRATIVO CONDENSADO
+
+Você receberá o texto integral de um capítulo de um livro. Produza uma versão significativamente mais curta da própria história, em narrativa contínua, não uma análise nem um resumo explicativo.
+
+Reconte os acontecimentos com escrita natural, objetiva, fluida e envolvente, preservando a perspectiva narrativa, a ordem original dos acontecimentos e das revelações, o suspense e o impacto do encerramento. Não antecipe descobertas nem inclua informações de capítulos seguintes.
+
+Preserve os fatos, decisões, relações, pistas e informações históricas ou científicas necessários para compreender a história e seus desdobramentos, inclusive detalhes pequenos que possam ser importantes mais tarde. Condense com firmeza descrições, gestos, deslocamentos, pensamentos reiterados, transições e diálogos secundários; reúna ações relacionadas e evite repetir uma emoção ou suspeita já estabelecida. Use diálogo direto somente quando ele for essencial à cena ou à revelação.
+
+Priorize economia real de leitura: busque, quando a densidade do capítulo permitir, uma redução aproximada de 40% a 50% em relação ao original, sem transformar o texto em uma lista de fatos e sem eliminar acontecimentos relevantes apenas para atingir uma meta numérica. A extensão final deve se adaptar à complexidade do capítulo.
+
+Não invente acontecimentos, não interprete simbolismos, não acrescente comentários, títulos explicativos, tópicos, análises ou conclusões externas. Entregue somente a narrativa condensada.`;
 let narrativeContext=null,readerConsult=null;
 function beginReaderConsult(){
  if(readerConsult||!rendition)return;
@@ -1994,7 +2014,7 @@ function narrativeDraw(){
   narrativePresent(html);return;
  }
  const options=c.chapters.map((ch,i)=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(ch.label)}${saved[ch.href]?' · salvo':''}</option>`).join('');
- const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)${narrativeTotalReduction(b)!==null?' · Redução estimada: '+narrativeTotalReduction(b)+'%':''}</p><label class="field"><label>Selecionar capítulo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-actions"><button class="btn primary" onclick="narrativeCopy()">✧ Copiar para IA</button><button class="btn" onclick="narrativeEdit()">${saved[narrativeKey(c.index)]?'✎ Editar resumo':'＋ Salvar resumo'}</button></div><p class="notice">O pedido inclui o capítulo completo e as instruções do Resumo Narrativo Aprofundado. Cole na sua IA preferida e salve o resultado aqui.</p><div class="narrative-list">${c.chapters.map((ch,i)=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeSelect(${i})"><span>${esc(ch.label)}</span><small>${saved[ch.href]?'✓ Salvo':'Sem resumo'}</small></button>`).join('')}</div>${saved[narrativeKey(c.index)]?'<button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo deste capítulo</button>':''}`;
+ const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)${narrativeTotalReduction(b)!==null?' · Redução estimada: '+narrativeTotalReduction(b)+'%':''}</p><label class="field"><label>Selecionar capítulo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-actions"><button class="btn primary" onclick="narrativeCopyChoose()">✧ Copiar para IA</button><button class="btn" onclick="narrativeEdit()">${saved[narrativeKey(c.index)]?'✎ Editar resumo':'＋ Salvar resumo'}</button></div><p class="notice">Escolha o estilo ao copiar o capítulo para IA. Depois, cole e salve o resumo normalmente.</p><div class="narrative-list">${c.chapters.map((ch,i)=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeSelect(${i})"><span>${esc(ch.label)}</span><small>${saved[ch.href]?'✓ Salvo':'Sem resumo'}</small></button>`).join('')}</div>${saved[narrativeKey(c.index)]?'<button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo deste capítulo</button>':''}`;
  narrativePresent(html);
 }
 function narrativeReadAll(){
@@ -2082,15 +2102,21 @@ async function narrativeClipboard(text){
   try{const el=document.createElement('textarea');el.value=text;el.style.cssText='position:fixed;opacity:0;top:0';document.body.append(el);el.select();const ok=document.execCommand('copy');el.remove();return ok}catch(_){return false}
  }
 }
-async function narrativeCopy(){
+function narrativeCopyChoose(){
+ const c=narrativeContext;if(!c)return;
+ c.view='copy-choice';
+ narrativePresent(`<div class="row between"><h2>✧ Copiar para IA</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(c.chapters[c.index].label)} · Escolha o estilo para este capítulo.</p><div class="narrative-copy-options"><button class="narrative-copy-option" onclick="narrativeCopy('deep')"><strong>✧ Narrativo aprofundado</strong><small>Leitura envolvente, detalhada e com riqueza narrativa.</small></button><button class="narrative-copy-option" onclick="narrativeCopy('short')"><strong>✧ Narrativo condensado</strong><small>Leitura mais rápida, preservando acontecimentos e revelações importantes.</small></button></div><p class="notice">A escolha vale apenas para esta cópia. Você pode substituir o resumo salvo depois.</p><button class="btn full" onclick="narrativeDraw()">Voltar</button>`);
+}
+async function narrativeCopy(style='deep'){
+
  const c=narrativeContext;if(!c)return;
  toast('Preparando o capítulo…');
  try{
   const body=await narrativeExtract(c),b=books.find(x=>x.id===c.id),ch=c.chapters[c.index];
-  const full=`${NARRATIVE_PROMPT}\n\nLIVRO: ${b.title}\nAUTOR: ${b.author||'Não informado'}\nCAPÍTULO: ${ch.label}\n\nTEXTO ORIGINAL DO CAPÍTULO:\n\n${body}`;
+  const full=`${style==='short'?NARRATIVE_CONDENSED_PROMPT:NARRATIVE_PROMPT}\n\nLIVRO: ${b.title}\nAUTOR: ${b.author||'Não informado'}\nCAPÍTULO: ${ch.label}\n\nTEXTO ORIGINAL DO CAPÍTULO:\n\n${body}`;
   if(!await narrativeClipboard(full))throw Error('O navegador bloqueou a cópia. Tente novamente pelo navegador.');
   b.narrativeOriginalWords={...(b.narrativeOriginalWords||{}),[ch.href]:narrativeWords(body)};await tx('books','readwrite','put',b);
-  toast('Capítulo copiado: '+body.length.toLocaleString('pt-BR')+' caracteres de texto.');
+  toast('Capítulo copiado: '+body.length.toLocaleString('pt-BR')+' caracteres de texto.');narrativeDraw();
  }catch(e){toast(e.message||'Não foi possível copiar o capítulo')}
 }
 function narrativeEdit(){const c=narrativeContext;if(!c)return;c.editFromMissing=c.view==='missing';c.view='edit';const item=narrativeSaved()[narrativeKey(c.index)];narrativePresent(`<div class="row between"><h2>${item?'Editar':'Salvar'} resumo</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(c.chapters[c.index].label)}</p><label class="field"><label>Resumo narrativo</label><textarea id="narrative-text" class="narrative-textarea" placeholder="Cole aqui o resumo gerado pela IA…">${esc(item?.text||'')}</textarea></label><div class="narrative-actions"><button class="btn" onclick="narrativePaste()">▤ Colar</button><button class="btn primary" onclick="narrativeSave()">Salvar resumo</button></div>${item?'<button class="btn tiny ghost" style="margin-top:14px" onclick="narrativeDelete()">Excluir este resumo</button>':''}`)}
@@ -2220,7 +2246,7 @@ function narrativeRead(){
   c.view='missing';
   const ch=c.chapters[c.index];
   const header=`<div class="row between"><div><h2>${esc(ch.label)}</h2><small>${esc(books.find(x=>x.id===c.id)?.title||'')}</small></div><button class="btn tiny ghost" title="Voltar à lista de resumos" onclick="narrativeDraw()">✕</button></div>`;
-  narrativePresent(`${header}<div class="narrative-missing"><div class="narrative-missing-icon">✧</div><h3>Este capítulo ainda não possui um resumo narrativo.</h3><p>Você pode preparar um resumo agora ou continuar para outro capítulo.</p><div class="narrative-missing-actions"><button class="btn" onclick="narrativeCopy()">Copiar capítulo para IA</button><button class="btn" onclick="narrativeEdit()">Adicionar resumo</button></div></div><div class="narrative-actions narrative-navigation"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`);
+  narrativePresent(`${header}<div class="narrative-missing"><div class="narrative-missing-icon">✧</div><h3>Este capítulo ainda não possui um resumo narrativo.</h3><p>Você pode preparar um resumo agora ou continuar para outro capítulo.</p><div class="narrative-missing-actions"><button class="btn" onclick="narrativeCopyChoose()">Copiar capítulo para IA</button><button class="btn" onclick="narrativeEdit()">Adicionar resumo</button></div></div><div class="narrative-actions narrative-navigation"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`);
   return;
  }
  c.view='read';
