@@ -197,8 +197,9 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 @media(max-width:380px){.library-header-actions{gap:3px}.library-header-actions .add-book{font-size:10px;padding:8px 6px}}
 
 
-/* v6.9.27 — paginação visual exclusiva dos resumos narrativos. */
-.narrative-reading.narrative-paged{height:100%;min-height:0;max-height:none;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;touch-action:pan-x pinch-zoom;position:relative}
+/* v6.9.28 — alinhamento controlado das páginas dos resumos narrativos. */
+.reader-popup-card:has(.narrative-paged) .narrative-reading.narrative-paged{overflow-x:hidden;overflow-y:hidden}
+.narrative-reading.narrative-paged{height:100%;min-height:0;max-height:none;overflow-x:hidden;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-y pinch-zoom;position:relative}
 .narrative-reading.narrative-paged::-webkit-scrollbar{display:none}
 .narrative-paged #narrative-text-content{height:100%;width:100%;box-sizing:border-box;column-width:var(--narrative-page-width);column-gap:0;column-fill:auto;white-space:pre-wrap;overflow-wrap:anywhere}
 .narrative-paged #narrative-text-content::after{content:'';display:block}
@@ -206,7 +207,7 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 .narrative-page-controls button{border:0;background:transparent;color:inherit;font-size:23px;padding:0 14px;min-height:30px;cursor:pointer}
 .narrative-page-controls button:disabled{opacity:.25}
 .narrative-page-controls span{min-width:62px;text-align:center;font-variant-numeric:tabular-nums}
-.reader-popup-card:has(.narrative-paged) .narrative-reading{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden}
+.reader-popup-card:has(.narrative-paged) .narrative-reading{flex:1;min-height:0;overflow-x:hidden;overflow-y:hidden}
 .reader-popup-card:has(.narrative-paged) .narrative-panel{min-height:0}
 #sheet:has(.narrative-paged) .narrative-panel{height:75dvh;display:flex;flex-direction:column;min-height:0}
 #sheet:has(.narrative-paged) .narrative-reading{flex:1;min-height:0}
@@ -2164,9 +2165,8 @@ function narrativeInitPages(){
   if(!e.changedTouches.length)return;
   const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;
   if(Math.abs(dx)>38&&Math.abs(dx)>Math.abs(dy)*1.3){
-   const page=Math.round(reading.scrollLeft/Math.max(1,reading.clientWidth));
-   // Native horizontal scrolling already handles swipes; only snap to the nearest page.
-   requestAnimationFrame(()=>narrativeGoPage(page));
+   // Advance exactly one full column; never rely on native free scrolling.
+   narrativeTurnPage(dx<0?1:-1);
   }
  },{passive:true});
  reading.addEventListener('click',e=>{
@@ -2176,11 +2176,11 @@ function narrativeInitPages(){
   if(x<bounds.width*.20)narrativeTurnPage(-1);
   else if(x>bounds.width*.80)narrativeTurnPage(1);
  });
- reading.addEventListener('scroll',()=>narrativeUpdatePage(),{passive:true});
+ // The indicator follows requested pages, not intermediate smooth-scroll offsets.
 }
-function narrativePageInfo(){const el=document.querySelector('.narrative-reading.narrative-paged');if(!el)return null;const w=Math.max(1,el.clientWidth);return {el,w,page:Math.round(el.scrollLeft/w),total:Math.max(1,Math.ceil((el.scrollWidth-1)/w))}}
+function narrativePageInfo(){const el=document.querySelector('.narrative-reading.narrative-paged');if(!el)return null;const w=Math.max(1,el.clientWidth);return {el,w,page:Number(el.dataset.page??Math.round(el.scrollLeft/w)),total:Math.max(1,Math.ceil((el.scrollWidth-1)/w))}}
 function narrativeUpdatePage(){const info=narrativePageInfo();if(!info)return;const page=Math.min(info.page,info.total-1);info.el.dataset.page=page;const indicator=$('narrative-page-indicator');if(indicator)indicator.textContent=(page+1)+' / '+info.total;const prev=$('narrative-page-prev'),next=$('narrative-page-next');if(prev)prev.disabled=page<=0;if(next)next.disabled=page>=info.total-1}
-function narrativeGoPage(index){const info=narrativePageInfo();if(!info)return;const target=Math.max(0,Math.min(info.total-1,index));info.el.scrollTo({left:target*info.w,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});info.el.dataset.page=target;requestAnimationFrame(narrativeUpdatePage)}
+function narrativeGoPage(index){const info=narrativePageInfo();if(!info)return;const target=Math.max(0,Math.min(info.total-1,index));info.el.dataset.page=target;info.el.scrollTo({left:target*info.w,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});requestAnimationFrame(narrativeUpdatePage)}
 function narrativeTurnPage(delta){const info=narrativePageInfo();if(info)narrativeGoPage(info.page+delta)}
 function narrativeShowMarkedPage(id){const mark=[...document.querySelectorAll('#narrative-text-content [data-mark-id]')].find(el=>el.dataset.markId===id);const info=narrativePageInfo();if(!mark||!info)return;const rect=mark.getBoundingClientRect(),base=info.el.getBoundingClientRect();narrativeGoPage(Math.floor((info.el.scrollLeft+rect.left-base.left)/info.w))}
 function narrativeRead(){
