@@ -2095,10 +2095,26 @@ function narrativeClearSelection(){narrativeSelection=null;$('narrative-selectio
 async function narrativeAddMark(kind){
  const c=narrativeContext,sel=narrativeSelection;if(!c||!sel)return;
  const b=books.find(x=>x.id===c.id),key=narrativeKey(c.index);
+ // Preserve the summary scroll position even when the browser opens a prompt.
+ const reading=$('narrative-text-content')?.closest('.narrative-reading');
+ const originalScroll=reading?.scrollTop??0;
  let note='';if(kind==='note'){note=prompt('Anotação sobre o trecho selecionado:')||'';if(!note.trim())return}
  b.narrativeMarks=b.narrativeMarks||{};b.narrativeMarks[key]=b.narrativeMarks[key]||[];
  b.narrativeMarks[key].push({id:uid(),start:sel.start,end:sel.end,text:sel.text,note,kind});
- await tx('books','readwrite','put',b);narrativeClearSelection();narrativeRead();toast(kind==='note'?'Anotação salva no resumo':'Destaque salvo no resumo');
+ await tx('books','readwrite','put',b);
+ narrativeClearSelection();
+ // Update the marked text in place: rebuilding the dialog resets its scroll.
+ const content=$('narrative-text-content');
+ if(reading&&content&&narrativeContext===c&&c.view==='read'&&narrativeKey(c.index)===key){
+  const item=narrativeSaved()[key];
+  if(item)content.innerHTML=narrativeMarkedHTML(item.text);
+  reading.scrollTop=originalScroll;
+ }else if(narrativeContext===c&&c.view==='read'){
+  narrativeRead();
+  const restored=$('narrative-text-content')?.closest('.narrative-reading');
+  if(restored)restored.scrollTop=originalScroll;
+ }
+ toast(kind==='note'?'Anotação salva no resumo':'Destaque salvo no resumo');
 }
 function narrativeOpenMark(id){const m=narrativeMarks().find(x=>x.id===id);if(!m)return;const action=confirm(`${m.text}${m.note?'\n\nNota: '+m.note:''}\n\nExcluir esta marcação?`);if(action)narrativeDeleteMark(id)}
 async function narrativeDeleteMark(id){const c=narrativeContext,b=books.find(x=>x.id===c.id),key=narrativeKey(c.index);b.narrativeMarks[key]=(b.narrativeMarks[key]||[]).filter(x=>x.id!==id);await tx('books','readwrite','put',b);narrativeRead()}
