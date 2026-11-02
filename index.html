@@ -1986,17 +1986,17 @@ function narrativeNodeText(doc,startId,endId){
   if(!id)return null;
   let decoded=id;
   try{decoded=decodeURIComponent(id)}catch(_){}
-  return [...root.querySelectorAll('[id],[name]')].find(n=>n.id===decoded||n.getAttribute('name')===decoded)||null;
+  return [root,...root.querySelectorAll('[id],[name]')].find(n=>n.id===decoded||n.getAttribute('name')===decoded)||null;
  };
  const start=findAnchor(startId),end=findAnchor(endId);
  // Nunca ignorar silenciosamente um limite: isso pode incluir capítulos vizinhos.
  if(startId&&!start)throw Error('Não foi possível localizar o início deste capítulo no EPUB. A cópia foi interrompida para evitar texto incorreto.');
  if(endId&&!end)throw Error('Não foi possível localizar o início do próximo capítulo no EPUB. A cópia foi interrompida para evitar capítulos misturados.');
  const range=doc.createRange();range.selectNodeContents(root);
- if(start)range.setStartBefore(start);
+ if(start){if(start===root)range.setStart(root,0);else range.setStartBefore(start);}
  if(end){
   if(start&&!(start.compareDocumentPosition(end)&Node.DOCUMENT_POSITION_FOLLOWING))throw Error('O índice deste EPUB apresenta limites de capítulo fora de ordem.');
-  range.setEndBefore(end);
+  if(end===root)range.setEnd(root,0);else range.setEndBefore(end);
  }
  const fragment=range.cloneContents();
  fragment.querySelectorAll('script,style,nav,aside').forEach(n=>n.remove());
