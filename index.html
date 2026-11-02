@@ -1858,7 +1858,7 @@ function narrativeDraw(){
  if(!c.fromReader){
   if(indices.length&&!indices.includes(c.index))c.index=indices[0];
   const options=indices.map(i=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(c.chapters[i].label)}</option>`).join('');
-  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s) <small style="opacity:.65">· v6.9.18</small></p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeContext.index=${i};narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
+  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s) <small style="opacity:.65">· v6.9.19</small></p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeContext.index=${i};narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
   narrativePresent(html);return;
  }
  const options=c.chapters.map((ch,i)=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(ch.label)}${saved[ch.href]?' · salvo':''}</option>`).join('');
@@ -1892,52 +1892,56 @@ function narrativePresent(html){
 }
 function narrativeSelect(i){if(!narrativeContext||!narrativeContext.chapters[i])return;narrativeContext.index=i;narrativeDraw()}
 function narrativeNodeText(doc,startId,endId){
- // EPUBs podem fornecer documentos XHTML/XML e âncoras do índice que não existem literalmente.
- if(typeof doc==='string')doc=new DOMParser().parseFromString(doc,'text/html');
- const root=doc?.body||doc?.documentElement;
- if(!root)return '';
- const locate=id=>{
+ const root=doc.body||doc.documentElement;
+ if(!root)throw Error('O arquivo do capítulo não contém texto legível.');
+ const findAnchor=id=>{
   if(!id)return null;
-  const decoded=decodeURIComponent(id);
-  const nodes=root.querySelectorAll('[id],[name]');
-  return [...nodes].find(n=>n.id===decoded||n.getAttribute('name')===decoded)||null;
+  let decoded=id;
+  try{decoded=decodeURIComponent(id)}catch(_){}
+  return [...root.querySelectorAll('[id],[name]')].find(n=>n.id===decoded||n.getAttribute('name')===decoded)||null;
  };
- const start=locate(startId),end=locate(endId);
- // Se a âncora do índice estiver ausente, recuperar o início do arquivo em vez de retornar vazio.
- const range=doc.createRange();
- range.selectNodeContents(root);
+ const start=findAnchor(startId),end=findAnchor(endId);
+ // Nunca ignorar silenciosamente um limite: isso pode incluir capítulos vizinhos.
+ if(startId&&!start)throw Error('Não foi possível localizar o início deste capítulo no EPUB. A cópia foi interrompida para evitar texto incorreto.');
+ if(endId&&!end)throw Error('Não foi possível localizar o início do próximo capítulo no EPUB. A cópia foi interrompida para evitar capítulos misturados.');
+ const range=doc.createRange();range.selectNodeContents(root);
  if(start)range.setStartBefore(start);
  if(end){
-  try{range.setEndBefore(end)}catch(e){}
+  if(start&&!(start.compareDocumentPosition(end)&Node.DOCUMENT_POSITION_FOLLOWING))throw Error('O índice deste EPUB apresenta limites de capítulo fora de ordem.');
+  range.setEndBefore(end);
  }
  const fragment=range.cloneContents();
- fragment.querySelectorAll?.('script,style,nav,aside').forEach(n=>n.remove());
- fragment.querySelectorAll?.('br').forEach(n=>n.replaceWith(doc.createTextNode('\n')));
- fragment.querySelectorAll?.('p,div,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(n=>n.append(doc.createTextNode('\n\n')));
+ fragment.querySelectorAll('script,style,nav,aside').forEach(n=>n.remove());
+ fragment.querySelectorAll('br').forEach(n=>n.replaceWith(doc.createTextNode('\n')));
+ fragment.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(n=>n.append(doc.createTextNode('\n\n')));
  return (fragment.textContent||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim();
 }
 async function narrativeExtract(c){
  const current=c.chapters[c.index],next=c.chapters[c.index+1];
  const parse=href=>{
-  const [file,hash]=href.split('#');
-  return {section:c.epub.spine.get(file),id:hash?decodeURIComponent(hash):null};
+  const pos=href.indexOf('#'),file=pos<0?href:href.slice(0,pos),id=pos<0?null:href.slice(pos+1);
+  // EPUB.js resolve os caminhos do índice contra a spine.
+  const section=c.epub.spine.get(file);
+  return {section,id};
  };
  const begin=parse(current.href),end=next?parse(next.href):null;
- if(!begin.section)throw Error('Não foi possível localizar este capítulo no EPUB.');
- const result=[];
+ if(!begin.section)throw Error('Não foi possível localizar o capítulo selecionado no EPUB.');
+ if(end&&!end.section)throw Error('Não foi possível localizar o próximo capítulo para definir o fim do texto.');
+ if(end&&end.section.index<begin.section.index)throw Error('O índice deste EPUB está fora de ordem.');
+ const parts=[];
  for(let i=begin.section.index;i<c.epub.spine.length;i++){
+  if(end&&i>end.section.index)break;
+  // Se o capítulo seguinte começa no início de outro arquivo, não ler esse arquivo.
+  if(end&&i===end.section.index&&!end.id)break;
   const section=c.epub.spine.get(i);
-  if(end?.section&&i>end.section.index)break;
-  // section.load pode devolver um documento, enquanto section.render devolve XHTML em texto.
-  // Usar render e DOMParser evita depender da representação interna do EPUB.js.
   const markup=await section.render(c.epub.load.bind(c.epub));
   const doc=new DOMParser().parseFromString(markup,'text/html');
-  const text=narrativeNodeText(doc,i===begin.section.index?begin.id:null,end?.section?.index===i?end.id:null);
-  if(text)result.push(text);
-  if(end?.section?.index===i)break;
+  const body=narrativeNodeText(doc,i===begin.section.index?begin.id:null,end&&i===end.section.index?end.id:null);
+  if(body)parts.push(body);
+  if(end&&i===end.section.index)break;
  }
- const output=result.join('\n\n').trim();
- if(!output||output.length<60)throw Error('Não foi possível extrair o texto deste capítulo. Verifique o índice do EPUB.');
+ const output=parts.join('\n\n').trim();
+ if(output.length<60)throw Error('O capítulo extraído está vazio ou incompleto. Verifique o índice do EPUB.');
  return output;
 }
 async function narrativeClipboard(text){
@@ -1952,7 +1956,7 @@ async function narrativeCopy(){
   const body=await narrativeExtract(c),b=books.find(x=>x.id===c.id),ch=c.chapters[c.index];
   const full=`${NARRATIVE_PROMPT}\n\nLIVRO: ${b.title}\nAUTOR: ${b.author||'Não informado'}\nCAPÍTULO: ${ch.label}\n\nTEXTO ORIGINAL DO CAPÍTULO:\n\n${body}`;
   if(!await narrativeClipboard(full))throw Error('O navegador bloqueou a cópia. Tente novamente pelo navegador.');
-  toast('Capítulo e instruções copiados para IA!');
+  toast('Capítulo copiado: '+body.length.toLocaleString('pt-BR')+' caracteres de texto.');
  }catch(e){toast(e.message||'Não foi possível copiar o capítulo')}
 }
 function narrativeEdit(){const c=narrativeContext;if(!c)return;c.view='edit';const item=narrativeSaved()[narrativeKey(c.index)];narrativePresent(`<div class="row between"><h2>${item?'Editar':'Salvar'} resumo</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(c.chapters[c.index].label)}</p><label class="field"><label>Resumo narrativo</label><textarea id="narrative-text" class="narrative-textarea" placeholder="Cole aqui o resumo gerado pela IA…">${esc(item?.text||'')}</textarea></label><div class="narrative-actions"><button class="btn" onclick="narrativePaste()">▤ Colar</button><button class="btn primary" onclick="narrativeSave()">Salvar resumo</button></div>${item?'<button class="btn tiny ghost" style="margin-top:14px" onclick="narrativeDelete()">Excluir este resumo</button>':''}`)}
