@@ -1,1 +1,5 @@
-Minha Biblioteca v6.9.10 — atualização visual. Envie os 5 arquivos para a mesma pasta do GitHub Pages: index.html, manifest.webmanifest, sw.js, icon-192.png, icon-512.png. Não apague dados do navegador nem reinstale o app. O ícone instalado pode demorar a atualizar conforme o Android.
+Minha Biblioteca v6.9.20 — prévia para testes
+
+Base: v6.9.19. Alterações: leitura ampliada de resumos, navegação entre resumos salvos, marcações independentes, navegação temporária protegida após consulta e busca simples no EPUB.
+
+IMPORTANTE: versão experimental. Faça backup dos dados da biblioteca antes de testar. A busca pode variar conforme a estrutura do EPUB e não garante encontrar frases divididas em múltiplos nós de texto. A consulta do dicionário e da Wikipédia requer internet.
