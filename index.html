@@ -1843,7 +1843,7 @@ async function narrativeOpen(id,fromReader=false){
  }catch(e){toast(e.message||'Não foi possível abrir os resumos');if(ctx.temporary)try{ctx.epub.destroy()}catch(_){};if(narrativeContext===ctx)narrativeContext=null}
 }
 function openNarrativeSummaryReader(){if(!epubBook)return;dismissReaderSettings();narrativeOpen(activeId,true)}
-function openNarrativeSummaryDetail(id){narrativeOpen(id,false)}
+function openNarrativeSummaryDetail(id){narrativeContext=null;narrativeOpen(id,false)}
 function narrativeSaved(){const b=books.find(x=>x.id===narrativeContext?.id);return b?.narrativeSummaries||{}}
 function narrativeKey(index){return narrativeContext.chapters[index]?.href||''}
 function narrativeClose(){const c=narrativeContext;if(!c)return;narrativeContext=null;if(c.fromReader){closeReaderPopup()}else{openDetail(c.id)}if(c.temporary)try{c.epub.destroy()}catch(e){}}
@@ -1858,7 +1858,7 @@ function narrativeDraw(){
  if(!c.fromReader){
   if(indices.length&&!indices.includes(c.index))c.index=indices[0];
   const options=indices.map(i=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(c.chapters[i].label)}</option>`).join('');
-  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeSelect(${i});narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
+  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s) <small style="opacity:.65">· v6.9.17</small></p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeContext.index=${i};narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
   narrativePresent(html);return;
  }
  const options=c.chapters.map((ch,i)=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(ch.label)}${saved[ch.href]?' · salvo':''}</option>`).join('');
