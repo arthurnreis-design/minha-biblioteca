@@ -1852,13 +1852,13 @@ function narrativeSavedIndices(){
  return c?c.chapters.map((ch,i)=>saved[ch.href]?.text?i:-1).filter(i=>i>=0):[];
 }
 function narrativeDraw(){
- const c=narrativeContext;if(!c)return;
+ const c=narrativeContext;if(!c)return;c.view='list';
  const b=books.find(x=>x.id===c.id),saved=narrativeSaved();
  const indices=narrativeSavedIndices();
  if(!c.fromReader){
   if(indices.length&&!indices.includes(c.index))c.index=indices[0];
   const options=indices.map(i=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(c.chapters[i].label)}</option>`).join('');
-  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s) <small style="opacity:.65">· v6.9.17</small></p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeContext.index=${i};narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
+  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s) <small style="opacity:.65">· v6.9.18</small></p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeContext.index=${i};narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
   narrativePresent(html);return;
  }
  const options=c.chapters.map((ch,i)=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(ch.label)}${saved[ch.href]?' · salvo':''}</option>`).join('');
@@ -1866,7 +1866,7 @@ function narrativeDraw(){
  narrativePresent(html);
 }
 function narrativeReadAll(){
- const c=narrativeContext;if(!c)return;
+ const c=narrativeContext;if(!c)return;c.view='all';
  const indices=narrativeSavedIndices(),saved=narrativeSaved();
  if(!indices.length)return toast('Nenhum resumo salvo neste livro.');
  const b=books.find(x=>x.id===c.id);
@@ -1874,7 +1874,22 @@ function narrativeReadAll(){
  narrativePresent(`<div class="row between"><h2>📖 Todos os resumos</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) na ordem original dos capítulos</p><article class="narrative-reading narrative-reading-all">${chapters}</article><button class="btn full" style="margin-top:12px" onclick="narrativeDraw()">Voltar aos resumos</button>`);
 }
 function narrativeFormatText(value){return esc(value||'').split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}
-function narrativePresent(html){const c=narrativeContext;if(!c)return;if(c.fromReader){showReaderPopup(`<div class="narrative-panel">${html}</div>`)}else{openModal(`<div class="narrative-panel">${html}</div>`);$('sheet').scrollTop=0}}
+function narrativeBack(){
+ const c=narrativeContext;if(!c)return;
+ if(c.view==='list')narrativeClose();
+ else narrativeDraw();
+}
+function narrativePresent(html){
+ const c=narrativeContext;if(!c)return;
+ if(c.fromReader){showReaderPopup(`<div class="narrative-panel">${html}</div>`)}
+ else{
+  openModal(`<div class="narrative-panel">${html}</div>`);
+  // O cabeçalho padrão fecha o modal inteiro; aqui ele deve retornar à lista de resumos.
+  const back=$('sheet').querySelector('.sheet-back');
+  if(back)back.setAttribute('onclick','narrativeBack()');
+  $('sheet').scrollTop=0;
+ }
+}
 function narrativeSelect(i){if(!narrativeContext||!narrativeContext.chapters[i])return;narrativeContext.index=i;narrativeDraw()}
 function narrativeNodeText(doc,startId,endId){
  // EPUBs podem fornecer documentos XHTML/XML e âncoras do índice que não existem literalmente.
@@ -1940,11 +1955,11 @@ async function narrativeCopy(){
   toast('Capítulo e instruções copiados para IA!');
  }catch(e){toast(e.message||'Não foi possível copiar o capítulo')}
 }
-function narrativeEdit(){const c=narrativeContext;if(!c)return;const item=narrativeSaved()[narrativeKey(c.index)];narrativePresent(`<div class="row between"><h2>${item?'Editar':'Salvar'} resumo</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(c.chapters[c.index].label)}</p><label class="field"><label>Resumo narrativo</label><textarea id="narrative-text" class="narrative-textarea" placeholder="Cole aqui o resumo gerado pela IA…">${esc(item?.text||'')}</textarea></label><div class="narrative-actions"><button class="btn" onclick="narrativePaste()">▤ Colar</button><button class="btn primary" onclick="narrativeSave()">Salvar resumo</button></div>${item?'<button class="btn tiny ghost" style="margin-top:14px" onclick="narrativeDelete()">Excluir este resumo</button>':''}`)}
+function narrativeEdit(){const c=narrativeContext;if(!c)return;c.view='edit';const item=narrativeSaved()[narrativeKey(c.index)];narrativePresent(`<div class="row between"><h2>${item?'Editar':'Salvar'} resumo</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(c.chapters[c.index].label)}</p><label class="field"><label>Resumo narrativo</label><textarea id="narrative-text" class="narrative-textarea" placeholder="Cole aqui o resumo gerado pela IA…">${esc(item?.text||'')}</textarea></label><div class="narrative-actions"><button class="btn" onclick="narrativePaste()">▤ Colar</button><button class="btn primary" onclick="narrativeSave()">Salvar resumo</button></div>${item?'<button class="btn tiny ghost" style="margin-top:14px" onclick="narrativeDelete()">Excluir este resumo</button>':''}`)}
 async function narrativePaste(){const area=$('narrative-text');if(!area)return;try{const val=await navigator.clipboard.readText();if(!val.trim())return toast('A área de transferência está vazia.');if(area.value.trim()&&!confirm('Substituir o texto atual pelo conteúdo copiado?'))return;area.value=val;toast('Texto colado!')}catch(e){area.focus();toast('Permissão de colagem indisponível. Toque no campo e use Colar.') }}
 async function narrativeSave(){const c=narrativeContext,area=$('narrative-text');if(!c||!area)return;const text=area.value.trim();if(!text)return toast('Cole ou digite um resumo antes de salvar.');const b=books.find(x=>x.id===c.id);b.narrativeSummaries={...(b.narrativeSummaries||{}),[narrativeKey(c.index)]:{text,updated:new Date().toISOString()}};await tx('books','readwrite','put',b);toast('Resumo salvo neste livro!');narrativeDraw()}
 async function narrativeDelete(){const c=narrativeContext;if(!c||!confirm('Excluir o resumo salvo deste capítulo?'))return;const b=books.find(x=>x.id===c.id);delete b.narrativeSummaries[narrativeKey(c.index)];await tx('books','readwrite','put',b);toast('Resumo excluído');narrativeDraw()}
-function narrativeRead(){const c=narrativeContext;if(!c)return;const item=narrativeSaved()[narrativeKey(c.index)];if(!item)return narrativeEdit();narrativePresent(`<div class="row between"><h2>${esc(c.chapters[c.index].label)}</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">Resumo narrativo · ${esc(books.find(x=>x.id===c.id)?.title||'')}</p><article class="narrative-reading">${esc(item.text).split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}</article><div class="narrative-actions"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeEdit()">Editar</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`)}
+function narrativeRead(){const c=narrativeContext;if(!c)return;c.view='read';const item=narrativeSaved()[narrativeKey(c.index)];if(!item)return narrativeEdit();narrativePresent(`<div class="row between"><h2>${esc(c.chapters[c.index].label)}</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">Resumo narrativo · ${esc(books.find(x=>x.id===c.id)?.title||'')}</p><article class="narrative-reading">${esc(item.text).split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}</article><div class="narrative-actions"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeEdit()">Editar</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`)}
 function narrativeStep(delta){const c=narrativeContext;if(!c)return;const idx=c.index+delta;if(idx<0||idx>=c.chapters.length)return toast('Não há outro capítulo nesta direção.');c.index=idx;if(narrativeSaved()[narrativeKey(idx)])narrativeRead();else narrativeDraw()}
 
 async function exportBackup(){let data={format:'minha_biblioteca_v1',exported:new Date().toISOString(),books:await tx('books','readonly','getAll')};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='minha-biblioteca-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);toast('Backup exportado (sem EPUBs)')}
