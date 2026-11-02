@@ -1,7 +1,1 @@
-Minha Biblioteca v6.9.20 — prévia para testes
-
-Base: v6.9.19. Alterações: leitura ampliada de resumos, navegação entre resumos salvos, marcações independentes, navegação temporária protegida após consulta e busca simples no EPUB.
-
-IMPORTANTE: versão experimental. Faça backup dos dados da biblioteca antes de testar. A busca pode variar conforme a estrutura do EPUB e não garante encontrar frases divididas em múltiplos nós de texto. A consulta do dicionário e da Wikipédia requer internet.
-
-Versão 6.9.21: identificação do capítulo do sumário no rodapé do leitor e X da leitura do resumo retorna à lista de resumos.
+Minha Biblioteca v6.9.24 — navegação sequencial por capítulos com ou sem resumo; ações de copiar/adicionar em capítulos sem resumo; menu flutuante compacto isolado do layout. Mantém a galeria e a consulta temporária.
