@@ -217,6 +217,8 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 .detail-about .about-entry p,.detail-about .about-plain{margin:0;line-height:1.65;color:inherit;overflow-wrap:anywhere}
 
 .narrative-panel .field select{width:100%}.narrative-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.narrative-actions .btn{flex:1;min-width:105px}.narrative-list{border:1px solid var(--line);border-radius:13px;max-height:34vh;overflow:auto}.narrative-list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);text-align:left}.narrative-list-row.active{background:var(--panel2)}.narrative-list-row small{color:var(--muted);white-space:nowrap}.narrative-textarea{min-height:210px!important;line-height:1.6}.narrative-reading{font:16px/1.85 Georgia,serif;color:var(--text);max-height:55vh;overflow:auto;overflow-wrap:anywhere}.narrative-reading p{margin:0 0 1em}.reader-popup-card .narrative-panel{color:#34334b}.reader-popup-card .narrative-panel .narrative-list{border-color:#e4e0ea}.reader-popup-card .narrative-panel .narrative-list-row{color:#34334b;border-color:#e4e0ea}.reader-popup-card .narrative-panel .narrative-list-row.active{background:#f3eff7}.reader-popup-card .narrative-panel .narrative-list-row small{color:#777084}.reader-popup-card .narrative-panel .narrative-reading{color:#34334b}.reader-popup-card .narrative-panel select{background:#fff;color:#34334b;border:1px solid #dddbe8;border-radius:11px;padding:11px}.reader-popup-card:has(.narrative-panel){max-height:88dvh;width:min(560px,100%)}
+
+.narrative-reading-all{max-height:65dvh;overflow-y:auto}.narrative-all-section+ .narrative-all-section{margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}.narrative-all-section h3{font:600 17px/1.4 inherit;margin:0 0 18px;color:var(--text)}.narrative-reading-all p{margin-bottom:1em}
 </style><style>
 .epub-import-progress{position:fixed;z-index:110;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,88vw);padding:22px;border-radius:20px;background:#f9f7f7;color:#4b4651;box-shadow:0 15px 70px #29202d55;display:flex;flex-direction:column;gap:9px;text-align:center}
 .epub-import-progress strong{font-size:16px}.epub-import-progress span{font-size:13px}.epub-import-progress small{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#857c8a}
@@ -1845,14 +1847,33 @@ function openNarrativeSummaryDetail(id){narrativeOpen(id,false)}
 function narrativeSaved(){const b=books.find(x=>x.id===narrativeContext?.id);return b?.narrativeSummaries||{}}
 function narrativeKey(index){return narrativeContext.chapters[index]?.href||''}
 function narrativeClose(){const c=narrativeContext;if(!c)return;narrativeContext=null;if(c.fromReader){closeReaderPopup()}else{openDetail(c.id)}if(c.temporary)try{c.epub.destroy()}catch(e){}}
+function narrativeSavedIndices(){
+ const c=narrativeContext,saved=narrativeSaved();
+ return c?c.chapters.map((ch,i)=>saved[ch.href]?.text?i:-1).filter(i=>i>=0):[];
+}
 function narrativeDraw(){
  const c=narrativeContext;if(!c)return;
  const b=books.find(x=>x.id===c.id),saved=narrativeSaved();
+ const indices=narrativeSavedIndices();
+ if(!c.fromReader){
+  if(indices.length&&!indices.includes(c.index))c.index=indices[0];
+  const options=indices.map(i=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(c.chapters[i].label)}</option>`).join('');
+  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p>${indices.length?`<button class="btn primary full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button><label class="field" style="margin-top:14px"><label>Selecionar resumo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-list">${indices.map(i=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeSelect(${i});narrativeRead()"><span>${esc(c.chapters[i].label)}</span><small>Ler ›</small></button>`).join('')}</div><button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo selecionado</button>`:'<p class="notice">Nenhum resumo salvo neste livro. Abra o leitor EPUB para criar seu primeiro resumo narrativo.</p>'}`;
+  narrativePresent(html);return;
+ }
  const options=c.chapters.map((ch,i)=>`<option value="${i}" ${i===c.index?'selected':''}>${esc(ch.label)}${saved[ch.href]?' · salvo':''}</option>`).join('');
- const savedCount=Object.keys(saved).length;
- const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${savedCount} resumo(s) salvo(s)</p><label class="field"><label>Selecionar capítulo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-actions"><button class="btn primary" onclick="narrativeCopy()">✧ Copiar para IA</button><button class="btn" onclick="narrativeEdit()">${saved[narrativeKey(c.index)]?'✎ Editar resumo':'＋ Salvar resumo'}</button></div><p class="notice">O pedido inclui o capítulo completo e as instruções do Resumo Narrativo Aprofundado. Cole na sua IA preferida e salve o resultado aqui.</p><div class="narrative-list">${c.chapters.map((ch,i)=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeSelect(${i})"><span>${esc(ch.label)}</span><small>${saved[ch.href]?'✓ Salvo':'Sem resumo'}</small></button>`).join('')}</div>${saved[narrativeKey(c.index)]?'<button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo deste capítulo</button>':''}`;
+ const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice" style="margin:0 0 12px">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p><label class="field"><label>Selecionar capítulo</label><select id="narrative-chapter" onchange="narrativeSelect(+this.value)">${options}</select></label><div class="narrative-actions"><button class="btn primary" onclick="narrativeCopy()">✧ Copiar para IA</button><button class="btn" onclick="narrativeEdit()">${saved[narrativeKey(c.index)]?'✎ Editar resumo':'＋ Salvar resumo'}</button></div><p class="notice">O pedido inclui o capítulo completo e as instruções do Resumo Narrativo Aprofundado. Cole na sua IA preferida e salve o resultado aqui.</p><div class="narrative-list">${c.chapters.map((ch,i)=>`<button class="narrative-list-row ${i===c.index?'active':''}" onclick="narrativeSelect(${i})"><span>${esc(ch.label)}</span><small>${saved[ch.href]?'✓ Salvo':'Sem resumo'}</small></button>`).join('')}</div>${saved[narrativeKey(c.index)]?'<button class="btn full" style="margin-top:12px" onclick="narrativeRead()">📖 Ler resumo deste capítulo</button>':''}`;
  narrativePresent(html);
 }
+function narrativeReadAll(){
+ const c=narrativeContext;if(!c)return;
+ const indices=narrativeSavedIndices(),saved=narrativeSaved();
+ if(!indices.length)return toast('Nenhum resumo salvo neste livro.');
+ const b=books.find(x=>x.id===c.id);
+ const chapters=indices.map(i=>`<section class="narrative-all-section"><h3>${esc(c.chapters[i].label)}</h3><div>${narrativeFormatText(saved[narrativeKey(i)].text)}</div></section>`).join('');
+ narrativePresent(`<div class="row between"><h2>📖 Todos os resumos</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) na ordem original dos capítulos</p><article class="narrative-reading narrative-reading-all">${chapters}</article><button class="btn full" style="margin-top:12px" onclick="narrativeDraw()">Voltar aos resumos</button>`);
+}
+function narrativeFormatText(value){return esc(value||'').split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}
 function narrativePresent(html){const c=narrativeContext;if(!c)return;if(c.fromReader){showReaderPopup(`<div class="narrative-panel">${html}</div>`)}else{openModal(`<div class="narrative-panel">${html}</div>`);$('sheet').scrollTop=0}}
 function narrativeSelect(i){if(!narrativeContext||!narrativeContext.chapters[i])return;narrativeContext.index=i;narrativeDraw()}
 function narrativeNodeText(doc,startId,endId){
