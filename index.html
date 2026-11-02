@@ -1856,32 +1856,52 @@ function narrativeDraw(){
 function narrativePresent(html){const c=narrativeContext;if(!c)return;if(c.fromReader){showReaderPopup(`<div class="narrative-panel">${html}</div>`)}else{openModal(`<div class="narrative-panel">${html}</div>`);$('sheet').scrollTop=0}}
 function narrativeSelect(i){if(!narrativeContext||!narrativeContext.chapters[i])return;narrativeContext.index=i;narrativeDraw()}
 function narrativeNodeText(doc,startId,endId){
- const root=doc.body||doc.documentElement;if(!root)return '';
- const walker=doc.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);let node,inside=!startId,parts=[];
- while(node=walker.nextNode()){
-  if(node.nodeType===1){if(endId&&(node.id===endId||node.getAttribute('name')===endId))break;if(!inside&&(node.id===startId||node.getAttribute('name')===startId))inside=true;if(inside&&/^(P|DIV|H[1-6]|LI|BLOCKQUOTE|BR)$/i.test(node.tagName))parts.push('\n\n');continue}
-  if(!inside)continue;
-  if(node.parentElement?.closest('script,style,nav,aside'))continue;
-  const val=node.nodeValue?.replace(/\s+/g,' ').trim();if(val)parts.push(val);
+ // EPUBs podem fornecer documentos XHTML/XML e âncoras do índice que não existem literalmente.
+ if(typeof doc==='string')doc=new DOMParser().parseFromString(doc,'text/html');
+ const root=doc?.body||doc?.documentElement;
+ if(!root)return '';
+ const locate=id=>{
+  if(!id)return null;
+  const decoded=decodeURIComponent(id);
+  const nodes=root.querySelectorAll('[id],[name]');
+  return [...nodes].find(n=>n.id===decoded||n.getAttribute('name')===decoded)||null;
+ };
+ const start=locate(startId),end=locate(endId);
+ // Se a âncora do índice estiver ausente, recuperar o início do arquivo em vez de retornar vazio.
+ const range=doc.createRange();
+ range.selectNodeContents(root);
+ if(start)range.setStartBefore(start);
+ if(end){
+  try{range.setEndBefore(end)}catch(e){}
  }
- return parts.join(' ').replace(/ *\n\n */g,'\n\n').replace(/\n{3,}/g,'\n\n').replace(/ {2,}/g,' ').trim();
+ const fragment=range.cloneContents();
+ fragment.querySelectorAll?.('script,style,nav,aside').forEach(n=>n.remove());
+ fragment.querySelectorAll?.('br').forEach(n=>n.replaceWith(doc.createTextNode('\n')));
+ fragment.querySelectorAll?.('p,div,h1,h2,h3,h4,h5,h6,li,blockquote').forEach(n=>n.append(doc.createTextNode('\n\n')));
+ return (fragment.textContent||'').replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim();
 }
 async function narrativeExtract(c){
  const current=c.chapters[c.index],next=c.chapters[c.index+1];
- const parse=(href)=>{const [file,hash]=href.split('#');return {section:c.epub.spine.get(file),id:hash?decodeURIComponent(hash):null}};
+ const parse=href=>{
+  const [file,hash]=href.split('#');
+  return {section:c.epub.spine.get(file),id:hash?decodeURIComponent(hash):null};
+ };
  const begin=parse(current.href),end=next?parse(next.href):null;
  if(!begin.section)throw Error('Não foi possível localizar este capítulo no EPUB.');
- const result=[];let reachedEnd=false;
+ const result=[];
  for(let i=begin.section.index;i<c.epub.spine.length;i++){
-  const section=c.epub.spine.get(i);if(end?.section&&i>end.section.index)break;
-  const doc=await section.load(c.epub.load.bind(c.epub));
+  const section=c.epub.spine.get(i);
+  if(end?.section&&i>end.section.index)break;
+  // section.load pode devolver um documento, enquanto section.render devolve XHTML em texto.
+  // Usar render e DOMParser evita depender da representação interna do EPUB.js.
+  const markup=await section.render(c.epub.load.bind(c.epub));
+  const doc=new DOMParser().parseFromString(markup,'text/html');
   const text=narrativeNodeText(doc,i===begin.section.index?begin.id:null,end?.section?.index===i?end.id:null);
   if(text)result.push(text);
-  if(end?.section?.index===i){reachedEnd=true;break}
-  // Quando o índice termina, limita a extração ao último item de leitura do EPUB.
+  if(end?.section?.index===i)break;
  }
  const output=result.join('\n\n').trim();
- if(!output||output.length<60)throw Error('Não foi possível extrair o texto completo. Confira o índice deste EPUB.');
+ if(!output||output.length<60)throw Error('Não foi possível extrair o texto deste capítulo. Verifique o índice do EPUB.');
  return output;
 }
 async function narrativeClipboard(text){
