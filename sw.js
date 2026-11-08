@@ -1,4 +1,4 @@
-const CACHE='minha-biblioteca-v6-9-32-jornada-atividade-20261107';
+const CACHE='minha-biblioteca-v6-9-33-ia-20261107';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys()){if(key.startsWith('minha-biblioteca-')&&key!==CACHE)await caches.delete(key)}await self.clients.claim()})()));
