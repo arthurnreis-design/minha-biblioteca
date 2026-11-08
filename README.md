@@ -1,11 +1,20 @@
-# Minha Biblioteca v6.9.36 — Progresso e páginas
+# Minha Biblioteca v6.9.37
 
-Atualização apenas da PWA no GitHub Pages. **Não alterar o Cloudflare Worker.**
+Atualização incremental sobre a v6.9.36.
 
-- Cards Continuar lendo: coluna de informações alinhada ao topo da capa, percentual de progresso calculado pela posição atual/total, barra com contraste adaptativo e páginas estimadas.
-- Detalhes do livro: total de páginas estimadas e lista expansível de estimativas por capítulo (quando o EPUB permite identificar as seções).
-- Leitor de resumos: remoção dos eventos de toque antigos ao recalcular a paginação na ampliação, evitando que um toque avance duas páginas. Swipe preservado.
-- Páginas são estimadas com base nas posições EPUB.js (~150 caracteres por posição; referência de 1.800 caracteres por página), não correspondem necessariamente à paginação editorial.
-- Não foi alterado o percentual dentro do leitor EPUB nem o progresso independente dos resumos.
+## Alterações
+- Ao abrir um capítulo com resumo salvo, a posição do EPUB acompanha o início do capítulo correspondente, inclusive ao voltar para capítulos anteriores.
+- A lista **Capítulos resumidos** destaca discretamente o capítulo correspondente à posição atual do EPUB, com a etiqueta **No livro**.
+- Mantém a página exata de leitura dos resumos separada da posição do EPUB.
+- Mantém o progresso do EPUB baseado nas posições existentes. Quando disponível, usa o mapa de posições já armazenado para atualizar o indicador sem recalcular o EPUB.
 
-Publique index.html e sw.js no GitHub e teste em seu Samsung. Faça backup da versão anterior e dos dados antes de atualizar.
+## Instalação
+Substitua `index.html` e `sw.js` no GitHub Pages. Os demais arquivos do pacote são preservados sem alterações. Não é necessário alterar o Cloudflare Worker.
+
+## Testes sugeridos
+1. Abra um resumo do capítulo 10 e confirme que **Continuar livro** leva ao início desse capítulo.
+2. Abra um resumo anterior e depois volte ao 10, conferindo se o progresso acompanha ambos.
+3. Dentro do EPUB, abra **Capítulos resumidos** e confira a etiqueta **No livro**.
+4. Confirme que marcadores, notas e a página salva do resumo permanecem intactos.
+
+Observação: a precisão da correspondência depende do índice fornecido pelo arquivo EPUB. Se o livro não tiver mapa de posições calculado, o percentual poderá ser atualizado ao abrir o leitor EPUB.
