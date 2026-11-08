@@ -1,12 +1,11 @@
-# Minha Biblioteca v6.9.35 — revisão pontual
+# Minha Biblioteca v6.9.36 — Progresso e páginas
 
-Atualização somente de frontend (GitHub Pages), sem alterações no Cloudflare Worker.
+Atualização apenas da PWA no GitHub Pages. **Não alterar o Cloudflare Worker.**
 
-- Fundo da biblioteca escurecido e desfocado quando o leitor de resumos está aberto.
-- Menu próprio de seleção próximo e abaixo do trecho selecionado.
-- Dicionário abre em camada sobre o resumo, preservando o DOM e a página atual.
-- Marcador de página próprio dos resumos, com listagem na área de registros, separado do EPUB.
-- Acesso para retornar à posição anterior após abrir um marcador.
-- Botão Início nas seções Biblioteca e Configurações.
+- Cards Continuar lendo: coluna de informações alinhada ao topo da capa, percentual de progresso calculado pela posição atual/total, barra com contraste adaptativo e páginas estimadas.
+- Detalhes do livro: total de páginas estimadas e lista expansível de estimativas por capítulo (quando o EPUB permite identificar as seções).
+- Leitor de resumos: remoção dos eventos de toque antigos ao recalcular a paginação na ampliação, evitando que um toque avance duas páginas. Swipe preservado.
+- Páginas são estimadas com base nas posições EPUB.js (~150 caracteres por posição; referência de 1.800 caracteres por página), não correspondem necessariamente à paginação editorial.
+- Não foi alterado o percentual dentro do leitor EPUB nem o progresso independente dos resumos.
 
-Faça backup antes de atualizar. Substitua apenas index.html e sw.js no GitHub; os demais arquivos não precisam ser alterados.
+Publique index.html e sw.js no GitHub e teste em seu Samsung. Faça backup da versão anterior e dos dados antes de atualizar.

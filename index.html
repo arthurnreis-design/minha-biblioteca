@@ -214,7 +214,7 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 @media(prefers-reduced-motion:reduce){.narrative-paged{scroll-behavior:auto}}
 
 
-/* Jornada v6.9.35: atividade e histórico individual */
+/* Jornada v6.9.36: atividade e histórico individual */
 .activity-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
 .activity-metric{padding:12px;border:1px solid var(--line,#ddd6d1);border-radius:13px;background:var(--card,#ffffff12)}
 .activity-metric small{display:block;opacity:.75;font-size:11px;margin-bottom:5px}
@@ -292,7 +292,7 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 .reader-popup-card .narrative-copy-option small{color:#777084}
 .ai-chapter-list{max-height:38dvh;overflow:auto;border:1px solid var(--line);border-radius:13px;margin:8px 0}.ai-chapter-row{display:flex;align-items:center;gap:7px;padding:9px;border-bottom:1px solid var(--line)}.ai-chapter-row label{display:flex;align-items:center;gap:8px;flex:1;min-width:0;font-size:12px}.ai-chapter-row label span{overflow-wrap:anywhere}.ai-chapter-row input{width:18px;height:18px;accent-color:#9b7bc2;flex-shrink:0}.ai-chapter-row small{color:var(--muted);font-size:10px}.ai-progress{border:1px solid var(--line);border-radius:12px;padding:13px;margin:12px 0}.ai-progress progress{width:100%;height:12px;accent-color:#82977c}.reader-popup-card.ai-expanded{width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}.reader-popup-card.ai-expanded .narrative-panel{height:calc(100dvh - 36px)!important}.sheet:has(.narrative-panel.ai-expanded){height:100dvh!important;max-height:100dvh!important;width:100vw!important;border-radius:0!important}.sheet:has(.narrative-panel.ai-expanded) .narrative-panel{height:calc(100dvh - 50px)!important;display:flex;flex-direction:column}.sheet:has(.narrative-panel.ai-expanded) .narrative-reading{flex:1;min-height:0}
 
-/* v6.9.35 — revisão pontual do leitor de resumos */
+/* v6.9.36 — revisão pontual do leitor de resumos */
 #modal:has(.narrative-panel):not(.hide){background:rgba(12,15,21,.77)!important;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 #modal:has(.narrative-panel):not(.hide) #sheet{box-shadow:0 20px 65px #0008}
 #narrative-selection-menu.narrative-floating-tools{position:fixed!important;inset:auto!important;bottom:auto!important;right:auto!important;z-index:110!important;display:flex!important;flex-wrap:nowrap!important;gap:2px!important;width:max-content!important;max-width:calc(100vw - 16px)!important;padding:5px!important;background:#f8f9fc!important;color:#454c60!important;border:1px solid #dfe3eb!important;border-radius:12px!important;box-shadow:0 8px 24px #0004!important}
@@ -926,7 +926,7 @@ body{background:#e9e9e7!important;color:#292929}
 #page-back:focus-visible{outline:2px solid #666;outline-offset:3px;border-radius:5px}
 </style>
 <style id="mb6934-improvements">
-/* v6.9.35: criação enxuta, leitura separada, sem alteração do Worker */
+/* v6.9.36: criação enxuta, leitura separada, sem alteração do Worker */
 .ai-chapter-row{padding:5px 8px!important;min-height:39px;gap:5px!important}
 .ai-chapter-row label{line-height:1.25;gap:7px!important}
 .ai-chapter-row .btn.tiny{font-size:11px!important;padding:5px 7px!important;border-radius:8px!important;white-space:nowrap}
@@ -950,7 +950,28 @@ body{background:#e9e9e7!important;color:#292929}
 .ai-progress progress{accent-color:#6486b6!important}
 .narrative-copy-option,.reader-popup-card .narrative-copy-option{background:#f4f6fa!important;border-color:#e0e5ee!important;color:#454c60!important}
 @media(max-width:410px){.reader-head .reader-head-actions>button{min-width:29px;padding:5px!important}.reader-head{padding:0 6px!important;gap:4px!important}.reader-head .reader-head-control{font-size:11px!important}}
-</style></head><body>
+</style><style id="mb6936-progress-layout">
+/* Alinha informações ao topo da capa, sem mudar a altura do cartão. */
+#tab-home .reading-feature .reading-item{align-items:flex-start!important}
+#tab-home .reading-feature .reading-meta{align-self:flex-start;display:flex;flex-direction:column;justify-content:flex-start;gap:0;min-width:0;padding-top:2px}
+#tab-home .reading-feature .reading-meta .reading-kicker{margin:0 0 8px!important}
+#tab-home .reading-feature .reading-meta>span:not(.reading-kicker){margin:7px 0 10px!important}
+#tab-home .reading-feature .reading-meta>small{display:block}
+#tab-home .reading-extra{display:flex;flex-direction:column;gap:6px;margin-top:8px;min-width:0}
+#tab-home .reading-extra .reading-estimated-pages{font-size:12px;opacity:.87;color:inherit}
+#tab-home .reading-progress-label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;line-height:1.25}
+#tab-home .reading-progress-label strong{font-size:13px;font-weight:750}
+#tab-home .reading-progress-track{height:8px;border-radius:99px;overflow:hidden;background:color-mix(in srgb,currentColor 18%,transparent);border:1px solid color-mix(in srgb,currentColor 20%,transparent)}
+#tab-home .reading-progress-track>span{display:block;height:100%;border-radius:99px;background:currentColor;opacity:.85;min-width:0;transition:width .2s}
+#tab-home .reading-feature.reading-dynamic .reading-extra,#tab-home .reading-feature.reading-dynamic .reading-progress-label{color:var(--dynamic-ink)!important}
+#tab-home .reading-feature.reading-dynamic .reading-progress-track{color:var(--dynamic-ink)!important}
+.detail-chapter-pages{margin:10px 0 15px;padding:10px 13px;border:1px solid var(--line);border-radius:12px;font-size:12px}
+.detail-chapter-pages summary{cursor:pointer;font-weight:650}
+.detail-chapter-page-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.detail-chapter-page-row span{min-width:0;overflow-wrap:anywhere}.detail-chapter-page-row strong{white-space:nowrap}
+@media(max-width:550px){#tab-home .reading-feature .reading-meta .reading-kicker{margin-bottom:5px!important}#tab-home .reading-extra{gap:4px;margin-top:5px}#tab-home .reading-extra .reading-estimated-pages{font-size:11px}}
+</style>
+</head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
 <section id="tab-home" class="home-screen">
@@ -1045,6 +1066,15 @@ function renderAllReadingNotes(){
  const relevant=books.filter(b=>(b.highlights||[]).length||(b.notes||[]).length||(b.bookmarks||[]).length);
  root.innerHTML=relevant.length?relevant.map(b=>`<button class="notes-book-row" data-id="${esc(b.id)}"><span class="notes-book-cover">${b.cover?`<img src="${esc(b.cover)}" alt="">`:"📖"}</span><span class="notes-book-text"><strong>${esc(b.title)}</strong><span>${(b.highlights||[]).length} destaques · ${(b.notes||[]).length+(b.highlights||[]).filter(h=>h.note?.trim()).length} anotações · ${(b.bookmarks||[]).length} marcadores →</span></span></button>`).join(''):'<p class="notice">Seus destaques, anotações e marcadores aparecerão aqui.</p>';
  root.querySelectorAll('[data-id]').forEach(x=>x.onclick=()=>showBookNotes(x.dataset.id));
+}
+// Estimativa padronizada: EPUB.js gera uma posição a cada ~150 caracteres.
+// Referência de ~1.800 caracteres por página; não equivale à paginação editorial.
+const EPUB_LOCATIONS_PER_ESTIMATED_PAGE=12;
+function estimatedBookPages(total){const n=Number(total);return Number.isFinite(n)&&n>0?Math.max(1,Math.ceil(n/EPUB_LOCATIONS_PER_ESTIMATED_PAGE)):null}
+function readingProgressInfo(b){const current=Number(b?.position),total=Number(b?.positionTotal);if(!b?.hasFile||!Number.isFinite(current)||!Number.isFinite(total)||current<=0||total<=0)return null;return {percent:Math.max(0,Math.min(100,Math.round(current/total*100))),total}}
+function readingExtraMarkup(b){
+ const progress=readingProgressInfo(b),pages=estimatedBookPages(b?.positionTotal);
+ return `<div class="reading-extra">${pages?`<span class="reading-estimated-pages">${pages.toLocaleString('pt-BR')} páginas estimadas</span>`:''}${progress?`<div class="reading-progress-label"><span>Progresso da leitura</span><strong>${progress.percent}%</strong></div><div class="reading-progress-track" role="progressbar" aria-label="Progresso do livro" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.percent}"><span style="width:${progress.percent}%"></span></div>`:''}</div>`;
 }
 function readingPositionText(b){if(!b?.hasFile)return 'Sem posição de leitura';const pos=Number(b.position),total=Number(b.positionTotal);return Number.isFinite(pos)&&pos>0&&Number.isFinite(total)&&total>0?'Posição '+Math.min(pos,total).toLocaleString('pt-BR')+' de '+total.toLocaleString('pt-BR'):'Não iniciado'}
 function bookCard(b){return `<div class="book dynamic-cover-card" data-id="${esc(b.id)}"><div class="cover">${b.cover?`<img src="${esc(b.cover)}" loading="lazy">`:'<span class="fallback">📖</span>'}${b.favorite?'<span class="favorite-cover-mark" title="Favorito">★</span>':''}${!String(b.description||'').trim()?'<span class="synopsis-missing" title="Sinopse não cadastrada" aria-label="Sinopse não cadastrada"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v5h4M10 12h5M10 16h4"/></svg></span>':''}<span class="badge badge-${b.hasFile?b.status:'wishlist'}">${esc(b.hasFile?statusName(b.status):'Desejos')}</span></div><div class="book-body"><strong>${esc(b.title)}</strong><span class="muted">${esc(b.author||'Autor não informado')}</span><span class="book-rating" aria-label="${b.rating?b.rating+' estrelas':'Sem avaliação'}">${'★'.repeat(Math.max(0,Math.min(5,Math.round(b.rating||0))))}${'☆'.repeat(5-Math.max(0,Math.min(5,Math.round(b.rating||0))))}</span><span class="muted reading-position">${esc(readingPositionText(b))}</span></div></div>`}function statusName(s){return ({reading:'Lendo',done:'Concluído',want:'Não iniciado',paused:'Pausado',abandoned:'Abandonado'})[s]||'Quero ler'}
@@ -1183,7 +1213,7 @@ function renderHome(){
    <div class="reading-card-actions"><button class="reading-card-more" type="button" data-reading-more="${esc(b.id)}" aria-label="Mais opções para ${esc(b.title)}" aria-expanded="false">⋯</button><div class="reading-card-menu hide"><button type="button" data-reading-pause="${esc(b.id)}">⏸ Pausar leitura</button><button type="button" data-reading-finish="${esc(b.id)}">✓ Finalizar livro</button><button type="button" data-reading-reset="${esc(b.id)}">↺ Zerar leitura</button></div></div>
    <div class="reading-item" data-id="${esc(b.id)}" role="button" tabindex="0" aria-label="Continuar lendo ${esc(b.title)}">
     <div class="reading-cover">${b.cover?`<img src="${esc(b.cover)}" loading="lazy" alt="">`:'📖'}</div>
-    <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(readingPositionText(b))}</small>${lastBookAccessText(b)?`<small class="reading-last-access">◷ ${esc(lastBookAccessText(b))}</small>`:''}</div>
+    <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(readingPositionText(b))}</small>${readingExtraMarkup(b)}${lastBookAccessText(b)?`<small class="reading-last-access">◷ ${esc(lastBookAccessText(b))}</small>`:''}</div>
    </div>
    ${`<div class="reading-insights"><button type="button" onclick="showHomeRecords('highlights','${esc(b.id)}')">✎ ${hs.length} destaque${hs.length===1?'':'s'}</button><button type="button" onclick="showHomeRecords('notes','${esc(b.id)}')">▤ ${notes} anotaç${notes===1?'ão':'ões'}</button><button type="button" onclick="showHomeRecords('bookmarks','${esc(b.id)}')">♧ ${(b.bookmarks||[]).length} marcador${(b.bookmarks||[]).length===1?'':'es'}</button></div>`}
    <div class="reading-quick-actions"><button type="button" onclick="openReader('${esc(b.id)}')">📖 Continuar livro</button>${hasSummaryProgress?`<button type="button" class="summary-continue" onclick="narrativeResumeHome('${esc(b.id)}')">✧ Continuar resumo</button>`:''}</div>
@@ -1447,10 +1477,32 @@ async function prepareDetailPositionTotal(id){
  if(!count){if(!window.ePub){el.textContent='Total de posições indisponível';return}
   let temp;try{temp=ePub(f.data instanceof ArrayBuffer?f.data.slice(0):f.data);await temp.ready;await temp.locations.generate(150);const raw=temp.locations.save();const items=typeof raw==='string'?JSON.parse(raw):raw;count=items.length;await tx('locations','readwrite','put',{id,fileSize:f.data.byteLength,items})}catch(e){console.warn('Total de posições indisponível:',e)}finally{try{temp?.destroy()}catch(e){}}
  }
- if(count&&document.getElementById('detail-position-total')===el&&activeId===id){el.textContent='Total de posições: '+count.toLocaleString('pt-BR')}
- else if(!count&&el.isConnected)el.textContent='Total de posições indisponível';
+ if(count&&document.getElementById('detail-position-total')===el&&activeId===id){el.textContent='Total de posições: '+count.toLocaleString('pt-BR');const pg=document.getElementById('detail-page-estimate');if(pg)pg.textContent='Páginas estimadas: '+estimatedBookPages(count).toLocaleString('pt-BR');}
+ else if(!count&&el.isConnected){el.textContent='Total de posições indisponível';const pg=document.getElementById('detail-page-estimate');if(pg)pg.textContent='Páginas estimadas indisponíveis';}
 }
-function openDetail(id){let b=books.find(x=>x.id===id);if(!b)return;activeId=id;const group=activeGroupContext?.ids.includes(id)?activeGroupContext:null;const groupIndex=group?group.ids.indexOf(id):-1;const memberships=bookMemberships(id);const multiGroup=group&&['authors','series','collections'].includes(group.kind)&&group.ids.length>1;openModal(`<div class="row between"><h2>${group?esc(group.title):'Detalhes do livro'}</h2><div class="detail-header-controls"><div class="detail-menu-wrap"><button class="detail-more-btn" type="button" aria-label="Mais opções" aria-expanded="false" onclick="toggleDetailMenu(event)">⋯</button><div class="detail-menu hide" id="detail-menu"><button onclick="editBook(activeId)">✎ <span>Editar ficha</span></button><button onclick="showBookNotes(activeId)">☷ <span>Anotações e destaques</span></button><button onclick="openNarrativeSummaryDetail(activeId)">✧ <span>Resumos narrativos</span></button><button onclick="assignBookSeries(activeId)">▤ <span>Organizar séries</span></button><button onclick="showSmartMetadata(activeId)">✧ <span>Preenchimento com IA</span></button>${b.status==='reading'||b.status==='paused'?`<button onclick="toggleReadingState(activeId)">${b.status==='reading'?'Ⅱ':'▶'} <span>${b.status==='reading'?'Pausar leitura':'Retomar leitura'}</span></button>`:''}<button onclick="openFinishBook(activeId)">✓ <span>Finalizar livro</span></button><button class="detail-menu-danger" onclick="resetBookReading(activeId)">↺ <span>Zerar leitura</span></button><button class="detail-menu-danger" onclick="deleteBook(activeId)">⌫ <span>Excluir livro</span></button></div></div><button class="detail-close-btn" aria-label="Fechar detalhes" onclick="closeModal()">✕</button></div></div><div class="detail-top detail-top-unified">${multiGroup?`<div class="detail-view-toggle"><button class="${detailViewMode==='carousel'?'active':''}" onclick="setDetailViewMode('carousel')">Carrossel</button><button class="${detailViewMode==='gallery'?'active':''}" onclick="setDetailViewMode('gallery')">Galeria</button></div>`:''}${multiGroup&&detailViewMode==='gallery'?detailGalleryMarkup(group,id):group?`<div class="detail-carousel-wrap">${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Livro anterior" title="Livro anterior" onclick="navigateDetailCarousel(-1)">‹</button>`:''}<div class="detail-carousel" id="detail-carousel"><div class="detail-carousel-stack">${group.ids.map((bookId,i)=>{const item=books.find(x=>x.id===bookId);const delta=i-groupIndex;return `<div class="detail-carousel-item ${delta===0?'current':''}" style="--delta:${delta};--depth:${Math.abs(delta)};z-index:${group.ids.length-Math.abs(delta)}">${item?.cover?`<img src="${esc(item.cover)}" alt="${esc(item.title)}">`:'<span>📖</span>'}${delta===0?detailCoverFlags(b):''}</div>`}).join('')}</div></div>${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Próximo livro" title="Próximo livro" onclick="navigateDetailCarousel(1)">›</button>`:''}</div>${group.ids.length>1?`<div class="detail-carousel-counter">${group.kind==='series'?'Volume '+(Number(libraryGroups().series.find(g=>g.id===group.key)?.items.find(i=>i.id===id)?.order)||groupIndex+1)+' · ':''}Livro ${groupIndex+1} de ${group.ids.length}</div>`:''}`:`<div class="detail-single-cover">${b.cover?`<img class="detail-cover" src="${esc(b.cover)}">`:'<div class="detail-cover placeholder">📖</div>'}${detailCoverFlags(b)}</div>`}<div class="detail-book-metadata"><div class="detail-meta-primary"><h2>${esc(b.title)}</h2><div class="detail-meta-author">${esc(b.author||'Autor desconhecido')}</div>${memberships.series.map(g=>`<div class="detail-meta-series">Série: ${esc(g.name)}${g.order?` · Volume ${esc(String(g.order))}`:''}</div>`).join('')}</div><div class="detail-meta-line detail-meta-secondary"><span>${esc(b.genre||'Gênero não informado')}</span><span class="detail-meta-separator" aria-hidden="true">·</span><span class="reading-position">${esc(readingPositionText(b))}</span>${b.hasFile?`<span class="detail-meta-separator">·</span><span id="detail-position-total">${b.positionTotal>0?'Total de posições: '+Number(b.positionTotal).toLocaleString('pt-BR'):'Calculando posições…'}</span>`:''}${memberships.collections.length?`<span class="detail-meta-separator">·</span><span>Coleção: ${esc(memberships.collections.join(', '))}</span>`:''}</div></div></div><div class="rating-control" aria-label="Sua avaliação"><span>Sua avaliação</span>${[1,2,3,4,5].map(n=>`<button aria-label="${n} estrelas" title="${n} estrelas" onclick="rateBook(activeId,${n})" class="${n<=(b.rating||0)?'on':''}">${n<=(b.rating||0)?'★':'☆'}</button>`).join('')}</div><hr class="divider"><div class="detail-synopsis-heading"><span class="small muted">Sinopse</span>${!(b.description||'').trim()?`<button class="detail-ai-shortcut" onclick="showSmartMetadata(activeId)">✧ Gerar com IA</button>`:''}</div><p style="line-height:1.65">${esc(b.description||'Sem sinopse cadastrada.')}</p><div class="detail-about"><div class="detail-synopsis-heading"><span class="small muted">Sobre a obra</span><button class="detail-ai-shortcut" onclick="showSmartMetadata(activeId)">✧ Preencher com IA</button></div><div class="about-content">${renderAboutWork(b.aboutWork)}</div></div>`);$('sheet').classList.add('book-detail-sheet');$('sheet').scrollTop=0;initDetailCarousel();initDetailCoverOpen();applyDetailCoverColors(b,group);if(b.hasFile)prepareDetailPositionTotal(id).catch(e=>console.warn(e))}
+async function showEstimatedChapterPages(id){
+ const root=document.getElementById('detail-chapter-pages');if(!root)return;
+ root.textContent='Calculando páginas por capítulo…';
+ let temp;
+ try{
+  const f=await tx('files','readonly','get',id);if(!f?.data||!window.ePub)throw Error('EPUB indisponível');
+  temp=ePub(f.data instanceof ArrayBuffer?f.data.slice(0):f.data);await temp.ready;
+  let cache=await tx('locations','readonly','get',id);
+  if(!cache?.items?.length||cache.fileSize!==f.data.byteLength){await temp.locations.generate(150);const raw=temp.locations.save();cache={id,fileSize:f.data.byteLength,items:typeof raw==='string'?JSON.parse(raw):raw};await tx('locations','readwrite','put',cache)}
+  const counts=new Map();for(const item of cache.items){const cfi=typeof item==='string'?item:item?.cfi||'';const m=cfi.match(/\/6\/(\d+)/);if(!m)continue;const idx=Number(m[1])/2-1;if(Number.isInteger(idx)&&idx>=0)counts.set(idx,(counts.get(idx)||0)+1)}
+  const nav=await temp.loaded.navigation;const chapters=[];
+  function collect(items){for(const ch of items||[]){const sec=temp.spine.get((ch.href||'').split('#')[0]);if(sec&&Number.isInteger(sec.index))chapters.push({index:sec.index,label:ch.label||'Capítulo'});if(ch.subitems?.length)collect(ch.subitems)}}
+  collect(nav?.toc);
+  const ordered=[...new Map(chapters.map(c=>[c.index,c])).values()].sort((a,b)=>a.index-b.index);
+  if(!ordered.length||!counts.size)throw Error('Capítulos sem mapa de posições');
+  const maxIndex=Math.max(...counts.keys());const rows=ordered.map((ch,i)=>{const next=ordered[i+1]?.index??maxIndex+1;let positions=0;for(let j=ch.index;j<next;j++)positions+=counts.get(j)||0;return {label:ch.label,pages:estimatedBookPages(positions)}}).filter(x=>x.pages);
+  if(!rows.length)throw Error('Sem capítulos mensuráveis');
+  if(!root.isConnected||activeId!==id)return;
+  root.innerHTML=rows.map(r=>`<div class="detail-chapter-page-row"><span>${esc(r.label)}</span><strong>~${r.pages} pág.</strong></div>`).join('');
+ }catch(e){console.warn('Estimativa de capítulos:',e);if(root.isConnected)root.textContent='Não foi possível estimar as páginas por capítulo neste EPUB.'}
+ finally{try{temp?.destroy()}catch(e){}}
+}
+function openDetail(id){let b=books.find(x=>x.id===id);if(!b)return;activeId=id;const group=activeGroupContext?.ids.includes(id)?activeGroupContext:null;const groupIndex=group?group.ids.indexOf(id):-1;const memberships=bookMemberships(id);const multiGroup=group&&['authors','series','collections'].includes(group.kind)&&group.ids.length>1;openModal(`<div class="row between"><h2>${group?esc(group.title):'Detalhes do livro'}</h2><div class="detail-header-controls"><div class="detail-menu-wrap"><button class="detail-more-btn" type="button" aria-label="Mais opções" aria-expanded="false" onclick="toggleDetailMenu(event)">⋯</button><div class="detail-menu hide" id="detail-menu"><button onclick="editBook(activeId)">✎ <span>Editar ficha</span></button><button onclick="showBookNotes(activeId)">☷ <span>Anotações e destaques</span></button><button onclick="openNarrativeSummaryDetail(activeId)">✧ <span>Resumos narrativos</span></button><button onclick="assignBookSeries(activeId)">▤ <span>Organizar séries</span></button><button onclick="showSmartMetadata(activeId)">✧ <span>Preenchimento com IA</span></button>${b.status==='reading'||b.status==='paused'?`<button onclick="toggleReadingState(activeId)">${b.status==='reading'?'Ⅱ':'▶'} <span>${b.status==='reading'?'Pausar leitura':'Retomar leitura'}</span></button>`:''}<button onclick="openFinishBook(activeId)">✓ <span>Finalizar livro</span></button><button class="detail-menu-danger" onclick="resetBookReading(activeId)">↺ <span>Zerar leitura</span></button><button class="detail-menu-danger" onclick="deleteBook(activeId)">⌫ <span>Excluir livro</span></button></div></div><button class="detail-close-btn" aria-label="Fechar detalhes" onclick="closeModal()">✕</button></div></div><div class="detail-top detail-top-unified">${multiGroup?`<div class="detail-view-toggle"><button class="${detailViewMode==='carousel'?'active':''}" onclick="setDetailViewMode('carousel')">Carrossel</button><button class="${detailViewMode==='gallery'?'active':''}" onclick="setDetailViewMode('gallery')">Galeria</button></div>`:''}${multiGroup&&detailViewMode==='gallery'?detailGalleryMarkup(group,id):group?`<div class="detail-carousel-wrap">${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Livro anterior" title="Livro anterior" onclick="navigateDetailCarousel(-1)">‹</button>`:''}<div class="detail-carousel" id="detail-carousel"><div class="detail-carousel-stack">${group.ids.map((bookId,i)=>{const item=books.find(x=>x.id===bookId);const delta=i-groupIndex;return `<div class="detail-carousel-item ${delta===0?'current':''}" style="--delta:${delta};--depth:${Math.abs(delta)};z-index:${group.ids.length-Math.abs(delta)}">${item?.cover?`<img src="${esc(item.cover)}" alt="${esc(item.title)}">`:'<span>📖</span>'}${delta===0?detailCoverFlags(b):''}</div>`}).join('')}</div></div>${group.ids.length>1?`<button class="detail-carousel-arrow" type="button" aria-label="Próximo livro" title="Próximo livro" onclick="navigateDetailCarousel(1)">›</button>`:''}</div>${group.ids.length>1?`<div class="detail-carousel-counter">${group.kind==='series'?'Volume '+(Number(libraryGroups().series.find(g=>g.id===group.key)?.items.find(i=>i.id===id)?.order)||groupIndex+1)+' · ':''}Livro ${groupIndex+1} de ${group.ids.length}</div>`:''}`:`<div class="detail-single-cover">${b.cover?`<img class="detail-cover" src="${esc(b.cover)}">`:'<div class="detail-cover placeholder">📖</div>'}${detailCoverFlags(b)}</div>`}<div class="detail-book-metadata"><div class="detail-meta-primary"><h2>${esc(b.title)}</h2><div class="detail-meta-author">${esc(b.author||'Autor desconhecido')}</div>${memberships.series.map(g=>`<div class="detail-meta-series">Série: ${esc(g.name)}${g.order?` · Volume ${esc(String(g.order))}`:''}</div>`).join('')}</div><div class="detail-meta-line detail-meta-secondary"><span>${esc(b.genre||'Gênero não informado')}</span><span class="detail-meta-separator" aria-hidden="true">·</span><span class="reading-position">${esc(readingPositionText(b))}</span>${b.hasFile?`<span class="detail-meta-separator">·</span><span id="detail-position-total">${b.positionTotal>0?'Total de posições: '+Number(b.positionTotal).toLocaleString('pt-BR'):'Calculando posições…'}</span>`:''}${b.hasFile?`<span class="detail-meta-separator">·</span><span id="detail-page-estimate">${estimatedBookPages(b.positionTotal)?'Páginas estimadas: '+estimatedBookPages(b.positionTotal).toLocaleString('pt-BR'):'Calculando páginas…'}</span>`:''}${memberships.collections.length?`<span class="detail-meta-separator">·</span><span>Coleção: ${esc(memberships.collections.join(', '))}</span>`:''}</div></div></div>${b.hasFile?`<details class="detail-chapter-pages"><summary onclick="if(!this.parentElement.dataset.loaded){this.parentElement.dataset.loaded='1';showEstimatedChapterPages('${esc(b.id)}')}">Páginas estimadas por capítulo</summary><div id="detail-chapter-pages">Toque para calcular.</div></details>`:''}<div class="rating-control" aria-label="Sua avaliação"><span>Sua avaliação</span>${[1,2,3,4,5].map(n=>`<button aria-label="${n} estrelas" title="${n} estrelas" onclick="rateBook(activeId,${n})" class="${n<=(b.rating||0)?'on':''}">${n<=(b.rating||0)?'★':'☆'}</button>`).join('')}</div><hr class="divider"><div class="detail-synopsis-heading"><span class="small muted">Sinopse</span>${!(b.description||'').trim()?`<button class="detail-ai-shortcut" onclick="showSmartMetadata(activeId)">✧ Gerar com IA</button>`:''}</div><p style="line-height:1.65">${esc(b.description||'Sem sinopse cadastrada.')}</p><div class="detail-about"><div class="detail-synopsis-heading"><span class="small muted">Sobre a obra</span><button class="detail-ai-shortcut" onclick="showSmartMetadata(activeId)">✧ Preencher com IA</button></div><div class="about-content">${renderAboutWork(b.aboutWork)}</div></div>`);$('sheet').classList.add('book-detail-sheet');$('sheet').scrollTop=0;initDetailCarousel();initDetailCoverOpen();applyDetailCoverColors(b,group);if(b.hasFile)prepareDetailPositionTotal(id).catch(e=>console.warn(e))}
 let detailCarouselChanging=false;
 function navigateDetailCarousel(direction){
  const group=activeGroupContext;
@@ -2325,6 +2377,7 @@ function narrativeReturnDictionary(){const layer=$('narrative-dictionary-layer')
 function narrativeWiki(){const sel=narrativeSelection;if(!sel)return;const word=sel.text.trim();narrativeClearSelection();window.open('https://pt.wikipedia.org/wiki/Special:Search?search='+encodeURIComponent(word),'_blank','noopener')}
 // Paginação temporária: não grava páginas, progresso ou posição no EPUB.
 let narrativePageResize=null;
+let narrativeTouchController=null;
 function narrativeInitPages(){
  const reading=document.querySelector('.narrative-reading.narrative-paged');
  if(!reading)return;
@@ -2339,6 +2392,9 @@ function narrativeInitPages(){
   }));
  }
  if(narrativePageResize)narrativePageResize.disconnect();
+ if(narrativeTouchController)narrativeTouchController.abort();
+ narrativeTouchController=new AbortController();
+ const narrativeTouchSignal=narrativeTouchController.signal;
  narrativePageResize=new ResizeObserver(()=>{
   const el=document.querySelector('.narrative-reading.narrative-paged');if(!el)return;
   const old=Number(el.dataset.page||0);
@@ -2348,8 +2404,8 @@ function narrativeInitPages(){
  });
  narrativePageResize.observe(reading);
  let startX=0,startY=0,startedAt=0,lastTouchEnd=0,lastTapAt=0;
- reading.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;startX=e.touches[0].clientX;startY=e.touches[0].clientY;startedAt=Date.now();reading.dataset.swipeStartPage=reading.dataset.page||'0'},{passive:true});
- reading.addEventListener('touchmove',e=>{if(e.touches.length!==1)return;const dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.3&&!window.getSelection()?.toString().trim())e.preventDefault()},{passive:false});
+ reading.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;startX=e.touches[0].clientX;startY=e.touches[0].clientY;startedAt=Date.now();reading.dataset.swipeStartPage=reading.dataset.page||'0'},{passive:true,signal:narrativeTouchSignal});
+ reading.addEventListener('touchmove',e=>{if(e.touches.length!==1)return;const dx=e.touches[0].clientX-startX,dy=e.touches[0].clientY-startY;if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.3&&!window.getSelection()?.toString().trim())e.preventDefault()},{passive:false,signal:narrativeTouchSignal});
  reading.addEventListener('touchend',e=>{
   if(!e.changedTouches.length)return;lastTouchEnd=Date.now();
   const dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;
@@ -2358,7 +2414,7 @@ function narrativeInitPages(){
    // Advance exactly one full column; never rely on native free scrolling.
    if(!window.getSelection()?.toString().trim())narrativeGoPage(Number(reading.dataset.swipeStartPage||0)+(dx<0?1:-1));
   }
- },{passive:true});
+ },{passive:true,signal:narrativeTouchSignal});
  reading.addEventListener('click',e=>{
   if(e.target.closest('mark,button,a,input,textarea')||window.getSelection()?.toString().trim())return;
   if(e.detail&&Date.now()-lastTouchEnd<450)return;
@@ -2367,7 +2423,7 @@ function narrativeInitPages(){
   const bounds=reading.getBoundingClientRect(),x=e.clientX-bounds.left;
   if(x<bounds.width*.20)narrativeTurnPage(-1);
   else if(x>bounds.width*.80)narrativeTurnPage(1);
- });
+ },{signal:narrativeTouchSignal});
  // The indicator follows requested pages, not intermediate smooth-scroll offsets.
 }
 function narrativePageInfo(){const el=document.querySelector('.narrative-reading.narrative-paged');if(!el)return null;const w=Math.max(1,el.clientWidth);return {el,w,page:Number(el.dataset.page??Math.round(el.scrollLeft/w)),total:Math.max(1,Math.ceil((el.scrollWidth-1)/w))}}
