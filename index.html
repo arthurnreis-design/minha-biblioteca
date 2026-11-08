@@ -926,7 +926,7 @@ body{background:#e9e9e7!important;color:#292929}
 #page-back:focus-visible{outline:2px solid #666;outline-offset:3px;border-radius:5px}
 </style>
 <style id="mb6934-improvements">
-/* v6.9.37: criação enxuta, leitura separada, sem alteração do Worker */
+/* v6.9.38: criação enxuta, leitura separada, sem alteração do Worker */
 .ai-chapter-row{padding:5px 8px!important;min-height:39px;gap:5px!important}
 .ai-chapter-row label{line-height:1.25;gap:7px!important}
 .ai-chapter-row .btn.tiny{font-size:11px!important;padding:5px 7px!important;border-radius:8px!important;white-space:nowrap}
@@ -935,7 +935,7 @@ body{background:#e9e9e7!important;color:#292929}
 .ai-chapter-row .chapter-hide{opacity:.78}
 .summary-chapter-link{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;padding:13px 12px;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--text);font:inherit;cursor:pointer}
 .summary-chapter-link:last-child{border-bottom:0}
-.summary-chapter-link.current-epub-chapter{background:rgba(139,115,159,.11);box-shadow:inset 3px 0 #9b82ad}
+.summary-chapter-link.current-epub-chapter{background:rgba(56,56,56,.085);box-shadow:inset 3px 0 #525252}
 .summary-chapter-link .epub-chapter-tag{font-size:11px;font-weight:650;color:var(--text);opacity:.75;white-space:nowrap}
 .narrative-finished{padding:18px 12px;border:1px dashed #b9c4c7;border-radius:13px;color:#60717b;text-align:center;font-size:12px;line-height:1.6;margin:12px 0}
 .reading-quick-actions{display:flex;gap:7px;padding:7px 12px 10px}
@@ -2142,16 +2142,28 @@ function narrativeChapterCfi(book,href){
  }catch(e){return null}
 }
 function narrativeEpubChapterIndex(c){
- const book=c?.epub;if(!book)return -1;
- const b=books.find(x=>x.id===c.id),loc=c.fromReader?rendition?.currentLocation()?.start:null;
- const cfi=loc?.cfi||b?.cfi;
- if(!cfi)return -1;
- let current=-1;
- try{current=book.epubcfi.parse(cfi).spinePos}catch(e){}
- if(current<0)return -1;
+ const book=c?.epub;if(!book||!c.chapters?.length)return -1;
+ const b=books.find(x=>x.id===c.id);
+ // O leitor já fornece o índice da seção atual: não depender de book.epubcfi.parse,
+ // que pode não estar exposto na instância do EPUB e deixava a lista sem destaque.
+ const loc=c.fromReader&&activeId===c.id?rendition?.currentLocation()?.start:null;
+ let sectionIndex=Number.isInteger(loc?.index)?loc.index:-1;
+ if(sectionIndex<0){
+  const cfi=loc?.cfi||b?.cfi;
+  if(cfi)try{
+   const parsed=book.epubcfi?.parse?.(cfi);
+   if(Number.isInteger(parsed?.spinePos))sectionIndex=parsed.spinePos;
+  }catch(e){}
+ }
+ if(sectionIndex<0&&b?.narrativeSyncHref){
+  try{const section=book.spine.get(b.narrativeSyncHref.split('#')[0]);if(section)sectionIndex=section.index}catch(e){}
+ }
+ if(sectionIndex<0)return -1;
  let match=-1;
  for(let i=0;i<c.chapters.length;i++){
-  try{const section=book.spine.get(c.chapters[i].href.split('#')[0]);if(section&&section.index<=current)match=i}catch(e){}
+  try{const section=book.spine.get(c.chapters[i].href.split('#')[0]);
+   if(section&&section.index<=sectionIndex)match=i;
+  }catch(e){}
  }
  return match;
 }
@@ -2195,7 +2207,7 @@ function narrativeHidden(){const b=books.find(x=>x.id===narrativeContext?.id);re
 async function narrativeHideChapter(i){const c=narrativeContext,b=books.find(x=>x.id===c?.id),href=c?.chapters[i]?.href;if(!b||!href)return;b.narrativeHiddenChapters=[...new Set([...(b.narrativeHiddenChapters||[]),href])];c.selected.delete(i);await tx('books','readwrite','put',b);narrativeDraw()}
 async function narrativeRestoreChapter(i){const c=narrativeContext,b=books.find(x=>x.id===c?.id),href=c?.chapters[i]?.href;if(!b||!href)return;b.narrativeHiddenChapters=(b.narrativeHiddenChapters||[]).filter(x=>x!==href);await tx('books','readwrite','put',b);narrativeHiddenScreen()}
 function narrativeHiddenScreen(){const c=narrativeContext;if(!c)return;c.view='hidden';const hidden=new Set(narrativeHidden()),indices=c.chapters.map((ch,i)=>hidden.has(ch.href)?i:-1).filter(i=>i>=0);narrativePresent(`<div class="row between"><h2>Capítulos ocultos</h2><button class="btn tiny ghost" onclick="narrativeDraw()">‹ Voltar</button></div><p class="notice">${indices.length} capítulo(s) oculto(s) neste livro. Nenhum conteúdo foi excluído.</p><div class="ai-chapter-list">${indices.length?indices.map(i=>`<div class="ai-chapter-row"><span class="chapter-name">${esc(c.chapters[i].label)}</span><button class="btn tiny" onclick="narrativeRestoreChapter(${i})">Restaurar</button></div>`).join(''):'<p class="notice" style="padding:12px">Nenhum capítulo oculto.</p>'}</div>`)}
-function narrativeSummariesScreen(){const c=narrativeContext;if(!c)return;c.view='summaries';const indices=narrativeSavedIndices(),b=books.find(x=>x.id===c.id);narrativePresent(`<div class="row between"><h2>Capítulos resumidos</h2><div class="row"><button class="btn tiny ghost" title="Página inicial" onclick="narrativeHome()">⌂ Início</button><button class="btn tiny ghost" onclick="narrativeDraw()">‹ Voltar</button></div></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p>${indices.length?`<div class="ai-chapter-list">${indices.map(i=>`<button class="summary-chapter-link${i===narrativeEpubChapterIndex(c)?' current-epub-chapter':''}" onclick="narrativeSelectSaved(${i})"><span>📖 ${esc(c.chapters[i].label)}</span><span>${i===narrativeEpubChapterIndex(c)?'<span class="epub-chapter-tag">No livro</span>':'›'}</span></button>`).join('')}</div><button class="btn full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button>`:'<p class="notice">Ainda não há resumos salvos.</p>'}`)}
+function narrativeSummariesScreen(){const c=narrativeContext;if(!c)return;c.view='summaries';const indices=narrativeSavedIndices(),b=books.find(x=>x.id===c.id),currentEpubIndex=narrativeEpubChapterIndex(c);narrativePresent(`<div class="row between"><h2>Capítulos resumidos</h2><div class="row"><button class="btn tiny ghost" title="Página inicial" onclick="narrativeHome()">⌂ Início</button><button class="btn tiny ghost" onclick="narrativeDraw()">‹ Voltar</button></div></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p>${indices.length?`<div class="ai-chapter-list">${indices.map(i=>`<button class="summary-chapter-link${i===currentEpubIndex?' current-epub-chapter':''}" onclick="narrativeSelectSaved(${i})"><span>📖 ${esc(c.chapters[i].label)}</span><span>${i===currentEpubIndex?'<span class="epub-chapter-tag">No livro</span>':'›'}</span></button>`).join('')}</div><button class="btn full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button>`:'<p class="notice">Ainda não há resumos salvos.</p>'}`)}
 function narrativeSelectSaved(i){const c=narrativeContext;if(!c)return;c.index=i;c.openPreviousAtEnd=false;c.resumePending=null;c.markJumpReturnPage=null;narrativeRead()}
 function narrativeDraw(){
  const c=narrativeContext;if(!c)return;c.view='list';
