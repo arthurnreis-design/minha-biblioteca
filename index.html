@@ -926,7 +926,7 @@ body{background:#e9e9e7!important;color:#292929}
 #page-back:focus-visible{outline:2px solid #666;outline-offset:3px;border-radius:5px}
 </style>
 <style id="mb6934-improvements">
-/* v6.9.38: criação enxuta, leitura separada, sem alteração do Worker */
+/* v6.9.39: criação enxuta, leitura separada, sem alteração do Worker */
 .ai-chapter-row{padding:5px 8px!important;min-height:39px;gap:5px!important}
 .ai-chapter-row label{line-height:1.25;gap:7px!important}
 .ai-chapter-row .btn.tiny{font-size:11px!important;padding:5px 7px!important;border-radius:8px!important;white-space:nowrap}
@@ -2142,28 +2142,53 @@ function narrativeChapterCfi(book,href){
  }catch(e){return null}
 }
 function narrativeEpubChapterIndex(c){
- const book=c?.epub;if(!book||!c.chapters?.length)return -1;
+ const book=c?.epub;
+ if(!book||!c.chapters?.length)return -1;
  const b=books.find(x=>x.id===c.id);
- // O leitor já fornece o índice da seção atual: não depender de book.epubcfi.parse,
- // que pode não estar exposto na instância do EPUB e deixava a lista sem destaque.
- const loc=c.fromReader&&activeId===c.id?rendition?.currentLocation()?.start:null;
- let sectionIndex=Number.isInteger(loc?.index)?loc.index:-1;
- if(sectionIndex<0){
-  const cfi=loc?.cfi||b?.cfi;
-  if(cfi)try{
-   const parsed=book.epubcfi?.parse?.(cfi);
-   if(Number.isInteger(parsed?.spinePos))sectionIndex=parsed.spinePos;
-  }catch(e){}
+ const readerActive=c.fromReader&&activeId===c.id&&!!rendition;
+ const loc=readerActive?rendition.currentLocation()?.start:null;
+ // O endereço salvo pela sincronização é uma referência exata ao capítulo.
+ const pending=b?.narrativeSyncHref;
+ if(pending){const i=c.chapters.findIndex(ch=>ch.href===pending);if(i>=0)return i}
+ // A referência do capítulo exibida pelo próprio leitor é mais confiável
+ // que tentar decodificar o CFI com uma API não disponível em todo EPUB.js.
+ if(readerActive){
+  const title=($('reader-current-chapter')?.textContent||'').trim();
+  const normalize=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLocaleLowerCase('pt-BR');
+  if(title){const i=c.chapters.findIndex(ch=>normalize(ch.label)===normalize(title));if(i>=0)return i}
  }
- if(sectionIndex<0&&b?.narrativeSyncHref){
-  try{const section=book.spine.get(b.narrativeSyncHref.split('#')[0]);if(section)sectionIndex=section.index}catch(e){}
+ // Primeiro localizar o arquivo efetivamente exibido; alguns EPUBs não
+ // fornecem start.index, mas fornecem start.href.
+ const spine=book.spine;
+ let sectionIndex=Number.isInteger(loc?.index)?loc.index:-1;
+ const normalizePath=value=>{
+  try{return decodeURIComponent(String(value||'').split('#')[0]).replace(/^\.\//,'').replace(/^\/+/, '');}
+  catch(e){return String(value||'').split('#')[0]}
+ };
+ const currentHref=normalizePath(loc?.href||'');
+ if(sectionIndex<0&&currentHref){
+  try{const section=spine.get(currentHref);if(Number.isInteger(section?.index))sectionIndex=section.index}catch(e){}
+  if(sectionIndex<0){for(const item of spine.spineItems||[]){
+   const path=normalizePath(item.href||item.url||'');
+   if(path&&(path===currentHref||path.endsWith('/'+currentHref)||currentHref.endsWith('/'+path))){sectionIndex=item.index;break}
+  }}
+ }
+ if(sectionIndex<0&&b?.cfi){
+  // A posição do spine é codificada no primeiro passo par do CFI EPUB.
+  const match=String(b.cfi).match(/^epubcfi\(\/(\d+)/);
+  if(match)sectionIndex=Math.floor(Number(match[1])/2)-1;
  }
  if(sectionIndex<0)return -1;
  let match=-1;
  for(let i=0;i<c.chapters.length;i++){
-  try{const section=book.spine.get(c.chapters[i].href.split('#')[0]);
-   if(section&&section.index<=sectionIndex)match=i;
-  }catch(e){}
+  const href=normalizePath(c.chapters[i].href);
+  let idx=-1;
+  try{const section=spine.get(href);if(Number.isInteger(section?.index))idx=section.index}catch(e){}
+  if(idx<0)for(const item of spine.spineItems||[]){
+   const path=normalizePath(item.href||item.url||'');
+   if(path&&(path===href||path.endsWith('/'+href)||href.endsWith('/'+path))){idx=item.index;break}
+  }
+  if(idx>=0&&idx<=sectionIndex)match=i;
  }
  return match;
 }
