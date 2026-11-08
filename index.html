@@ -2292,7 +2292,37 @@ function narrativeHidden(){const b=books.find(x=>x.id===narrativeContext?.id);re
 async function narrativeHideChapter(i){const c=narrativeContext,b=books.find(x=>x.id===c?.id),href=c?.chapters[i]?.href;if(!b||!href)return;b.narrativeHiddenChapters=[...new Set([...(b.narrativeHiddenChapters||[]),href])];c.selected.delete(i);await tx('books','readwrite','put',b);narrativeDraw()}
 async function narrativeRestoreChapter(i){const c=narrativeContext,b=books.find(x=>x.id===c?.id),href=c?.chapters[i]?.href;if(!b||!href)return;b.narrativeHiddenChapters=(b.narrativeHiddenChapters||[]).filter(x=>x!==href);await tx('books','readwrite','put',b);narrativeHiddenScreen()}
 function narrativeHiddenScreen(){const c=narrativeContext;if(!c)return;c.view='hidden';const hidden=new Set(narrativeHidden()),indices=c.chapters.map((ch,i)=>hidden.has(ch.href)?i:-1).filter(i=>i>=0);narrativePresent(`<div class="row between"><h2>Capítulos ocultos</h2><button class="btn tiny ghost" onclick="narrativeDraw()">‹ Voltar</button></div><p class="notice">${indices.length} capítulo(s) oculto(s) neste livro. Nenhum conteúdo foi excluído.</p><div class="ai-chapter-list">${indices.length?indices.map(i=>`<div class="ai-chapter-row"><span class="chapter-name">${esc(c.chapters[i].label)}</span><button class="btn tiny" onclick="narrativeRestoreChapter(${i})">Restaurar</button></div>`).join(''):'<p class="notice" style="padding:12px">Nenhum capítulo oculto.</p>'}</div>`)}
-function narrativeSummariesScreen(){const c=narrativeContext;if(!c)return;c.view='summaries';const indices=narrativeSavedIndices(),b=books.find(x=>x.id===c.id),currentEpubIndex=narrativeEpubChapterIndex(c);narrativePresent(`<div class="row between"><h2>Capítulos resumidos</h2><div class="row"><button class="btn tiny ghost" title="Página inicial" onclick="narrativeHome()">⌂ Início</button><button class="btn tiny ghost" onclick="narrativeDraw()">‹ Voltar</button></div></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p>${indices.length?`<div class="ai-chapter-list">${indices.map(i=>`<button class="summary-chapter-link${i===currentEpubIndex?' current-epub-chapter':''}" onclick="narrativeSelectSaved(${i})"><span>📖 ${esc(c.chapters[i].label)}</span><span>${i===currentEpubIndex?'<span class="epub-chapter-tag">No livro</span>':'›'}</span></button>`).join('')}</div><button class="btn full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button>`:'<p class="notice">Ainda não há resumos salvos.</p>'}`)}
+function narrativeSummariesScreen(){
+ const c=narrativeContext;if(!c)return;c.view='summaries';
+ const indices=narrativeSavedIndices(),b=books.find(x=>x.id===c.id),currentEpubIndex=narrativeEpubChapterIndex(c);
+ const selecting=!!c.summarySelecting;
+ c.summaryDeleteSelection=c.summaryDeleteSelection||new Set();
+ c.summaryDeleteSelection=new Set([...c.summaryDeleteSelection].filter(i=>indices.includes(i)));
+ const selected=c.summaryDeleteSelection.size;
+ const controls=indices.length?`<div class="row between wrap" style="gap:8px;margin:10px 0"><button class="btn tiny ${selecting?'':'ghost'}" onclick="narrativeToggleDeleteMode()">${selecting?'Cancelar seleção':'Selecionar'}</button>${selecting?`<div class="row wrap" style="gap:6px"><button class="btn tiny ghost" onclick="narrativeSelectAllSaved()">Selecionar todos</button><button class="btn tiny ghost" onclick="narrativeClearSavedSelection()">Desmarcar todos</button></div>`:''}</div>`:'';
+ const rows=indices.map(i=>selecting?`<label class="ai-chapter-row" style="cursor:pointer;display:flex;align-items:center;gap:12px"><input type="checkbox" ${c.summaryDeleteSelection.has(i)?'checked':''} onchange="narrativeToggleSavedSelection(${i},this.checked)"><span class="chapter-name" style="flex:1">${esc(c.chapters[i].label)}</span>${i===currentEpubIndex?'<span class="epub-chapter-tag">No livro</span>':''}</label>`:`<button class="summary-chapter-link${i===currentEpubIndex?' current-epub-chapter':''}" onclick="narrativeSelectSaved(${i})"><span>📖 ${esc(c.chapters[i].label)}</span><span>${i===currentEpubIndex?'<span class="epub-chapter-tag">No livro</span>':'›'}</span></button>`).join('');
+ narrativePresent(`<div class="row between"><h2>Capítulos resumidos</h2><div class="row"><button class="btn tiny ghost" title="Página inicial" onclick="narrativeHome()">⌂ Início</button><button class="btn tiny ghost" onclick="narrativeDraw()">‹ Voltar</button></div></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)</p>${indices.length?`${controls}<div class="ai-chapter-list">${rows}</div>${selecting?`<p class="notice" id="narrative-delete-count">${selected} resumo(s) selecionado(s)</p><button class="btn full" id="narrative-delete-selected" style="color:#b42318" ${selected?'':'disabled'} onclick="narrativeDeleteSelectedSummaries()">Excluir selecionados (${selected})</button>`:'<button class="btn full" onclick="narrativeReadAll()">📖 Ler todos os resumos</button>'}`:'<p class="notice">Ainda não há resumos salvos.</p>'}`);
+}
+function narrativeToggleDeleteMode(){const c=narrativeContext;if(!c||c.aiRunning)return;c.summarySelecting=!c.summarySelecting;c.summaryDeleteSelection=new Set();narrativeSummariesScreen()}
+function narrativeToggleSavedSelection(i,checked){const c=narrativeContext;if(!c)return;checked?c.summaryDeleteSelection.add(i):c.summaryDeleteSelection.delete(i);narrativeUpdateDeleteCount()}
+function narrativeSelectAllSaved(){const c=narrativeContext;if(!c)return;c.summaryDeleteSelection=new Set(narrativeSavedIndices());narrativeSummariesScreen()}
+function narrativeClearSavedSelection(){const c=narrativeContext;if(!c)return;c.summaryDeleteSelection=new Set();narrativeSummariesScreen()}
+function narrativeUpdateDeleteCount(){const count=narrativeContext?.summaryDeleteSelection?.size||0;const el=$('narrative-delete-count'),btn=$('narrative-delete-selected');if(el)el.textContent=count+' resumo(s) selecionado(s)';if(btn){btn.disabled=!count;btn.textContent='Excluir selecionados ('+count+')'}}
+async function narrativeDeleteSelectedSummaries(){
+ const c=narrativeContext;if(!c||c.aiRunning)return;
+ const b=books.find(x=>x.id===c.id);if(!b)return;
+ const keys=[...(c.summaryDeleteSelection||[])].filter(i=>c.chapters[i]&&b.narrativeSummaries?.[c.chapters[i].href]?.text).map(i=>c.chapters[i].href);
+ if(!keys.length)return toast('Selecione pelo menos um resumo.');
+ const total=narrativeSavedIndices().length;
+ const message=keys.length===total?`Excluir TODOS os ${keys.length} resumos deste livro?`:`Excluir ${keys.length} resumo(s) selecionado(s) deste livro?`;
+ if(!confirm(message+'\n\nOs textos, destaques, anotações e marcadores desses resumos serão excluídos permanentemente. O EPUB, seu progresso de leitura e os outros resumos serão preservados.'))return;
+ clearTimeout(narrativeSaveProgressTimer);
+ for(const href of keys){delete b.narrativeSummaries[href];if(b.narrativeMarks)delete b.narrativeMarks[href];if(b.narrativePageBookmarks)delete b.narrativePageBookmarks[href];if(b.narrativeOriginalWords)delete b.narrativeOriginalWords[href];}
+ if(keys.includes(b.narrativeReadingProgress?.href))delete b.narrativeReadingProgress;
+ await tx('books','readwrite','put',b);
+ c.summaryDeleteSelection=new Set();c.summarySelecting=false;
+ toast(keys.length+' resumo(s) excluído(s)');narrativeSummariesScreen();
+}
 function narrativeSelectSaved(i){const c=narrativeContext;if(!c)return;c.index=i;c.openPreviousAtEnd=false;c.resumePending=null;c.markJumpReturnPage=null;narrativeRead()}
 function narrativeDraw(){
  const c=narrativeContext;if(!c)return;c.view='list';

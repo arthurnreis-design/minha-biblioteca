@@ -1,9 +1,9 @@
-Minha Biblioteca v6.9.45 — correção pontual de validação
+Minha Biblioteca v6.9.46 — Exclusão múltipla de resumos narrativos
 
-Corrige rejeição duplicada de resumos no aplicativo: o Worker v6.9.43 já valida a extensão e aplica os limites de segurança. O aplicativo não deve rejeitar a mesma resposta usando outra faixa.
+Publique index.html, sw.js, manifest.webmanifest e os ícones na mesma pasta do GitHub Pages.
 
-Instalação: publicar index.html e sw.js no GitHub Pages. NÃO alterar Cloudflare.
+Na ficha do livro: Resumos narrativos > Ver capítulos resumidos > Selecionar. Marque os resumos que deseja apagar ou use Selecionar todos. Confirme em Excluir selecionados.
 
-A meta narrativa de 40–50% continua sendo uma orientação de geração; esta correção não garante que a IA atinja a meta em todos os capítulos.
+A exclusão afeta somente os resumos do livro atual e suas anotações/marcadores relacionados. Não apaga o EPUB nem o progresso de leitura do livro.
 
-Os resumos existentes e as outras funções permanecem inalterados.
+Worker Cloudflare: não precisa alterar.
