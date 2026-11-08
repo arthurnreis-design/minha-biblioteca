@@ -1,6 +1,9 @@
-Minha Biblioteca v6.9.44 — correção pontual da abertura automática após gerar um único resumo.
+Minha Biblioteca v6.9.45 — correção pontual de validação
 
-Corrigido índice de capítulo: todo[0].i -> todo[0].
-Mantém a base v6.9.42 e usa o Worker v6.9.43 já publicado.
-Atualize index.html e sw.js no GitHub. Não altere o Cloudflare.
-Não apague dados do site ou IndexedDB.
+Corrige rejeição duplicada de resumos no aplicativo: o Worker v6.9.43 já valida a extensão e aplica os limites de segurança. O aplicativo não deve rejeitar a mesma resposta usando outra faixa.
+
+Instalação: publicar index.html e sw.js no GitHub Pages. NÃO alterar Cloudflare.
+
+A meta narrativa de 40–50% continua sendo uma orientação de geração; esta correção não garante que a IA atinja a meta em todos os capítulos.
+
+Os resumos existentes e as outras funções permanecem inalterados.
