@@ -1022,7 +1022,20 @@ body:has(#tab-library:not(.hide)) .app>.top{flex:0 0 auto}
  #tab-library .library-scroll{padding-bottom:18px}
 }
 </style>
-<style id="mb6952-plan">.mb-plan-list{max-height:min(52vh,430px);overflow-y:auto}.mb-plan-chapter{display:flex;gap:10px;align-items:center;padding:10px 7px;border-bottom:1px solid var(--line);font-size:14px}.mb-plan-chapter input{flex-shrink:0}.mb-plan-chapter span{flex:1}.mb-plan-chapter small{font-size:11px;color:var(--muted)}</style></head><body>
+<style id="mb6952-plan">.mb-plan-list{max-height:min(52vh,430px);overflow-y:auto}.mb-plan-chapter{display:flex;gap:10px;align-items:center;padding:10px 7px;border-bottom:1px solid var(--line);font-size:14px}.mb-plan-chapter input{flex-shrink:0}.mb-plan-chapter span{flex:1}.mb-plan-chapter small{font-size:11px;color:var(--muted)}</style><style id="mb-package-a-draft">
+/* Restrito ao leitor de resumos aberto pelo plano. */
+#modal:has(.mb-summary-fullscreen),#reader-popup:has(.mb-summary-fullscreen){padding:0!important;align-items:stretch!important}
+#modal:has(.mb-summary-fullscreen) #sheet,#reader-popup:has(.mb-summary-fullscreen) #reader-popup-card{width:100vw!important;max-width:none!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important;padding:clamp(12px,2vw,24px)!important;overflow:hidden!important;display:flex;flex-direction:column}
+.mb-summary-fullscreen{height:100%;min-height:0;flex:1;display:flex;flex-direction:column}
+.mb-summary-fullscreen .narrative-reading{min-height:0!important;flex:1!important}
+.mb-summary-head{flex-shrink:0;gap:10px}.mb-summary-head h2{font-size:clamp(16px,2vw,22px)}
+.mb-plan-toc-list{max-height:65dvh;overflow:auto}.mb-plan-toc-row{display:flex!important;justify-content:space-between;align-items:center;text-align:left;gap:10px;margin:5px 0}.mb-plan-toc-row small{color:var(--muted);white-space:nowrap}.mb-plan-toc-row[aria-current="true"]{outline:2px solid var(--muted)}
+@media(max-width:550px){.mb-summary-head>.row{gap:2px;flex-wrap:wrap}.mb-summary-head .btn{padding:6px!important;font-size:12px!important}}
+</style><style id="mb-pacote-a-cards">
+.mb-primary-mode{display:flex;align-items:center;gap:8px;padding:0 12px 9px;font-size:12px;color:var(--muted)}
+.mb-primary-mode button{border:1px solid #d6d8dc;background:transparent;border-radius:8px;padding:5px 10px;color:inherit;font-size:12px;cursor:pointer}
+.mb-primary-mode button.active{background:#e6e8ea;color:#202124;border-color:#9da2a7;font-weight:700}
+</style><style id="mb-assist-revision">.mb-assisted-status:not([hidden]){display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;margin:5px 0;border:1px solid var(--line);border-radius:9px;font-size:12px;color:var(--text);background:var(--panel2)}.mb-assisted-status[hidden]{display:none!important}</style></head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-home-shortcut" id="top-home-shortcut" onclick="switchTab('home')" aria-label="Início" title="Início">⌂</button><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
 <section id="tab-home" class="home-screen">
@@ -1060,7 +1073,7 @@ body:has(#tab-library:not(.hide)) .app>.top{flex:0 0 auto}
 <section id="tab-settings" class="hide"><button class="btn ghost" style="margin-bottom:10px" onclick="switchTab('stats')">▥ Ver estatísticas de leitura ›</button><br><button class="btn ghost" style="margin-bottom:14px" onclick="switchTab('notes')">▤ Anotações e destaques ›</button><div class="card"><h2>Preferências</h2><div class="field"><label>Atalhos externos</label><div id="external-links-editor"></div><button type="button" class="btn tiny" onclick="addExternalLink()">＋ Adicionar link</button></div><button class="btn tiny" onclick="configureHighlightColors()">Significado das cores dos destaques</button></div><div class="card"><h2>Inteligência artificial</h2><p class="notice">Token de acesso armazenado apenas neste dispositivo. A chave da OpenAI permanece no Worker.</p><button class="btn" onclick="aiConfigureToken()">Configurar acesso à IA</button><button class="btn" onclick="aiShowUsage()">Consultar consumo da IA</button><div id="ai-usage-settings" class="notice" style="margin-top:12px"></div></div><div class="card"><h2>Backup e transferência</h2><p class="notice">O backup exporta fichas, progresso, anotações e marcadores. <b>Não inclui os arquivos EPUB.</b> Importe o mesmo EPUB em cada aparelho e depois restaure o backup para recuperar sua posição.</p><div class="row wrap"><button class="btn" onclick="exportBackup()">Exportar dados</button><button class="btn" onclick="document.getElementById('backup-input').click()">Importar dados</button></div></div><div class="card"><h2>Sobre o leitor</h2><p class="notice">Leitura paginada, temas claro suave/escuro, ajuste de fonte, índice, progresso, marcadores, destaques, anotações e consultas internas. Arquivos EPUB sem DRM. O motor de leitura EPUB.js é carregado pela internet nesta versão experimental; depois de carregar, os livros ficam salvos no dispositivo.</p><p class="notice">Para importar EPUB, é necessária conexão com a internet na primeira abertura para carregar o leitor e o descompactador. Se houver erro, a mensagem agora informa o motivo. Os dados ficam no armazenamento deste navegador. Limpar os dados do navegador pode apagar a biblioteca. Faça backups regularmente.</p></div></section></div>
 <nav class="nav" aria-label="Navegação principal"><div class="nav-inner"><button id="nav-home" class="active" onclick="switchTab('home')" aria-label="Início"><span class="nav-symbol">⌂</span><span class="nav-label">Início</span></button><button id="nav-library" onclick="switchTab('library')" aria-label="Biblioteca"><span class="nav-symbol">▦</span><span class="nav-label">Biblioteca</span><b id="new-books-badge" class="new-books-badge hide"></b></button></div></nav>
 <input type="file" id="epub-input" accept=".epub,application/epub+zip" hidden multiple><input type="file" id="backup-input" accept="application/json,.json" hidden><div id="modal" class="modal hide" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
-<div id="reader" class="reader hide"><div class="reader-dim-overlay" aria-hidden="true"></div><div class="reader-head"><button class="reader-head-control" onclick="closeReader()">‹ Voltar</button><div class="reader-ident"><div class="title" id="reader-title"></div><div id="reader-author"></div></div><div class="row reader-head-actions" style="gap:4px"><button id="bookmark-toggle" onclick="bookmarkCurrent()" title="Marcar página" aria-label="Marcar página"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></button><button onclick="toggleReaderSettings()" title="Aparência">Aa</button><button onclick="openReaderSearch()" title="Buscar no livro" aria-label="Buscar no livro">⌕</button><button class="reader-ai-control" onclick="openNarrativeSummaryReader()" title="Resumos narrativos" aria-label="Resumos narrativos">✧</button><button onclick="showReaderContents()" title="Índice">☷</button></div></div><div class="reader-main"><div id="epub-view"></div><button class="tap prev" type="button" aria-label="Página anterior" onclick="turnPage(-1)">‹</button><button class="tap next" type="button" aria-label="Próxima página" onclick="turnPage(1)">›</button></div><div id="reader-consult" class="reader-consult hide"><span>Consulta temporária</span><button onclick="restoreReaderPosition()">↩ Voltar à leitura</button><button onclick="keepReaderPosition()">✓ Manter esta posição</button></div><div class="reader-foot"><span class="reader-foot-left"><span id="reader-current-chapter" title="Capítulo atual" aria-live="off"></span><span id="reader-chapter">Página —</span></span><span id="reader-progress">Posição —</span></div><div class="reader-settings hide" id="reader-settings"><label>Fonte <div class="level-slider"><button type="button" onclick="stepReaderControl('font-size',-1)">−</button><input type="range" min="75" max="180" step="5" id="font-size" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('font-size',1)">+</button><output id="font-level"></output></div></label><label>Cor da página <select id="reader-theme" onchange="applyReaderSettings()"><option value="light">Clara suave</option><option value="sepia">Sépia</option><option value="dark">Escura</option></select><div class="segmented" id="theme-buttons"></div></label><label>Estilo da fonte <select id="reader-font-family" onchange="applyReaderSettings()"><option value="original">Original do livro</option><option value="serif">Serifada</option><option value="sans">Sem serifa</option></select><div class="segmented" id="family-buttons"></div></label><label>Luminosidade da leitura <div class="level-slider"><button type="button" onclick="stepReaderControl('reader-dim',-1)">−</button><input type="range" id="reader-dim" min="55" max="100" step="5" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('reader-dim',1)">+</button><output id="dim-level"></output></div></label><label>Espaçamento entre parágrafos <div class="segmented" id="paragraph-buttons"></div></label></div><div id="selection-actions" class="selection-actions hide"><button onclick="lookupSelection('define')">Dicionário</button><button onclick="lookupSelection('wiki')">Wikipédia</button><button onclick="readerAskAI('explain')">Explicar IA</button><button onclick="readerAskAI('historical')">Contexto histórico</button><button onclick="readerAskAI('translate')">Traduzir IA</button><button onclick="chooseHighlightColor()">Destacar</button><button onclick="startAnnotation()">Anotar</button><button onclick="createSelectedQuote()">Citação</button></div><div id="reader-popup" class="reader-popup hide" onclick="if(event.target===this)closeReaderPopup()"><div class="reader-popup-card" id="reader-popup-card"></div></div></div>
+<div id="reader" class="reader hide"><div class="reader-dim-overlay" aria-hidden="true"></div><div class="reader-head"><button class="reader-head-control" onclick="closeReader()">‹ Voltar</button><div class="reader-ident"><div class="title" id="reader-title"></div><div id="reader-author"></div></div><div class="row reader-head-actions" style="gap:4px"><button id="bookmark-toggle" onclick="bookmarkCurrent()" title="Marcar página" aria-label="Marcar página"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></button><button onclick="toggleReaderSettings()" title="Aparência">Aa</button><button onclick="openReaderSearch()" title="Buscar no livro" aria-label="Buscar no livro">⌕</button><button class="reader-ai-control" onclick="openNarrativeSummaryReader()" title="Resumos narrativos" aria-label="Resumos narrativos">✧</button><button onclick="showReaderContents()" title="Índice">☷</button></div></div><div class="reader-main"><div id="epub-view"></div><button class="tap prev" type="button" aria-label="Página anterior" onclick="turnPage(-1)">‹</button><button class="tap next" type="button" aria-label="Próxima página" onclick="turnPage(1)">›</button></div><div id="reader-consult" class="reader-consult hide"><span>Consulta temporária</span><button onclick="restoreReaderPosition()">↩ Voltar à leitura</button><button onclick="keepReaderPosition()">✓ Manter esta posição</button></div><div class="reader-foot"><span class="reader-foot-left"><span id="reader-current-chapter" title="Capítulo atual" aria-live="off"></span><span id="reader-chapter">Página —</span></span><span id="reader-progress">Posição —</span></div><div class="reader-settings hide" id="reader-settings"><label>Fonte <div class="level-slider"><button type="button" onclick="stepReaderControl('font-size',-1)">−</button><input type="range" min="75" max="180" step="5" id="font-size" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('font-size',1)">+</button><output id="font-level"></output></div></label><label>Cor da página <select id="reader-theme" onchange="applyReaderSettings()"><option value="light">Clara suave</option><option value="sepia">Sépia</option><option value="dark">Escura</option></select><div class="segmented" id="theme-buttons"></div></label><label>Estilo da fonte <select id="reader-font-family" onchange="applyReaderSettings()"><option value="original">Original do livro</option><option value="serif">Serifada</option><option value="sans">Sem serifa</option></select><div class="segmented" id="family-buttons"></div></label><label>Luminosidade da leitura <div class="level-slider"><button type="button" onclick="stepReaderControl('reader-dim',-1)">−</button><input type="range" id="reader-dim" min="55" max="100" step="5" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('reader-dim',1)">+</button><output id="dim-level"></output></div></label><label>Espaçamento entre parágrafos <div class="segmented" id="paragraph-buttons"></div></label></div><div id="selection-actions" class="selection-actions hide"><button onclick="lookupSelection('define')">Dicionário</button><button onclick="lookupSelection('wiki')">Wikipédia</button><button onclick="readerAskAI('explain')">Explicar IA</button><button onclick="readerAskAI('historical')">Contexto histórico</button><button onclick="readerAskAI('translate')">Traduzir IA</button><button id="reader-assist-continue" onclick="readerAssistContinue()">Continuar seleção ›</button><button id="reader-assist-extend" onclick="readerAssistExtend()" class="hide">Continuar na próxima ›</button><button id="reader-assist-finish" onclick="readerAssistFinish()" class="hide">Concluir seleção</button><button id="reader-assist-cancel" onclick="readerAssistCancel()" class="hide">Cancelar</button><button onclick="chooseHighlightColor()">Destacar</button><button onclick="startAnnotation()">Anotar</button><button onclick="createSelectedQuote()">Citação</button></div><div id="reader-popup" class="reader-popup hide" onclick="if(event.target===this)closeReaderPopup()"><div class="reader-popup-card" id="reader-popup-card"></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script><script>
 'use strict';const $=id=>document.getElementById(id);let db,books=[],filter='Todos',activeId=null,epubBook=null,rendition=null,selectedText='',selectedCfi='',saveTimer=null;let readerSession=0,readerLocationsReady=false;let settings=JSON.parse(localStorage.getItem('biblioteca_reader_settings')||'{"theme":"light","font":100}');if(settings.theme==='sepia')settings.theme='light';
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function toast(t){document.querySelector('.toast')?.remove();let d=document.createElement('div');d.className='toast';d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),3200)}function uid(){return crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()}
@@ -1266,10 +1279,11 @@ function renderHome(){
    <div class="reading-card-actions"><button class="reading-card-more" type="button" data-reading-more="${esc(b.id)}" aria-label="Mais opções para ${esc(b.title)}" aria-expanded="false">⋯</button><div class="reading-card-menu hide"><button type="button" data-reading-pause="${esc(b.id)}">⏸ Pausar leitura</button><button type="button" data-reading-finish="${esc(b.id)}">✓ Finalizar livro</button><button type="button" data-reading-reset="${esc(b.id)}">↺ Zerar leitura</button></div></div>
    <div class="reading-item" data-id="${esc(b.id)}" role="button" tabindex="0" aria-label="Continuar lendo ${esc(b.title)}">
     <div class="reading-cover">${b.cover?`<img src="${esc(b.cover)}" loading="lazy" alt="">`:'📖'}</div>
-    <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(readingPositionText(b))}</small>${readingExtraMarkup(b)}${lastBookAccessText(b)?`<small class="reading-last-access">◷ ${esc(lastBookAccessText(b))}</small>`:''}</div>
+    <div class="reading-meta"><span class="reading-kicker">SUA LEITURA ATUAL</span><strong>${esc(b.title)}</strong><span>${esc(b.author||'Autor não informado')}</span><small>${esc(narrativePrimaryMode(b)==='summary'&&narrativePlanPercent(b)!==null?'Resumo: '+narrativePlanPercent(b)+'% do plano':readingPositionText(b))}</small>${narrativePrimaryMode(b)==='original'?readingExtraMarkup(b):''}${lastBookAccessText(b)?`<small class="reading-last-access">◷ ${esc(lastBookAccessText(b))}</small>`:''}</div>
    </div>
    ${`<div class="reading-insights"><button type="button" onclick="showHomeRecords('highlights','${esc(b.id)}')">✎ ${hs.length} destaque${hs.length===1?'':'s'}</button><button type="button" onclick="showHomeRecords('notes','${esc(b.id)}')">▤ ${notes} anotaç${notes===1?'ão':'ões'}</button><button type="button" onclick="showHomeRecords('bookmarks','${esc(b.id)}')">♧ ${(b.bookmarks||[]).length} marcador${(b.bookmarks||[]).length===1?'':'es'}</button></div>`}
-   <div class="reading-quick-actions"><button type="button" onclick="openReader('${esc(b.id)}')">📖 Continuar livro</button>${hasSummaryProgress?`<button type="button" class="summary-continue" onclick="narrativeResumeHome('${esc(b.id)}')">✧ Continuar resumo</button>`:''}</div>
+   <div class="mb-primary-mode"><span>Leitura principal</span><button type="button" class="${narrativePrimaryMode(b)==='original'?'active':''}" onclick="narrativeSetPrimaryMode('${esc(b.id)}','original')">Livro</button><button type="button" class="${narrativePrimaryMode(b)==='summary'?'active':''}" onclick="narrativeSetPrimaryMode('${esc(b.id)}','summary')">Resumo</button></div>
+   <div class="reading-quick-actions"><button type="button" onclick="openReader('${esc(b.id)}')">📖 Ler livro</button><button type="button" class="summary-continue" onclick="narrativeOpenPlanHome('${esc(b.id)}')">✧ Ler resumo</button></div>
   </div>`;
  }).join(''):'<div class="reading-empty"><strong>Que tal começar uma nova leitura?</strong><span>Escolha um livro na sua biblioteca para começar.</span><button class="btn tiny" onclick="switchTab(\'library\')">Abrir Biblioteca</button></div>';
  el.querySelectorAll('.reading-item[data-id]').forEach(x=>{
@@ -1756,7 +1770,7 @@ async function openReader(id){readerConsult=null;$('reader-consult').classList.a
    setTimeout(renderReaderHighlights,30);setTimeout(applyParagraphSpacing,35);contents.document.documentElement.style.webkitTapHighlightColor='transparent';contents.document.body.style.webkitTapHighlightColor='transparent';// Preserva o menu nativo de seleção do Samsung Internet.
   }catch(e){}
  });
- rendition.on('selected',(cfi,contents)=>{selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();recordBookAccess(b);await tx('books','readwrite','put',b);await refresh()}catch(e){finishBookOpening(true);console.error(e);toast('Falha ao abrir o EPUB');closeReader()}}
+ rendition.on('selected',(cfi,contents)=>{if(readerCompletedSegments)readerCompletedSegments=null;selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');readerAssistControls();positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();recordBookAccess(b);await tx('books','readwrite','put',b);await refresh()}catch(e){finishBookOpening(true);console.error(e);toast('Falha ao abrir o EPUB');closeReader()}}
 let footnoteReturnCfi=null;
 function handleEpubFootnote(event,contents){const link=event.target?.closest?.('a[href]');if(!link||!rendition)return;const href=link.getAttribute('href')||'';if(!href||/^https?:|^mailto:/i.test(href))return;const targetId=decodeURIComponent(href.split('#')[1]||'');if(!targetId)return;const label=(link.textContent||'').trim();const isNote=/^(\[?\d{1,3}\]?|[¹²³⁴⁵⁶⁷⁸⁹⁰]+)$/.test(label)||/noteref|footnote/i.test(link.getAttribute('epub:type')||link.getAttribute('role')||link.className||'');if(!isNote)return;const target=contents.document.getElementById(targetId);if(!target)return;event.preventDefault();event.stopPropagation();const text=(target.innerText||target.textContent||'').trim();if(!text)return;showReaderPopup(`<h3>Nota ${esc(label)}</h3><div class="footnote-text">${esc(text)}</div><div class="popup-actions"><button class="btn" onclick="closeReaderPopup()">Voltar à leitura</button></div>`)}
 function updateLocation(loc){
@@ -1782,13 +1796,14 @@ function updateLocation(loc){
 }
 let pageTurning=false;
 async function turnPage(n){
- if(!rendition||!epubBook||pageTurning)return;
+ if(!rendition||!epubBook||pageTurning)return false;
  pageTurning=true;
  try{
   // O EPUB.js gerencia as transições entre seções. Não forçar display()
   // com CFI antigo: isso fazia voltar ao começo do capítulo.
   await (n>0?rendition.next():rendition.prev());
- }catch(e){console.error('Erro ao virar página:',e);toast('Não foi possível mudar a página: '+(e?.message||'erro de leitura'))}
+  return true;
+ }catch(e){console.error('Erro ao virar página:',e);toast('Não foi possível mudar a página: '+(e?.message||'erro de leitura'));return false}
  finally{if(rendition?.currentLocation())updateLocation(rendition.currentLocation());pageTurning=false}
 }
 // Navegação por gesto dentro do iframe do EPUB e nas margens do leitor.
@@ -1843,7 +1858,7 @@ function attachReaderSwipe(doc){
 }
 function clearReaderSwipe(){for(const l of swipeListeners){l.doc.removeEventListener('touchstart',l.start);l.doc.removeEventListener('touchend',l.end);l.doc.removeEventListener('touchcancel',l.cancel);l.doc.removeEventListener('click',l.click);l.doc.removeEventListener('selectionchange',l.selectionChange);if(l.doc!==document)l.doc.removeEventListener('pointerdown',dismissReaderSettings);l.doc.removeEventListener('pointerup',l.dismissSelection)}swipeListeners=[]}
 function initReaderSwipe(){clearReaderSwipe();attachReaderSwipe(document.querySelector('.reader-main'));if(rendition){rendition.hooks.content.register(c=>attachReaderSwipe(c.document));for(const c of rendition.getContents?.()||[])attachReaderSwipe(c.document)}}
-function closeReader(fromHistory=false){finishBookOpening(true);if(!fromHistory&&history.state?.bibliotecaScreen==='reader'){history.back();return}readerSession++;readerLocationsReady=false;stopReadingClock();closeReaderPopup();clearReaderSwipe();clearTimeout(saveTimer);if(readerConsult){restoreConsultRecord();readerConsult=null;$('reader-consult').classList.add('hide')}let b=books.find(x=>x.id===activeId);if(b)tx('books','readwrite','put',b).catch(console.error);try{rendition?.destroy()}catch(e){}try{epubBook?.destroy()}catch(e){}rendition=null;epubBook=null;$('epub-view').innerHTML='';$('reader').classList.add('hide');$('reader-settings').classList.add('hide');hideSelection();refresh()}
+function closeReader(fromHistory=false){readerAssistedSegments=null;readerCompletedSegments=null;readerAssistControls();finishBookOpening(true);if(!fromHistory&&history.state?.bibliotecaScreen==='reader'){history.back();return}readerSession++;readerLocationsReady=false;stopReadingClock();closeReaderPopup();clearReaderSwipe();clearTimeout(saveTimer);if(readerConsult){restoreConsultRecord();readerConsult=null;$('reader-consult').classList.add('hide')}let b=books.find(x=>x.id===activeId);if(b)tx('books','readwrite','put',b).catch(console.error);try{rendition?.destroy()}catch(e){}try{epubBook?.destroy()}catch(e){}rendition=null;epubBook=null;$('epub-view').innerHTML='';$('reader').classList.add('hide');$('reader-settings').classList.add('hide');hideSelection();refresh()}
 function toggleReaderSettings(){$('reader-settings').classList.toggle('hide')}
 function dismissReaderSettings(){const panel=$('reader-settings');if(panel&&!panel.classList.contains('hide'))panel.classList.add('hide')}
 document.addEventListener('pointerdown',e=>{const panel=$('reader-settings');if(panel&&!panel.classList.contains('hide')&&!panel.contains(e.target)&&!e.target.closest('[onclick*="toggleReaderSettings"]'))panel.classList.add('hide')});
@@ -1888,6 +1903,46 @@ async function showReaderContents(){
  $('reader-popup-card').querySelectorAll('[data-toc]').forEach(x=>x.onclick=async()=>{const n=toc[Number(x.dataset.toc)];closeReaderPopup();try{await rendition.display(n.href)}catch(e){toast('Não foi possível abrir este capítulo')}});
  $('reader-popup-card').querySelectorAll('[data-bookmark]').forEach(x=>x.onclick=async()=>{const m=b.bookmarks[Number(x.dataset.bookmark)];closeReaderPopup();if(m?.cfi)await rendition.display(m.cfi)});
 }
+// Pacote A: uma anotação lógica, com vários CFIs individuais do EPUB.js.
+// Cada página mantém sua própria âncora, evitando CFIs artificiais entre seções.
+let readerAssistedSegments=null;
+function readerAssistControls(){
+ const active=!!readerAssistedSegments?.length;
+ $('reader-assist-continue')?.classList.toggle('hide',active);
+ $('reader-assist-extend')?.classList.toggle('hide',!active);
+ $('reader-assist-finish')?.classList.toggle('hide',!active);
+ $('reader-assist-cancel')?.classList.toggle('hide',!active);
+}
+function readerAssistContinue(){
+ readerCompletedSegments=null;
+ if(!selectedCfi||!selectedText)return toast('Selecione um trecho para começar.');
+ readerAssistedSegments=[{cfi:selectedCfi,text:selectedText}];
+ readerAssistControls();hideSelection();
+ Promise.resolve(turnPage(1)).then(ok=>{if(ok)toast('Selecione a continuação na próxima página.');else{readerAssistedSegments=null;readerAssistControls();toast('Não foi possível iniciar a seleção entre páginas. Tente novamente.')}}).catch(e=>{readerAssistedSegments=null;readerAssistControls();console.warn('Falha ao avançar seleção assistida',e);toast('Não foi possível iniciar a seleção entre páginas.');});
+}
+function readerAssistExtend(){
+ if(!readerAssistedSegments?.length||!selectedCfi||!selectedText)return toast('Selecione a continuação antes de avançar.');
+ if(readerAssistedSegments.some(x=>x.cfi===selectedCfi))return toast('Selecione um novo trecho para continuar.');
+ readerAssistedSegments.push({cfi:selectedCfi,text:selectedText});
+ hideSelection();
+ Promise.resolve(turnPage(1)).then(ok=>{if(ok)toast('Selecione a próxima parte do trecho.');else{readerAssistedSegments?.pop();toast('Não foi possível avançar. Selecione novamente o trecho ou cancele.')}}).catch(e=>{readerAssistedSegments?.pop();console.warn('Falha ao avançar seleção assistida',e);toast('Não foi possível avançar. Selecione novamente o trecho ou cancele.');});
+}
+function readerAssistCancel(){readerAssistedSegments=null;readerCompletedSegments=null;readerAssistControls();hideSelection();toast('Seleção assistida cancelada.');}
+function readerAssistFinish(){
+ if(!readerAssistedSegments?.length||!selectedCfi||!selectedText)return toast('Selecione a continuação antes de concluir.');
+ if(readerAssistedSegments.some(x=>x.cfi===selectedCfi))return toast('Escolha um novo trecho na página seguinte.');
+ readerAssistedSegments.push({cfi:selectedCfi,text:selectedText});
+ const segments=readerAssistedSegments;
+ // Não concatenar CFIs: o EPUB.js só consegue ancorar intervalos individuais.
+ selectedCfi=segments[0].cfi;
+ selectedText=segments.map(x=>x.text).join(' ').replace(/\s+/g,' ').trim();
+ readerAssistedSegments=null;
+ readerAssistControls();
+ // Mantém seleção lógica em memória para o próximo clique em Destacar/Anotar.
+ readerCompletedSegments=segments;
+ toast('Trecho unificado. Agora escolha Destacar ou Anotar.');
+}
+let readerCompletedSegments=null;
 function positionSelectionMenu(contents){try{const sel=contents.window.getSelection();if(!sel?.rangeCount)return;const rect=sel.getRangeAt(0).getBoundingClientRect();const frame=contents.document.defaultView.frameElement;const fr=frame?.getBoundingClientRect()||$('epub-view').getBoundingClientRect();const menu=$('selection-actions');const x=Math.min(window.innerWidth-menu.offsetWidth-8,Math.max(8,fr.left+rect.left));const y=fr.top+rect.bottom+8;menu.style.left=Math.max(8,x)+'px';menu.style.right='auto';menu.style.bottom='auto';menu.style.top=y+'px';if(y+menu.offsetHeight>window.innerHeight){const overflow=y+menu.offsetHeight-window.innerHeight+8;try{contents.window.scrollBy(0,overflow)}catch(e){}}}catch(e){}}
 function hideSelection(){
  $('selection-actions').classList.add('hide');
@@ -1989,31 +2044,48 @@ async function lookupSelection(type){
 function highlightStyle(h){return {'fill':h.color|| (h.note?'#c5b2e8':'#f1d47b'),'fill-opacity':'0.48','mix-blend-mode':'multiply','pointer-events':'all','cursor':'pointer'}}
 function renderReaderHighlights(){
  const b=books.find(x=>x.id===activeId);if(!rendition||!b)return;
- for(const h of b.highlights||[]){if(!h.cfi)continue;
-  try{rendition.annotations.remove(h.cfi,'highlight')}catch(e){}
-  try{rendition.annotations.add('highlight',h.cfi,{id:h.id||h.cfi},ev=>{ev?.preventDefault?.();ev?.stopPropagation?.();showSavedHighlight(h.id||h.cfi)},'reader-highlight',highlightStyle(h))}catch(e){console.warn('Destaque indisponível',e)}
+ for(const h of b.highlights||[]){if(!h.cfi)continue;for(const segment of (h.segments?.length?h.segments:[{cfi:h.cfi}])){const markCfi=segment.cfi;
+  try{rendition.annotations.remove(markCfi,'highlight')}catch(e){}
+  try{rendition.annotations.add('highlight',markCfi,{id:h.id||h.cfi},ev=>{ev?.preventDefault?.();ev?.stopPropagation?.();showSavedHighlight(h.id||h.cfi)},'reader-highlight',highlightStyle(h))}catch(e){console.warn('Destaque indisponível',e)}
+ }
+ }
+}
+async function persistBookFieldSafely(book,field,previous,notice){
+ try{await tx('books','readwrite','put',book);return true}
+ catch(error){
+  book[field]=previous;
+  console.error('Falha ao salvar '+field,error);
+  toast(notice||'Não foi possível salvar. Nenhuma alteração foi confirmada.');
+  return false;
  }
 }
 async function saveHighlight(color){
  const b=books.find(x=>x.id===activeId);if(!b||!selectedText||!selectedCfi)return;
- b.highlights=b.highlights||[];const found=b.highlights.find(h=>h.cfi===selectedCfi);
- if(found){found.color=color||found.color||'#c5b2e8'}else b.highlights.push({id:uid(),text:selectedText,cfi:selectedCfi,color:color||'#c5b2e8',date:new Date().toISOString()});
- await tx('books','readwrite','put',b);hideSelection();renderReaderHighlights();toast('Trecho destacado no livro');
+ const completed=readerCompletedSegments?.map(x=>({...x}));
+ const previousHighlights=structuredClone(b.highlights||[]);
+ b.highlights=b.highlights||[];const found=readerCompletedSegments?.length?null:b.highlights.find(h=>h.cfi===selectedCfi);
+ if(found){found.color=color||found.color||'#c5b2e8'}else b.highlights.push({id:uid(),text:selectedText,cfi:selectedCfi,segments:completed||undefined,color:color||'#c5b2e8',date:new Date().toISOString()});readerCompletedSegments=null;
+ if(!await persistBookFieldSafely(b,'highlights',previousHighlights,'Não foi possível salvar o destaque.'))return;
+ hideSelection();renderReaderHighlights();toast('Trecho destacado no livro');
 }
 function startAnnotation(){
  if(!selectedText||!selectedCfi)return;
  const cfi=selectedCfi,text=selectedText;hideSelection();
- showReaderPopup(`<h3>Anotar trecho</h3><p style="font-size:12px;color:#77798c">${esc(text)}</p><textarea id="reader-note-text" placeholder="Escreva sua anotação..."></textarea><div class="popup-actions"><button class="btn" onclick="closeReaderPopup()">Cancelar</button><button class="btn primary" id="reader-note-save">Salvar anotação</button></div>`);
+ showReaderPopup(`<h3>Anotar trecho</h3><p style="font-size:12px;color:#77798c">${esc(text)}</p><textarea id="reader-note-text" placeholder="Escreva sua anotação..."></textarea><div class="popup-actions"><button class="btn" onclick="readerCompletedSegments=null;closeReaderPopup()">Cancelar</button><button class="btn primary" id="reader-note-save">Salvar anotação</button></div>`);
  $('reader-note-save').onclick=()=>persistReaderNote(cfi,text,$('reader-note-text').value);
 }
 async function persistReaderNote(cfi,text,note){
  note=note.trim();if(!note){toast('Escreva sua anotação antes de salvar');return}
  const b=books.find(x=>x.id===activeId);if(!b)return;
- b.highlights=b.highlights||[];let h=b.highlights.find(x=>x.cfi===cfi);
- if(h){h.note=note}else b.highlights.push({id:uid(),cfi,text,note,date:new Date().toISOString()});
- await tx('books','readwrite','put',b);closeReaderPopup();renderReaderHighlights();toast('Anotação salva no trecho');
+ const completed=readerCompletedSegments?.map(x=>({...x}));
+ const previousHighlights=structuredClone(b.highlights||[]);
+ b.highlights=b.highlights||[];let h=readerCompletedSegments?.length?null:b.highlights.find(x=>x.cfi===cfi);
+ if(h){h.note=note}else b.highlights.push({id:uid(),cfi,text,note,segments:completed||undefined,date:new Date().toISOString()});readerCompletedSegments=null;
+ if(!await persistBookFieldSafely(b,'highlights',previousHighlights,'Não foi possível salvar a anotação.'))return;
+ closeReaderPopup();renderReaderHighlights();toast('Anotação salva no trecho');
 }
 function showSavedHighlight(id){
+ readerCompletedSegments=null;
  ignoreReaderTapUntil=Date.now()+700;
  const b=books.find(x=>x.id===activeId),h=b?.highlights?.find(x=>(x.id||x.cfi)===id);if(!h)return;
  const note=String(h.note||'').trim();
@@ -2027,7 +2099,11 @@ function showSavedHighlight(id){
  $('remove-reader-mark').onclick=async()=>{
   if(!confirm('Remover este destaque'+(h.note?' e a anotação vinculada':'')+'?'))return;
   b.highlights=b.highlights.filter(x=>x!==h);await tx('books','readwrite','put',b);
-  try{rendition.annotations.remove(h.cfi,'highlight')}catch(e){}
+  // Marcações assistidas possuem várias âncoras: remover todas da camada EPUB.js.
+  for(const part of (h.segments?.length?h.segments:[{cfi:h.cfi}])){
+   if(!part.cfi)continue;
+   try{rendition?.annotations.remove(part.cfi,'highlight')}catch(e){console.warn('Falha ao remover âncora de destaque',e)}
+  }
   closeReaderPopup();renderReaderHighlights();
  };
 }
@@ -2400,11 +2476,58 @@ async function narrativePlanSave(){
 
 // v6.9.53 — leitura de plano: reutilização local e geração individual sob demanda.
 // O modo de plano não modifica o fluxo de geração em lote.
+// Pacote A: modo principal e entrada do plano a partir da página inicial.
+function narrativePrimaryMode(b){return b?.primaryReadingMode==='summary'?'summary':'original'}
+function narrativePlanPercent(b){
+ const plan=narrativePlanData(b),keys=plan?.chapters||[];
+ if(!keys.length)return null;
+ const pos=b.narrativeReadingProgress,idx=keys.indexOf(pos?.href);
+ if(idx<0)return 0;
+ const fraction=Math.max(0,Math.min(1,Number(pos.offset)||0));
+ return Math.round(100*(idx+fraction)/keys.length);
+}
+async function narrativeSetPrimaryMode(id,mode){
+ const b=books.find(x=>x.id===id);if(!b)return;
+ b.primaryReadingMode=mode==='summary'?'summary':'original';
+ await tx('books','readwrite','put',b);renderHome();
+}
+async function narrativeOpenPlanHome(id){
+ const b=books.find(x=>x.id===id);if(!b)return;
+ await narrativeOpen(id,false,false);
+ if(narrativeContext?.id!==id)return;
+ if(narrativePlanData(b)?.chapters?.length)narrativePlanStart();
+ else narrativePlanEditor();
+}
 function narrativePlanIndices(){
  const c=narrativeContext,b=books.find(x=>x.id===c?.id),plan=narrativePlanData(b);
  if(!c||!plan)return [];
  const keys=new Set(plan.chapters);
  return c.chapters.map((ch,i)=>keys.has(ch.href)?i:-1).filter(i=>i>=0);
+}
+// Pacote A (em desenvolvimento): sumário do plano sem gerar capítulos antecipadamente.
+function narrativePlanTOC(){
+ const c=narrativeContext;if(!c||!c.planMode)return;
+ // Save the current page before replacing the reader with the table of contents.
+ narrativePersistPosition();
+ const indices=narrativePlanIndices(),b=books.find(x=>x.id===c.id);
+ c.view='plan-toc';
+ const rows=indices.map(i=>{const ch=c.chapters[i];const ready=!!b?.narrativeSummaries?.[ch.href]?.text;
+ return `<button class="btn full mb-plan-toc-row" onclick="narrativePlanGoTo(${i})" ${i===c.index?'aria-current="true"':''}><span>${esc(ch.label)}</span><small>${ready?'Resumo salvo':'Gerar ao abrir'}</small></button>`}).join('');
+ narrativePresent(`<div class="row between"><h2>Sumário dos resumos</h2><button class="btn tiny ghost" onclick="narrativeRead()">✕</button></div><p class="notice">${indices.length} capítulos selecionados</p><div class="mb-plan-toc-list">${rows}</div><div class="narrative-actions"><button class="btn" onclick="narrativePlanEditor()">Editar plano</button><button class="btn primary" onclick="narrativeRead()">Voltar à leitura</button></div>`);
+}
+function narrativePlanGoTo(index){
+ const c=narrativeContext;if(!c||!narrativePlanIndices().includes(index))return;
+ const currentIndex=c.index;
+ // Do not retain an unfinished selection across a chapter change.
+ c.assistedSelection=null;
+ narrativeClearSelection();
+ c.index=index;
+ // The chapter currently open in the TOC retains its saved page.
+ // Another chapter opens at its beginning rather than borrowing the last chapter's position.
+ const progress=books.find(x=>x.id===c.id)?.narrativeReadingProgress;
+ c.resumePending=index===currentIndex&&progress?.href===narrativeKey(index)?{...progress}:null;
+ c.openPreviousAtEnd=false;
+ narrativePlanOpenCurrent();
 }
 function narrativePlanStart(){
  const c=narrativeContext,b=books.find(x=>x.id===c?.id),plan=narrativePlanData(b);
@@ -2412,6 +2535,10 @@ function narrativePlanStart(){
  const indices=narrativePlanIndices();
  if(!indices.length)return toast('Os capítulos do plano não foram encontrados neste EPUB.');
  c.planMode=true;
+ if(b.primaryReadingMode!=='summary'){
+  b.primaryReadingMode='summary';
+  tx('books','readwrite','put',b).catch(e=>console.warn('Não foi possível salvar modo principal:',e));
+ }
  const progress=b?.narrativeReadingProgress;
  const savedIndex=progress?.href?c.chapters.findIndex(ch=>ch.href===progress.href):-1;
  c.index=indices.includes(savedIndex)?savedIndex:indices[0];
@@ -2429,6 +2556,11 @@ function narrativePlanStep(delta){
 }
 function narrativePlanOpenCurrent(){
  const c=narrativeContext;if(!c)return;
+ if(c.planMode&&!narrativePlanIndices().includes(c.index)){
+  const next=narrativePlanIndices()[0];
+  if(next===undefined)return narrativePlanEditor();
+  c.index=next;c.resumePending=null;
+ }
  if(narrativeSaved()[narrativeKey(c.index)]?.text){narrativeRead();return}
  narrativePlanGenerateCurrent();
 }
@@ -2511,9 +2643,9 @@ function narrativePresent(html){
  const c=narrativeContext;if(!c)return;
  $('reader-popup')?.querySelector(':scope > #narrative-selection-menu')?.remove();
  $('modal')?.querySelector(':scope > #narrative-selection-menu')?.remove();
- if(c.fromReader){showReaderPopup(`<div class="narrative-panel">${html}</div>`);const card=$('reader-popup-card');card.style.setProperty('--reader',$('reader').style.getPropertyValue('--reader'));card.style.setProperty('--ink',$('reader').style.getPropertyValue('--ink'));card.style.setProperty('--narrative-scale',String((settings.font||100)/100));card.style.setProperty('--narrative-font',settings.family==='sans'?'Arial,sans-serif':'Georgia,serif');card.style.setProperty('background',settings.theme==='dark'?'#17191b':settings.theme==='sepia'?'#f3ead9':'#f8f9fc')}
+ if(c.fromReader){showReaderPopup(`<div class="narrative-panel ${c.view==='read'&&c.planMode?'mb-summary-fullscreen':''}">${html}</div>`);const card=$('reader-popup-card');card.style.setProperty('--reader',$('reader').style.getPropertyValue('--reader'));card.style.setProperty('--ink',$('reader').style.getPropertyValue('--ink'));card.style.setProperty('--narrative-scale',String((settings.font||100)/100));card.style.setProperty('--narrative-font',settings.family==='sans'?'Arial,sans-serif':'Georgia,serif');card.style.setProperty('background',settings.theme==='dark'?'#17191b':settings.theme==='sepia'?'#f3ead9':'#f8f9fc')}
  else{
-  openModal(`<div class="narrative-panel">${html}</div>`);
+  openModal(`<div class="narrative-panel ${c.view==='read'&&c.planMode?'mb-summary-fullscreen':''}">${html}</div>`);
   // O cabeçalho padrão fecha o modal inteiro; aqui ele deve retornar à lista de resumos.
   const back=$('sheet').querySelector('.sheet-back');
   if(back)back.setAttribute('onclick','narrativeBack()');
@@ -2641,11 +2773,14 @@ function narrativeBookmarkActive(){const c=narrativeContext,info=narrativePageIn
 async function narrativeToggleBookmark(){
  const c=narrativeContext,info=narrativePageInfo();if(!c||!info)return;
  const b=books.find(x=>x.id===c.id),key=narrativeKey(c.index);if(!b)return;
- b.narrativePageBookmarks=b.narrativePageBookmarks||{};const arr=b.narrativePageBookmarks[key]||[];
+ const previous=structuredClone(b.narrativePageBookmarks||{});
+ const updated={...previous},arr=[...(updated[key]||[])];
  const found=arr.findIndex(m=>m.page===info.page);
- if(found>=0){arr.splice(found,1);toast('Marcador do resumo removido')}
- else{arr.push({id:uid(),page:info.page,offset:info.total>1?info.page/(info.total-1):0,created:new Date().toISOString()});toast('Página do resumo marcada')}
- b.narrativePageBookmarks[key]=arr;await tx('books','readwrite','put',b);narrativeRefreshBookmarkIcon();
+ if(found>=0)arr.splice(found,1);
+ else arr.push({id:uid(),page:info.page,offset:info.total>1?info.page/(info.total-1):0,created:new Date().toISOString()});
+ updated[key]=arr;b.narrativePageBookmarks=updated;
+ if(!await persistBookFieldSafely(b,'narrativePageBookmarks',previous,'Não foi possível salvar o marcador.')){narrativeRefreshBookmarkIcon();return;}
+ if(narrativeContext===c){narrativeRefreshBookmarkIcon();toast(found>=0?'Marcador do resumo removido':'Página do resumo marcada');}
 }
 function narrativeRefreshBookmarkIcon(){const btn=$('narrative-bookmark-toggle');if(!btn)return;const active=narrativeBookmarkActive();btn.classList.toggle('narrative-bookmark-on',active);btn.textContent=active?'▮':'♧';btn.title=active?'Remover marcador desta página':'Marcar esta página do resumo';btn.setAttribute('aria-label',btn.title)}
 function narrativeAllBookmarks(){const c=narrativeContext,b=books.find(x=>x.id===c?.id);if(!c||!b)return [];return Object.entries(b.narrativePageBookmarks||{}).flatMap(([href,marks])=>(marks||[]).map(m=>({...m,href,chapter:c.chapters.find(ch=>ch.href===href)?.label||'Capítulo'})))}
@@ -2656,12 +2791,54 @@ function narrativeGoBookmark(href,id){
  c.index=index;c.resumePending={href,page:m.page,offset:m.offset};c.markJumpReturnPage=null;narrativeRead();
 }
 function narrativeBackBookmarkOrigin(){const c=narrativeContext,origin=c?.bookmarkOrigin;if(!origin)return;c.bookmarkOrigin=null;const index=c.chapters.findIndex(ch=>ch.href===origin.href);if(index<0)return;c.index=index;c.resumePending=origin;narrativeRead()}
-async function narrativeDeleteBookmark(href,id){const c=narrativeContext,b=books.find(x=>x.id===c?.id);if(!b)return;b.narrativePageBookmarks[href]=(b.narrativePageBookmarks[href]||[]).filter(x=>x.id!==id);await tx('books','readwrite','put',b);narrativeShowMarks(true)}
+async function narrativeDeleteBookmark(href,id){
+ const c=narrativeContext,b=books.find(x=>x.id===c?.id);if(!b)return;
+ const previous=structuredClone(b.narrativePageBookmarks||{}),arr=previous[href]||[];
+ if(!arr.some(x=>x.id===id))return;
+ b.narrativePageBookmarks={...previous,[href]:arr.filter(x=>x.id!==id)};
+ if(!await persistBookFieldSafely(b,'narrativePageBookmarks',previous,'Não foi possível excluir o marcador.'))return;
+ if(narrativeContext===c)narrativeShowMarks(true);
+}
 function narrativeMarks(){const c=narrativeContext,b=books.find(x=>x.id===c?.id);return b?.narrativeMarks?.[narrativeKey(c.index)]||[]}
 function narrativeMarkedHTML(value){
  const marks=narrativeMarks().filter(m=>Number.isInteger(m.start)&&Number.isInteger(m.end)&&m.end>m.start).sort((a,b)=>a.start-b.start),parts=[];let pos=0;
  for(const m of marks){if(m.start<pos||m.end>value.length)continue;parts.push(esc(value.slice(pos,m.start)));parts.push(`<mark class="narrative-mark" data-mark-id="${esc(m.id)}" onclick="narrativeOpenMark('${esc(m.id)}')">${esc(value.slice(m.start,m.end))}</mark>`);pos=m.end}
  parts.push(esc(value.slice(pos)));return parts.join('');
+}
+// Pacote A — seleção assistida: um intervalo contínuo do texto de um capítulo.
+// O início fica ancorado no resumo original; a segunda seleção define o final.
+function narrativeAssistContinue(){
+ const c=narrativeContext,sel=narrativeSelection,info=narrativePageInfo();
+ if(!c||!sel||!info)return;
+ if(info.page>=info.total-1)return toast('Esta é a última página deste capítulo.');
+ const current=c.assistedSelection;
+ // Never carry an unfinished range into a different chapter.
+ if(current&&current.href!==narrativeKey(c.index)){
+  c.assistedSelection=null;
+  return toast('A seleção anterior pertence a outro capítulo. Selecione novamente.');
+ }
+ // O intervalo pode ser ampliado por várias páginas, sem criar marcações separadas.
+ c.assistedSelection={href:narrativeKey(c.index),start:current?.href===narrativeKey(c.index)?current.start:sel.start,firstEnd:sel.end};
+ narrativeClearSelection();
+ narrativeGoPage(info.page+1);
+ narrativeAssistStatus();
+ toast('Selecione a continuação na página seguinte.');
+}
+function narrativeAssistCancel(){
+ if(narrativeContext)narrativeContext.assistedSelection=null;
+ narrativeClearSelection();narrativeAssistStatus();toast('Seleção assistida cancelada.');
+}
+function narrativeAssistStatus(){
+ const bar=$('mb-assisted-status'),pending=narrativeContext?.assistedSelection;
+ if(!bar)return;
+ bar.hidden=!pending;
+ if(pending){const t=bar.querySelector('[data-assist-label]');if(t)t.textContent='Seleção em andamento: selecione a continuação nesta página.'}
+}
+async function narrativeCopySelection(){
+ const sel=narrativeSelection;if(!sel?.text)return toast('Selecione um trecho primeiro.');
+ const text=sel.text;
+ try{await navigator.clipboard.writeText(text);narrativeAssistCancel();toast('Trecho completo copiado.');}
+ catch(e){toast('Não foi possível copiar automaticamente. Verifique as permissões do navegador.');}
 }
 function narrativeCaptureSelection(){
  const article=$('narrative-text-content');if(!article)return;
@@ -2675,11 +2852,23 @@ function narrativeCaptureSelection(){
  const range=selection.getRangeAt(0);
  if(!article.contains(range.commonAncestorContainer)){
   $('narrative-selection-menu')?.classList.add('hide');
+  narrativeSelection=null;
   return;
  }
  const pre=range.cloneRange();pre.selectNodeContents(article);pre.setEnd(range.startContainer,range.startOffset);
  const start=pre.toString().length,text=range.toString();if(!text.trim())return;
- narrativeSelection={start,end:start+text.length,text};
+ const assisted=narrativeContext?.assistedSelection;
+ if(assisted&&assisted.href===narrativeKey(narrativeContext.index)){
+  const end=start+text.length;
+  const source=narrativeSaved()[assisted.href]?.text||'';
+  if(start<assisted.firstEnd||end<=assisted.firstEnd||end>source.length){
+   // An invalid continuation must not leave an earlier selection actionable.
+   narrativeSelection=null;
+   $('narrative-selection-menu')?.classList.add('hide');
+   toast('Selecione somente a continuação do trecho na página seguinte.');return;
+  }
+  narrativeSelection={start:assisted.start,end,text:source.slice(assisted.start,end)};
+ }else narrativeSelection={start,end:start+text.length,text};
  const toolbar=$('narrative-selection-menu');
  if(toolbar){
   toolbar.classList.remove('hide');
@@ -2705,9 +2894,13 @@ async function narrativeAddMark(kind){
  const originalScroll=reading?.classList.contains('narrative-paged')?reading.scrollLeft:(reading?.scrollTop??0);
  let note='';if(kind==='note'){note=prompt('Anotação sobre o trecho selecionado:')||'';if(!note.trim())return}
  b.narrativeMarks=b.narrativeMarks||{};b.narrativeMarks[key]=b.narrativeMarks[key]||[];
+ // Marcas sobrepostas seriam ignoradas pelo renderizador; impedir perda silenciosa.
+ if(b.narrativeMarks[key].some(m=>sel.start<m.end&&sel.end>m.start)){toast('Este trecho já contém uma marcação. Selecione um intervalo sem sobreposição.');return;}
+ const previousMarks=b.narrativeMarks[key].slice();
  b.narrativeMarks[key].push({id:uid(),start:sel.start,end:sel.end,text:sel.text,note,kind});
- await tx('books','readwrite','put',b);
- narrativeClearSelection();
+ if(!await persistBookFieldSafely(b,'narrativeMarks',{...b.narrativeMarks,[key]:previousMarks},'Não foi possível salvar a marcação no resumo.'))return;
+ c.assistedSelection=null;
+ narrativeClearSelection();narrativeAssistStatus();
  // Update the marked text in place: rebuilding the dialog resets its scroll.
  const content=$('narrative-text-content');
  if(reading&&content&&narrativeContext===c&&c.view==='read'&&narrativeKey(c.index)===key){
@@ -2722,12 +2915,12 @@ async function narrativeAddMark(kind){
  toast(kind==='note'?'Anotação salva no resumo':'Destaque salvo no resumo');
 }
 function narrativeOpenMark(id){const m=narrativeMarks().find(x=>x.id===id);if(!m)return;const action=confirm(`${m.text}${m.note?'\n\nNota: '+m.note:''}\n\nExcluir esta marcação?`);if(action)narrativeDeleteMark(id)}
-async function narrativeDeleteMark(id){const c=narrativeContext,b=books.find(x=>x.id===c.id),key=narrativeKey(c.index);b.narrativeMarks[key]=(b.narrativeMarks[key]||[]).filter(x=>x.id!==id);await tx('books','readwrite','put',b);narrativeRead()}
+async function narrativeDeleteMark(id){const c=narrativeContext;if(!c)return;const b=books.find(x=>x.id===c.id);if(!b)return;const key=narrativeKey(c.index),previous=b.narrativeMarks?.[key]||[];if(!previous.some(m=>m.id===id))return;b.narrativeMarks[key]=previous.filter(x=>x.id!==id);if(!await persistBookFieldSafely(b,'narrativeMarks',{...b.narrativeMarks,[key]:previous},'Não foi possível excluir a marcação.'))return;if(narrativeContext!==c)return;if(c.view==='marks')narrativeShowMarks(true);else if(c.view==='read'){const info=narrativePageInfo();c.resumePending={href:key,page:info?.page||0,total:info?.total||1,offset:info?.total>1?(info.page/(info.total-1)):0};narrativeRead();}}
 function narrativeShowMarks(preserve=false){
  const c=narrativeContext;if(!c)return;
  if(!preserve){const info=narrativePageInfo();c.marksReturnPage=info?.page||0;c.marksReturnHref=narrativeKey(c.index);narrativePersistPosition()}
  c.view='marks';const marks=narrativeMarks(),bookmarks=narrativeAllBookmarks();
- const markHtml=marks.length?marks.map(m=>`<div class="narrative-mark-row"><button class="btn ghost" onclick="narrativeRead();setTimeout(()=>narrativeShowMarkedPage('${esc(m.id)}'),100)">${esc(m.text.slice(0,140))}${m.note?`<small> · ${esc(m.note)}</small>`:''}</button><button class="btn tiny" onclick="narrativeDeleteMark('${esc(m.id)}');narrativeShowMarks(true)">Excluir</button></div>`).join(''):'<p class="notice">Nenhum destaque ou anotação neste capítulo.</p>';
+ const markHtml=marks.length?marks.map(m=>`<div class="narrative-mark-row"><button class="btn ghost" onclick="narrativeRead();setTimeout(()=>narrativeShowMarkedPage('${esc(m.id)}'),100)">${esc(m.text.slice(0,140))}${m.note?`<small> · ${esc(m.note)}</small>`:''}</button><button class="btn tiny" onclick="narrativeDeleteMark('${esc(m.id)}')">Excluir</button></div>`).join(''):'<p class="notice">Nenhum destaque ou anotação neste capítulo.</p>';
  const bookmarkHtml=bookmarks.length?bookmarks.map(m=>`<div class="narrative-bookmark-row"><button class="btn ghost" onclick="narrativeGoBookmark('${esc(m.href)}','${esc(m.id)}')">▮ ${esc(m.chapter)} · página ${m.page+1}</button><button class="btn tiny" onclick="narrativeDeleteBookmark('${esc(m.href)}','${esc(m.id)}')">Excluir</button></div>`).join(''):'<p class="notice">Nenhuma página marcada nos resumos.</p>';
  narrativePresent(`<div class="row between"><h2>Registros do resumo</h2><button class="btn tiny" onclick="narrativeReturnFromMarks()">Voltar</button></div><h3 style="margin:16px 0 8px">Destaques e anotações</h3>${markHtml}<h3 style="margin:20px 0 8px">Marcadores de páginas</h3>${bookmarkHtml}`);
 }
@@ -2796,21 +2989,39 @@ function narrativeInitPages(){
  // The indicator follows requested pages, not intermediate smooth-scroll offsets.
 }
 function narrativePageInfo(){const el=document.querySelector('.narrative-reading.narrative-paged');if(!el)return null;const w=Math.max(1,el.clientWidth);return {el,w,page:Number(el.dataset.page??Math.round(el.scrollLeft/w)),total:Math.max(1,Math.ceil((el.scrollWidth-1)/w))}}
-function narrativeUpdatePage(){const info=narrativePageInfo();if(!info)return;const page=Math.min(info.page,info.total-1);info.el.dataset.page=page;const indicator=$('narrative-page-indicator');if(indicator)indicator.textContent=(page+1)+' / '+info.total;const prev=$('narrative-page-prev'),next=$('narrative-page-next');if(prev)prev.disabled=page<=0;if(next)next.disabled=page>=info.total-1;narrativeRefreshBookmarkIcon()}
-function narrativeGoPage(index){const info=narrativePageInfo();if(!info)return;const target=Math.max(0,Math.min(info.total-1,index));info.el.dataset.page=target;info.el.scrollTo({left:target*info.w,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});requestAnimationFrame(()=>{narrativeUpdatePage();narrativePersistPosition()})}
-function narrativeTurnPage(delta){narrativeClearSelection();const info=narrativePageInfo();if(info)narrativeGoPage(info.page+delta)}
+function narrativeUpdatePage(){const info=narrativePageInfo();if(!info)return;const page=Math.min(info.page,info.total-1);info.el.dataset.page=page;const indicator=$('narrative-page-indicator');if(indicator)indicator.textContent=(page+1)+' / '+info.total;const assist=$('narrative-assist-continue');if(assist)assist.disabled=page>=info.total-1;const prev=$('narrative-page-prev'),next=$('narrative-page-next');if(prev)prev.disabled=page<=0;if(next)next.disabled=page>=info.total-1;narrativeRefreshBookmarkIcon()}
+function narrativeGoPage(index){
+ const info=narrativePageInfo();if(!info)return;
+ const context=narrativeContext,chapter=context?.view==='read'?narrativeKey(context.index):null;
+ const target=Math.max(0,Math.min(info.total-1,index));
+ info.el.dataset.page=target;
+ info.el.scrollTo({left:target*info.w,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+ requestAnimationFrame(()=>{
+  // A callback from an old chapter must not save a position in a newly opened chapter.
+  if(narrativeContext!==context||context?.view!=='read'||narrativeKey(context.index)!==chapter||narrativePageInfo()?.el!==info.el)return;
+  narrativeUpdatePage();narrativePersistPosition();
+ });
+}
+function narrativeTurnPage(delta){narrativeClearSelection();narrativeAssistStatus();const info=narrativePageInfo();if(info)narrativeGoPage(info.page+delta)}
 function narrativeShowMarkedPage(id){const c=narrativeContext;if(c)c.markJumpReturnPage=c.marksReturnPage||0;const mark=[...document.querySelectorAll('#narrative-text-content [data-mark-id]')].find(el=>el.dataset.markId===id);const info=narrativePageInfo();if(!mark||!info)return;const rect=mark.getBoundingClientRect(),base=info.el.getBoundingClientRect();narrativeGoPage(Math.floor((info.el.scrollLeft+rect.left-base.left)/info.w))}
 let narrativeSaveProgressTimer=null;
+let narrativeProgressRevision=0;
 function narrativePersistPosition(){const c=narrativeContext,info=narrativePageInfo();if(!c||c.view!=='read'||!info||c.bookmarkOrigin)return;const b=books.find(x=>x.id===c.id);if(!b)return;const key=narrativeKey(c.index);if(!b.narrativeSummaries?.[key]?.text)return;
- b.narrativeReadingProgress={href:key,page:info.page,offset:info.total>1?info.page/(info.total-1):0,updated:new Date().toISOString()};
- clearTimeout(narrativeSaveProgressTimer);narrativeSaveProgressTimer=setTimeout(()=>tx('books','readwrite','put',b).catch(console.error),250);
+ b.narrativeReadingProgress={href:key,page:info.page,total:info.total,offset:info.total>1?info.page/(info.total-1):0,updated:new Date().toISOString(),revision:++narrativeProgressRevision};
+ clearTimeout(narrativeSaveProgressTimer);
+ const bookId=b.id,expectedProgress={...b.narrativeReadingProgress};
+ narrativeSaveProgressTimer=setTimeout(()=>{
+  const latest=books.find(x=>x.id===bookId);
+  if(!latest||latest.narrativeReadingProgress?.revision!==expectedProgress.revision)return;
+  tx('books','readwrite','put',latest).catch(console.error);
+ },250);
 }
 function narrativeRestoreReadPosition(){const c=narrativeContext;if(!c||c.view!=='read')return;const b=books.find(x=>x.id===c.id),progress=c.resumePending||b?.narrativeReadingProgress;c.resumePending=null;
  if(progress?.href===narrativeKey(c.index)){
-  const info=narrativePageInfo();if(info){const page=Number.isFinite(Number(progress.page))?Number(progress.page):Math.round((Number(progress.offset)||0)*(info.total-1));narrativeGoPage(Math.min(page,info.total-1));}
+  const info=narrativePageInfo();if(info){const changedLayout=Number.isFinite(Number(progress.total))&&Number(progress.total)>0&&Number(progress.total)!==info.total;const fraction=Math.max(0,Math.min(1,Number(progress.offset)||0));const page=changedLayout?Math.round(fraction*(info.total-1)):(Number.isFinite(Number(progress.page))?Number(progress.page):Math.round(fraction*(info.total-1)));narrativeGoPage(Math.min(Math.max(0,page),info.total-1));}
  }
 }
-function narrativeHome(){$('narrative-dictionary-layer')?.remove();const c=narrativeContext;if(!c)return;if(c.aiRunning){toast('Interrompa a geração antes de sair.');return;}narrativePersistPosition();narrativeContext=null;clearTimeout(narrativeSaveProgressTimer);
+function narrativeHome(){$('narrative-dictionary-layer')?.remove();const c=narrativeContext;if(!c)return;if(c.aiRunning){toast('Interrompa a geração antes de sair.');return;}narrativePersistPosition();narrativeContext=null;clearTimeout(narrativeSaveProgressTimer);const leavingBook=books.find(x=>x.id===c.id);if(leavingBook?.narrativeReadingProgress)tx('books','readwrite','put',leavingBook).catch(console.error);
  if(c.temporary)try{c.epub.destroy()}catch(e){};
  $('reader-popup').classList.add('hide');$('reader-popup-card').innerHTML='';$('modal').classList.add('hide');$('sheet').innerHTML='';
  if(!$('reader').classList.contains('hide'))closeReader(true);switchTab('home',false);renderHome();
@@ -2831,13 +3042,14 @@ function narrativeRead(){
  }
  c.view='read';
  narrativeSyncEpubChapter(c,narrativeKey(c.index)).catch(console.error);
- narrativePresent(`<div class="row between"><div><h2>${esc(c.chapters[c.index].label)}</h2><small>${esc(books.find(x=>x.id===c.id)?.title||'')}</small></div><div class="row"><button class="btn tiny ghost" title="Ampliar ou reduzir a leitura" onclick="narrativeToggleExpand()">⛶</button><button id="narrative-bookmark-toggle" class="btn tiny ghost" title="Marcar página do resumo" onclick="narrativeToggleBookmark()">♧</button><button class="btn tiny ghost" title="Marcações e marcadores" onclick="narrativeShowMarks()">▤</button><button class="btn tiny ghost" title="Voltar à lista de resumos" onclick="narrativeBackToSaved()">✕</button><button class="btn tiny ghost" title="Ir ao início da biblioteca" onclick="narrativeHome()">⌂</button></div></div>${narrativeMetricsMarkup(books.find(x=>x.id===c.id),narrativeKey(c.index))}<article class="narrative-reading narrative-paged"><div id="narrative-text-content" style="white-space:pre-wrap" onmouseup="narrativeCaptureSelection()" ontouchend="setTimeout(narrativeCaptureSelection,350)">${narrativeMarkedHTML(item.text)}</div></article><div class="narrative-page-controls"><button id="narrative-page-prev" onclick="narrativeTurnPage(-1)" aria-label="Página anterior">‹</button><span id="narrative-page-indicator">1 / 1</span><button id="narrative-page-next" onclick="narrativeTurnPage(1)" aria-label="Próxima página">›</button></div><div id="narrative-selection-menu" class="narrative-floating-tools hide" onmousedown="event.preventDefault()"><button onclick="narrativeDictionary()">Dicionário</button><button onclick="narrativeWiki()">Wikipédia</button><button onclick="narrativeAskAI('explain')">Explicar IA</button><button onclick="narrativeAskAI('historical')">Contexto histórico</button><button onclick="narrativeAskAI('translate')">Traduzir IA</button><button onclick="narrativeAddMark('highlight')">Destacar</button><button onclick="narrativeAddMark('note')">Anotar</button></div>${c.markJumpReturnPage!==null&&c.markJumpReturnPage!==undefined?'<button class="btn tiny" onclick="narrativeBackToMarkOrigin()">↩ Voltar ao ponto anterior</button>':''}${c.bookmarkOrigin?'<button class="btn tiny" onclick="narrativeBackBookmarkOrigin()">↩ Voltar à posição anterior</button>':''}<div class="narrative-actions narrative-navigation"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeEdit()">Editar</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`);
+ narrativePresent(`<div class="row between mb-summary-head"><div><h2>${esc(c.chapters[c.index].label)}</h2><small>${esc(books.find(x=>x.id===c.id)?.title||'')}</small></div><div class="row">${c.planMode?'<button class="btn tiny ghost" onclick="narrativePlanTOC()" title="Sumário dos resumos">☷ Sumário</button>':''}<button class="btn tiny ghost" title="Ampliar ou reduzir a leitura" onclick="narrativeToggleExpand()">⛶</button><button id="narrative-bookmark-toggle" class="btn tiny ghost" title="Marcar página do resumo" onclick="narrativeToggleBookmark()">♧</button><button class="btn tiny ghost" title="Marcações e marcadores" onclick="narrativeShowMarks()">▤</button><button class="btn tiny ghost" title="Voltar à lista de resumos" onclick="narrativeBackToSaved()">✕</button><button class="btn tiny ghost" title="Ir ao início da biblioteca" onclick="narrativeHome()">⌂</button></div></div>${narrativeMetricsMarkup(books.find(x=>x.id===c.id),narrativeKey(c.index))}<article class="narrative-reading narrative-paged"><div id="narrative-text-content" style="white-space:pre-wrap" onmouseup="narrativeCaptureSelection()" ontouchend="setTimeout(narrativeCaptureSelection,350)">${narrativeMarkedHTML(item.text)}</div></article><div id="mb-assisted-status" class="mb-assisted-status" hidden><span data-assist-label>Seleção em andamento</span><button class="btn tiny" onclick="narrativeAssistCancel()">Cancelar</button></div><div class="narrative-page-controls"><button id="narrative-page-prev" onclick="narrativeTurnPage(-1)" aria-label="Página anterior">‹</button><span id="narrative-page-indicator">1 / 1</span><button id="narrative-page-next" onclick="narrativeTurnPage(1)" aria-label="Próxima página">›</button></div><div id="narrative-selection-menu" class="narrative-floating-tools hide" onmousedown="event.preventDefault()"><button onclick="narrativeDictionary()">Dicionário</button><button onclick="narrativeWiki()">Wikipédia</button><button onclick="narrativeAskAI('explain')">Explicar IA</button><button onclick="narrativeAskAI('historical')">Contexto histórico</button><button onclick="narrativeAskAI('translate')">Traduzir IA</button><button id="narrative-assist-continue" onclick="narrativeAssistContinue()" title="Continuar selecionando na próxima página">Continuar seleção ›</button><button onclick="narrativeAssistCancel()" title="Descartar seleção assistida">Cancelar continuação</button><button onclick="narrativeCopySelection()">Copiar</button><button onclick="narrativeAddMark('highlight')">Destacar</button><button onclick="narrativeAddMark('note')">Anotar</button></div>${c.markJumpReturnPage!==null&&c.markJumpReturnPage!==undefined?'<button class="btn tiny" onclick="narrativeBackToMarkOrigin()">↩ Voltar ao ponto anterior</button>':''}${c.bookmarkOrigin?'<button class="btn tiny" onclick="narrativeBackBookmarkOrigin()">↩ Voltar à posição anterior</button>':''}<div class="narrative-actions narrative-navigation"><button class="btn" onclick="narrativeStep(-1)">‹ Anterior</button><button class="btn" onclick="narrativeEdit()">Editar</button><button class="btn" onclick="narrativeStep(1)">Próximo ›</button></div>`);
  // Keep the selection toolbar outside the flex layout, inside the modal overlay.
  const toolbar=$('narrative-selection-menu');if(toolbar)(c.fromReader?$('reader-popup'):$('modal')).appendChild(toolbar);
+ narrativeAssistStatus();
  requestAnimationFrame(()=>requestAnimationFrame(()=>{narrativeInitPages();narrativeRestoreReadPosition();narrativeRefreshBookmarkIcon()}));
 }
 function narrativeStep(delta){
- const c=narrativeContext;if(!c)return;
+ const c=narrativeContext;if(!c)return;c.assistedSelection=null;
  if(c.planMode)return narrativePlanStep(delta);
  const idx=c.index+delta;
  if(idx<0||idx>=c.chapters.length)return toast('Você chegou ao limite dos capítulos do livro.');
@@ -2886,16 +3098,22 @@ async function confirmFinishBook(id){
 async function resetBookReading(id){
  const b=books.find(x=>x.id===id);if(!b)return;
  if(!$('reader').classList.contains('hide')){toast('Feche a leitura antes de zerar o livro.');return}
- const ok=confirm('Zerar leitura de "'+b.title+'"?\n\nO progresso será reiniciado e todas as anotações, destaques, marcadores e citações salvas deste livro serão excluídos permanentemente.\n\nO EPUB, a sinopse, a avaliação e os dados do livro serão preservados.');
+ const ok=confirm('Zerar a leitura de "'+b.title+'"?\n\nAs posições do livro original e dos resumos serão reiniciadas, e o livro sairá de Continuar lendo.\n\nOs resumos, o plano de leitura, os destaques, as anotações, os marcadores e o histórico serão preservados.');
  if(!ok)return;
+ // Evitar que uma gravação de posição agendada restaure o progresso após o reset.
+ clearTimeout(narrativeSaveProgressTimer);
+ if(narrativeContext?.id===id){narrativeContext.resumePending=null;narrativeContext.bookmarkOrigin=null;}
  // Persistir um objeto novo: em caso de falha, não modificar o livro em memória.
- const reset={...b,status:'want',progress:0,position:0,positionTotal:0,bookmarks:[],highlights:[],notes:[],citations:[]};
- delete reset.cfi;delete reset.started;delete reset.finished;delete reset.excludeFromGoals;delete reset.lastRead;delete reset.lastBookAccess;delete reset.accessDays;
+ const reset={...b,status:'want',progress:0,position:0,positionTotal:0};
+ // Reiniciar apenas posições e conclusão. Não apagar registros históricos nem preferências.
+ delete reset.cfi;delete reset.narrativeReadingProgress;delete reset.finished;delete reset.excludeFromGoals;
+ // Um acesso antigo não pode fazer o livro reaparecer como leitura em andamento.
+ delete reset.lastRead;delete reset.lastBookAccess;
  try{
   await tx('books','readwrite','put',reset);
   await refresh();
   if(!$('modal').classList.contains('hide')&&activeId===id)openDetail(id);
-  toast('Leitura zerada. Registros da leitura excluídos.');
+  toast('Posições de leitura zeradas. Marcações e histórico preservados.');
  }catch(e){console.error('Falha ao zerar leitura',e);toast('Não foi possível zerar a leitura')}
 }
 async function toggleReadingState(id){const b=books.find(x=>x.id===id);if(!b)return;if(b.status==='reading'){b.status='paused'}else{b.status='reading';b.started=b.started||new Date().toISOString()}await tx('books','readwrite','put',b);await refresh();openDetail(id);toast(b.status==='paused'?'Leitura pausada':'Leitura retomada')}

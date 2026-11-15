@@ -1,0 +1,11 @@
+MINHA BIBLIOTECA — PACOTE A — CANDIDATO PARA TESTE
+
+Este pacote reúne o leitor de resumos e as revisões de seleção, marcações, marcadores e progresso.
+
+STATUS: CANDIDATO PARA TESTE, NÃO APROVADO.
+Verificações realizadas: sintaxe JavaScript, IDs HTML únicos e integridade dos arquivos essenciais.
+Não foram realizados testes funcionais completos no Android, EPUB.js, IndexedDB ou integração com IA.
+
+RECOMENDAÇÃO: faça backup/exportação dos dados antes de substituir a versão aprovada v6.9.53. Se possível, teste em instalação separada, sem dados importantes.
+
+ATENÇÃO: o leitor usa dependências externas JSZip e EPUB.js por CDN; algumas funções exigem conexão.
