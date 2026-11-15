@@ -1,0 +1,1 @@
+Correção: EPUB temporário inclui todos os capítulos do plano, mesmo pendentes. Ao navegar para capítulo pendente, usa geração individual existente, com confirmação de custo, e reabre o leitor único no capítulo gerado. Requer teste funcional no navegador. Não substitui a versão aprovada sem backup.
