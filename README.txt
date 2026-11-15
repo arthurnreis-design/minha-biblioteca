@@ -1,4 +1,4 @@
-Minha Biblioteca v6.9.52 — Plano de leitura (etapa 1)
-Base: v6.9.51 aprovada.
-Na área Resumos narrativos, o novo botão Criar/Editar plano de leitura permite selecionar capítulos e estilo, persistidos no registro local do livro. Não gera capítulos automaticamente nesta versão. Não altera resumos existentes nem a seleção antiga de geração em lote.
-Teste criação, edição e persistência após fechar e reabrir o aplicativo.
+Minha Biblioteca v6.9.53 — Geração sob demanda (teste)
+Base v6.9.52 aprovada.
+Na tela Resumos narrativos: crie plano, use 'Ler meu plano de resumos'. Abre primeiro capítulo selecionado (ou posição salva), reutiliza resumos existentes e pede confirmação para gerar apenas capítulo ausente. Próximo/Anterior percorrem somente capítulos selecionados. Geração pode exigir internet/token e tem custo; confirmação individual antes da chamada. Em caso de erro, permite tentar novamente. Geração em lote mantida.
+O leitor visual completo e a seleção assistida ainda são etapas futuras.

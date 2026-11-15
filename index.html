@@ -2397,15 +2397,89 @@ async function narrativePlanSave(){
  toast('Plano de leitura salvo. Seus resumos e posições foram preservados.');
  narrativeDraw();
 }
+
+// v6.9.53 — leitura de plano: reutilização local e geração individual sob demanda.
+// O modo de plano não modifica o fluxo de geração em lote.
+function narrativePlanIndices(){
+ const c=narrativeContext,b=books.find(x=>x.id===c?.id),plan=narrativePlanData(b);
+ if(!c||!plan)return [];
+ const keys=new Set(plan.chapters);
+ return c.chapters.map((ch,i)=>keys.has(ch.href)?i:-1).filter(i=>i>=0);
+}
+function narrativePlanStart(){
+ const c=narrativeContext,b=books.find(x=>x.id===c?.id),plan=narrativePlanData(b);
+ if(!plan?.chapters?.length){narrativePlanEditor();return toast('Crie e salve seu plano de leitura primeiro.')}
+ const indices=narrativePlanIndices();
+ if(!indices.length)return toast('Os capítulos do plano não foram encontrados neste EPUB.');
+ c.planMode=true;
+ const progress=b?.narrativeReadingProgress;
+ const savedIndex=progress?.href?c.chapters.findIndex(ch=>ch.href===progress.href):-1;
+ c.index=indices.includes(savedIndex)?savedIndex:indices[0];
+ c.resumePending=indices.includes(savedIndex)?progress:null;
+ narrativePlanOpenCurrent();
+}
+function narrativePlanStep(delta){
+ const c=narrativeContext,indices=narrativePlanIndices(),position=indices.indexOf(c?.index);
+ if(position<0)return narrativePlanStart();
+ const next=indices[position+delta];
+ if(next===undefined)return toast(delta>0?'Você chegou ao último capítulo do plano.':'Você chegou ao primeiro capítulo do plano.');
+ narrativePersistPosition();narrativeClearSelection();
+ c.openPreviousAtEnd=delta<0;c.index=next;c.resumePending=null;c.markJumpReturnPage=null;
+ narrativePlanOpenCurrent();
+}
+function narrativePlanOpenCurrent(){
+ const c=narrativeContext;if(!c)return;
+ if(narrativeSaved()[narrativeKey(c.index)]?.text){narrativeRead();return}
+ narrativePlanGenerateCurrent();
+}
+async function narrativePlanGenerateCurrent(){
+ const c=narrativeContext;if(!c||c.planGenerating)return;
+ const key=narrativeKey(c.index),b=books.find(x=>x.id===c.id),plan=narrativePlanData(b),ch=c.chapters[c.index];
+ if(!plan||!ch||!narrativePlanIndices().includes(c.index))return;
+ if(narrativeSaved()[key]?.text){narrativeRead();return}
+ c.planGenerating=true;c.view='plan-loading';
+ const panel=()=>narrativePresent(`<div class="row between"><h2>Preparando resumo</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">${esc(ch.label)}</p><div class="narrative-missing"><div class="narrative-missing-icon">✧</div><h3>Gerando somente este capítulo…</h3><p>Os demais capítulos serão gerados quando você chegar a eles. Mantenha o aplicativo aberto.</p></div>`);
+ panel();
+ try{
+  const original=await narrativeExtract({...c,index:c.index});
+  if(narrativeContext!==c||!c.planMode)return;
+  const estimate=aiEstimate(original,plan.style);
+  const approx=aiCostEstimate(estimate.input,estimate.output);
+  if(!confirm(`Gerar o resumo de "${ch.label}" em ${plan.style==='deep'?'Narrativo aprofundado':plan.style==='essential'?'Narrativo essencial':'Narrativo condensado'}?\n\nEstimativa ilustrativa: US$ ${approx.toFixed(4)}.\n\nSomente este capítulo será enviado à IA.`)){
+    c.view='plan-paused';
+    narrativePresent(`<h2>Geração pausada</h2><p class="notice">${esc(ch.label)} ainda não tem resumo salvo.</p><div class="narrative-actions"><button class="btn primary" onclick="narrativePlanOpenCurrent()">Gerar este capítulo</button><button class="btn" onclick="narrativeDraw()">Voltar</button></div>`);
+    return;
+  }
+  const result=await aiRequest({style:plan.style,chapter:original,title:b.title,author:b.author||'',chapter_label:ch.label});
+  const text=String(result.summary||'').trim();
+  if(text.length<40)throw Error('A IA retornou um resumo vazio ou curto demais.');
+  // Nunca substituir um resumo que tenha sido salvo durante a operação.
+  if(!b.narrativeSummaries?.[key]?.text){
+   b.narrativeSummaries={...(b.narrativeSummaries||{}),[key]:{text,originalWords:narrativeWords(original),updated:new Date().toISOString()}};
+   b.narrativeOriginalWords={...(b.narrativeOriginalWords||{}),[key]:narrativeWords(original)};
+   await tx('books','readwrite','put',b);
+  }
+  if(narrativeContext===c&&c.planMode&&narrativeKey(c.index)===key){
+   toast('Resumo salvo: '+ch.label);
+   narrativeRead();
+  }
+ }catch(e){
+  if(narrativeContext===c){
+   c.view='plan-error';
+   narrativePresent(`<h2>Não foi possível gerar o resumo</h2><p class="notice">${esc(e.message||'Erro desconhecido')}. Nenhum resumo existente foi alterado.</p><div class="narrative-actions"><button class="btn primary" onclick="narrativePlanOpenCurrent()">Tentar novamente</button><button class="btn" onclick="narrativeDraw()">Voltar</button></div>`);
+  }
+ }finally{c.planGenerating=false}
+}
 function narrativeDraw(){
- const c=narrativeContext;if(!c)return;c.view='list';
+ const c=narrativeContext;if(!c)return;c.planMode=false;c.view='list';
  const b=books.find(x=>x.id===c.id),saved=narrativeSaved(),indices=narrativeSavedIndices(),hidden=new Set(narrativeHidden());
  c.selected=c.selected||new Set();
  const pending=c.chapters.map((ch,i)=>!saved[ch.href]?.text&&!hidden.has(ch.href)?i:-1).filter(i=>i>=0);
  c.selected=new Set([...c.selected].filter(i=>pending.includes(i)));
  const list=pending.map(i=>`<div class="ai-chapter-row"><label><input type="checkbox" ${c.selected.has(i)?'checked':''} onchange="narrativeToggleChapter(${i},this.checked)"><span>${esc(c.chapters[i].label)}</span></label><button class="btn tiny ghost" onclick="narrativeOpenPending(${i})">Abrir</button><button class="btn tiny ghost chapter-hide" title="Ocultar capítulo" onclick="narrativeHideChapter(${i})">Ocultar</button></div>`).join('');
  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)${narrativeTotalReduction(b)!==null?' · Redução estimada: '+narrativeTotalReduction(b)+'%':''}</p>
- <button class="btn full" onclick="narrativePlanEditor()">☷ ${narrativePlanData(b)?'Editar plano de leitura':'Criar plano de leitura'}</button><p class="notice" style="margin:6px 0 10px">O plano fica salvo neste livro. A geração automática por capítulo será ativada em uma próxima etapa.</p>
+ <button class="btn full" onclick="narrativePlanEditor()">☷ ${narrativePlanData(b)?'Editar plano de leitura':'Criar plano de leitura'}</button><p class="notice" style="margin:6px 0 10px">O plano fica salvo neste livro. A leitura do plano gera somente o capítulo necessário, quando você chega a ele.</p>
+ <button class="btn full primary" onclick="narrativePlanStart()">▶ Ler meu plano de resumos</button>
  <button class="btn full" onclick="narrativeSummariesScreen()">📖 Ver capítulos resumidos (${indices.length})</button>
  <label class="field"><label>Tipo de resumo</label><select id="ai-narrative-style" onchange="narrativeContext.style=this.value"><option value="">Selecione o tipo de resumo...</option><option value="deep" ${c.style==='deep'?'selected':''}>Narrativo aprofundado</option><option value="short" ${c.style==='short'?'selected':''}>Narrativo condensado</option><option value="essential" ${c.style==='essential'?'selected':''}>Narrativo essencial</option></select></label>
  <div class="row between"><strong>Capítulos para resumir</strong><small id="ai-selected-count">${c.selected.size} selecionado(s)</small></div><div class="row wrap" style="margin:9px 0"><button class="btn tiny" onclick="narrativeSelectAll()">Selecionar pendentes</button><button class="btn tiny" onclick="narrativeClearChapters()">Limpar seleção</button><button class="btn tiny ghost" onclick="narrativeHiddenScreen()">◉ Ver ocultos (${hidden.size})</button></div>
@@ -2746,6 +2820,7 @@ function narrativeBackToSaved(){narrativePersistPosition();narrativeSummariesScr
 function narrativeRead(){
  const c=narrativeContext;if(!c)return;
  const item=narrativeSaved()[narrativeKey(c.index)];
+ if(!item&&c.planMode){narrativePlanOpenCurrent();return}
  if(!item){
   c.openPreviousAtEnd=false;
   c.view='missing';
@@ -2763,6 +2838,7 @@ function narrativeRead(){
 }
 function narrativeStep(delta){
  const c=narrativeContext;if(!c)return;
+ if(c.planMode)return narrativePlanStep(delta);
  const idx=c.index+delta;
  if(idx<0||idx>=c.chapters.length)return toast('Você chegou ao limite dos capítulos do livro.');
  narrativePersistPosition();narrativeClearSelection();c.openPreviousAtEnd=delta<0;c.index=idx;c.resumePending=null;c.markJumpReturnPage=null;narrativeRead();
