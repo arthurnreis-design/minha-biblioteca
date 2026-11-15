@@ -1,1 +1,5 @@
-Candidato de teste: botão compacto de plano no modo resumo, plano persistente com capítulos pendentes e indicação do atual; ao salvar, reconstrói EPUB temporário sem tocar no original; navegação para próximo capítulo usa o plano e solicita geração com confirmação de custo. Sintaxe verificada, comportamento em dispositivo não verificado. Faça backup antes de substituir versão aprovada.
+Entrega consolidada de 15/11/2026.
+
+Inclui plano de leitura, resumos sob demanda, progresso pelo plano, rodapé compacto, gerenciamento e regeneração, identificação de seções estruturais, falhas de extensão com escolha alternativa, sugestões por IA a partir de tendências semanais da Open Library e integração Explicar com IA.
+
+Verificação automatizada de sintaxe e integridade do pacote; execução com EPUBs reais, IndexedDB e Worker publicado não validada neste ambiente.

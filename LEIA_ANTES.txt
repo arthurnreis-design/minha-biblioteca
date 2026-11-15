@@ -1,1 +1,5 @@
-VERSÃO DE TESTE — geração automática do resumo. Corrige a detecção do capítulo pendente mesmo quando o evento inicial de navegação ocorre antes de registrar o listener; remove a confirmação remanescente do fluxo de plano. Não altera o Worker. Faça backup antes de instalar. Teste no navegador real.
+Minha Biblioteca — entrega completa para substituição no GitHub.
+
+Substitua os sete arquivos deste pacote no repositório, preservando a estrutura na raiz. Faça backup antes de atualizar. A aprovação definitiva depende dos testes no seu aparelho com seus livros e dados.
+
+O código do Cloudflare Worker é entregue separadamente em TXT; não envie esse TXT ao GitHub.

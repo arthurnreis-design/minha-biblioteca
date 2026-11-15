@@ -1074,7 +1074,9 @@ body:has(#tab-library:not(.hide)) .app{
  padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px))!important;
 }
 </style>
-</head><body>
+<style id="mb-summary-progress-style">
+.reader-foot{position:relative}.summary-footer-track{position:absolute;left:0;right:0;top:0;height:3px;background:rgba(127,127,127,.18);pointer-events:none}.summary-footer-track span{display:block;height:100%;width:0;background:currentColor;opacity:.7;transition:width .2s}.summary-footer-track.hide{display:none}
+</style></head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-home-shortcut" id="top-home-shortcut" onclick="switchTab('home')" aria-label="Início" title="Início">⌂</button><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
 <section id="tab-home" class="home-screen">
@@ -1112,7 +1114,7 @@ body:has(#tab-library:not(.hide)) .app{
 <section id="tab-settings" class="hide"><button class="btn ghost" style="margin-bottom:10px" onclick="switchTab('stats')">▥ Ver estatísticas de leitura ›</button><br><button class="btn ghost" style="margin-bottom:14px" onclick="switchTab('notes')">▤ Anotações e destaques ›</button><div class="card"><h2>Preferências</h2><div class="field"><label>Atalhos externos</label><div id="external-links-editor"></div><button type="button" class="btn tiny" onclick="addExternalLink()">＋ Adicionar link</button></div><button class="btn tiny" onclick="configureHighlightColors()">Significado das cores dos destaques</button></div><div class="card"><h2>Inteligência artificial</h2><p class="notice">Token de acesso armazenado apenas neste dispositivo. A chave da OpenAI permanece no Worker.</p><button class="btn" onclick="aiConfigureToken()">Configurar acesso à IA</button><button class="btn" onclick="aiShowUsage()">Consultar consumo da IA</button><div id="ai-usage-settings" class="notice" style="margin-top:12px"></div></div><div class="card"><h2>Backup e transferência</h2><p class="notice">O backup exporta fichas, progresso, anotações e marcadores. <b>Não inclui os arquivos EPUB.</b> Importe o mesmo EPUB em cada aparelho e depois restaure o backup para recuperar sua posição.</p><div class="row wrap"><button class="btn" onclick="exportBackup()">Exportar dados</button><button class="btn" onclick="document.getElementById('backup-input').click()">Importar dados</button></div></div><div class="card"><h2>Sobre o leitor</h2><p class="notice">Leitura paginada, temas claro suave/escuro, ajuste de fonte, índice, progresso, marcadores, destaques, anotações e consultas internas. Arquivos EPUB sem DRM. O motor de leitura EPUB.js é carregado pela internet nesta versão experimental; depois de carregar, os livros ficam salvos no dispositivo.</p><p class="notice">Para importar EPUB, é necessária conexão com a internet na primeira abertura para carregar o leitor e o descompactador. Se houver erro, a mensagem agora informa o motivo. Os dados ficam no armazenamento deste navegador. Limpar os dados do navegador pode apagar a biblioteca. Faça backups regularmente.</p></div></section></div>
 <nav class="nav" aria-label="Navegação principal"><div class="nav-inner"><button id="nav-home" class="active" onclick="switchTab('home')" aria-label="Início"><span class="nav-symbol">⌂</span><span class="nav-label">Início</span></button><button id="nav-library" onclick="switchTab('library')" aria-label="Biblioteca"><span class="nav-symbol">▦</span><span class="nav-label">Biblioteca</span><b id="new-books-badge" class="new-books-badge hide"></b></button></div></nav>
 <input type="file" id="epub-input" accept=".epub,application/epub+zip" hidden multiple><input type="file" id="backup-input" accept="application/json,.json" hidden><div id="modal" class="modal hide" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
-<div id="reader" class="reader hide"><div class="reader-dim-overlay" aria-hidden="true"></div><div class="reader-head"><button class="reader-head-control" onclick="closeReader()">‹ Voltar</button><div class="reader-ident"><div class="title" id="reader-title"></div><div id="reader-author"></div></div><div class="row reader-head-actions" style="gap:4px"><button id="bookmark-toggle" onclick="bookmarkCurrent()" title="Marcar página" aria-label="Marcar página"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></button><button onclick="toggleReaderSettings()" title="Aparência">Aa</button><button onclick="openReaderSearch()" title="Buscar no livro" aria-label="Buscar no livro">⌕</button><button id="reader-mode-action" class="reader-ai-control" onclick="readerModeAction()" title="Resumos narrativos" aria-label="Resumos narrativos">✧</button><button onclick="showReaderContents()" title="Índice">☷</button></div></div><div class="reader-main"><div id="epub-view"></div><button class="tap prev" type="button" aria-label="Página anterior" onclick="turnPage(-1)">‹</button><button class="tap next" type="button" aria-label="Próxima página" onclick="turnPage(1)">›</button></div><div id="reader-consult" class="reader-consult hide"><span>Consulta temporária</span><button onclick="restoreReaderPosition()">↩ Voltar à leitura</button><button onclick="keepReaderPosition()">✓ Manter esta posição</button></div><div class="reader-foot"><span class="reader-foot-left"><span id="reader-current-chapter" title="Capítulo atual" aria-live="off"></span><span id="reader-chapter">Página —</span></span><span id="reader-progress">Posição —</span></div><div class="reader-settings hide" id="reader-settings"><label>Fonte <div class="level-slider"><button type="button" onclick="stepReaderControl('font-size',-1)">−</button><input type="range" min="75" max="180" step="5" id="font-size" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('font-size',1)">+</button><output id="font-level"></output></div></label><label>Cor da página <select id="reader-theme" onchange="applyReaderSettings()"><option value="light">Clara suave</option><option value="sepia">Sépia</option><option value="dark">Escura</option></select><div class="segmented" id="theme-buttons"></div></label><label>Estilo da fonte <select id="reader-font-family" onchange="applyReaderSettings()"><option value="original">Original do livro</option><option value="serif">Serifada</option><option value="sans">Sem serifa</option></select><div class="segmented" id="family-buttons"></div></label><label>Luminosidade da leitura <div class="level-slider"><button type="button" onclick="stepReaderControl('reader-dim',-1)">−</button><input type="range" id="reader-dim" min="55" max="100" step="5" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('reader-dim',1)">+</button><output id="dim-level"></output></div></label><label>Espaçamento entre parágrafos <div class="segmented" id="paragraph-buttons"></div></label></div><div id="selection-actions" class="selection-actions hide"><button onclick="lookupSelection('define')">Dicionário</button><button onclick="lookupSelection('wiki')">Wikipédia</button><button onclick="readerAskAI('explain')">Explicar IA</button><button onclick="readerAskAI('historical')">Histórico</button><button onclick="readerAskAI('translate')">Traduzir</button><button id="reader-assist-continue" onclick="readerAssistContinue()">Continuar ›</button><button id="reader-assist-extend" onclick="readerAssistExtend()" class="hide">Próxima ›</button><button id="reader-assist-finish" onclick="readerAssistFinish()" class="hide">Concluir</button><button id="reader-assist-cancel" onclick="readerAssistCancel()" class="hide">Cancelar</button><button onclick="chooseHighlightColor()">Destacar</button><button onclick="startAnnotation()">Anotar</button><button onclick="createSelectedQuote()">Citação</button></div><div id="reader-popup" class="reader-popup hide" onclick="if(event.target===this)closeReaderPopup()"><div class="reader-popup-card" id="reader-popup-card"></div></div></div>
+<div id="reader" class="reader hide"><div class="reader-dim-overlay" aria-hidden="true"></div><div class="reader-head"><button class="reader-head-control" onclick="closeReader()">‹ Voltar</button><div class="reader-ident"><div class="title" id="reader-title"></div><div id="reader-author"></div></div><div class="row reader-head-actions" style="gap:4px"><button id="bookmark-toggle" onclick="bookmarkCurrent()" title="Marcar página" aria-label="Marcar página"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></button><button onclick="toggleReaderSettings()" title="Aparência">Aa</button><button onclick="openReaderSearch()" title="Buscar no livro" aria-label="Buscar no livro">⌕</button><button id="reader-mode-action" class="reader-ai-control" onclick="readerModeAction()" title="Resumos narrativos" aria-label="Resumos narrativos">✧</button><button onclick="showReaderContents()" title="Índice">☷</button></div></div><div class="reader-main"><div id="epub-view"></div><button class="tap prev" type="button" aria-label="Página anterior" onclick="turnPage(-1)">‹</button><button class="tap next" type="button" aria-label="Próxima página" onclick="turnPage(1)">›</button></div><div id="reader-consult" class="reader-consult hide"><span>Consulta temporária</span><button onclick="restoreReaderPosition()">↩ Voltar à leitura</button><button onclick="keepReaderPosition()">✓ Manter esta posição</button></div><div class="reader-foot"><div id="summary-footer-track" class="summary-footer-track hide"><span id="summary-footer-fill"></span></div><span class="reader-foot-left"><span id="reader-current-chapter" title="Capítulo atual" aria-live="off"></span><span id="reader-chapter">Página —</span></span><span id="reader-progress">Posição —</span></div><div class="reader-settings hide" id="reader-settings"><label>Fonte <div class="level-slider"><button type="button" onclick="stepReaderControl('font-size',-1)">−</button><input type="range" min="75" max="180" step="5" id="font-size" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('font-size',1)">+</button><output id="font-level"></output></div></label><label>Cor da página <select id="reader-theme" onchange="applyReaderSettings()"><option value="light">Clara suave</option><option value="sepia">Sépia</option><option value="dark">Escura</option></select><div class="segmented" id="theme-buttons"></div></label><label>Estilo da fonte <select id="reader-font-family" onchange="applyReaderSettings()"><option value="original">Original do livro</option><option value="serif">Serifada</option><option value="sans">Sem serifa</option></select><div class="segmented" id="family-buttons"></div></label><label>Luminosidade da leitura <div class="level-slider"><button type="button" onclick="stepReaderControl('reader-dim',-1)">−</button><input type="range" id="reader-dim" min="55" max="100" step="5" value="100" oninput="applyReaderSettings()"><button type="button" onclick="stepReaderControl('reader-dim',1)">+</button><output id="dim-level"></output></div></label><label>Espaçamento entre parágrafos <div class="segmented" id="paragraph-buttons"></div></label></div><div id="selection-actions" class="selection-actions hide"><button onclick="lookupSelection('define')">Dicionário</button><button onclick="lookupSelection('wiki')">Wikipédia</button><button onclick="readerAskAI('explain')">Explicar IA</button><button onclick="readerAskAI('historical')">Histórico</button><button onclick="readerAskAI('translate')">Traduzir</button><button id="reader-assist-continue" onclick="readerAssistContinue()">Continuar ›</button><button id="reader-assist-extend" onclick="readerAssistExtend()" class="hide">Próxima ›</button><button id="reader-assist-finish" onclick="readerAssistFinish()" class="hide">Concluir</button><button id="reader-assist-cancel" onclick="readerAssistCancel()" class="hide">Cancelar</button><button onclick="chooseHighlightColor()">Destacar</button><button onclick="startAnnotation()">Anotar</button><button onclick="createSelectedQuote()">Citação</button></div><div id="reader-popup" class="reader-popup hide" onclick="if(event.target===this)closeReaderPopup()"><div class="reader-popup-card" id="reader-popup-card"></div></div></div>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script><script>
 'use strict';const $=id=>document.getElementById(id);let db,books=[],filter='Todos',activeId=null,epubBook=null,rendition=null,selectedText='',selectedCfi='',saveTimer=null;let readerSession=0,readerLocationsReady=false;let readerEntryOrigin=null;let settings=JSON.parse(localStorage.getItem('biblioteca_reader_settings')||'{"theme":"light","font":100}');if(settings.theme==='sepia')settings.theme='light';
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function toast(t){document.querySelector('.toast')?.remove();let d=document.createElement('div');d.className='toast';d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),3200)}function uid(){return crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random()}
@@ -1131,7 +1133,8 @@ window.addEventListener('popstate',e=>{
  // Ao sair da leitura, preserve a ficha/carrossel que já estava aberto.
  if(!$('reader').classList.contains('hide')){
   closeReader(true);
-  if(state.bibliotecaScreen==='detail'&&readerEntryOrigin==='detail'&&!$('modal').classList.contains('hide'))return;
+  // Depois de iniciar uma leitura, o destino é sempre Continuar lendo.
+  readerEntryOrigin=null;return;
  }
  if(!$('modal').classList.contains('hide'))closeModal(true);
  if(state.bibliotecaScreen==='reader'||state.bibliotecaScreen==='detail'){if(readerEntryOrigin==='home')switchTab('home',false);readerEntryOrigin=null;return;}
@@ -1369,7 +1372,7 @@ async function fetchCatalog(url, timeout=9000){
 }
 function normalizeOpenLibrary(d){return {volumeInfo:{title:d.title,authors:d.author_name||[],categories:(d.subject||[]).slice(0,3),publishedDate:String(d.first_publish_year||''),description:'',language:isPortuguese(d)?'pt':'',imageLinks:d.cover_i?{thumbnail:'https://covers.openlibrary.org/b/id/'+d.cover_i+'-M.jpg'}:{}}}}
 function normalizeGoogleBooks(d){return d}
-function drawRecommendations(){const root=$('recommendation-strip');root.innerHTML=recommendedBooks.length?recommendedBooks.map((b,i)=>{let v=b.volumeInfo,cover=v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail;return `<div class="rec-item" data-rec="${i}" role="button" tabindex="0"><div class="rec-cover">${cover?`<img src="${esc(cover.replace(/^http:/,'https:'))}" loading="lazy" alt="">`:'📖'}</div><div class="rec-title">${esc(v.title)}</div><div class="rec-author">${esc(v.authors?.[0]||'Autor não informado')}</div></div>`}).join(''):'<div class="notice">Nenhuma sugestão encontrada. Experimente outros gêneros.</div>';root.querySelectorAll('[data-rec]').forEach(el=>{el.onclick=()=>showRecommendedBook(Number(el.dataset.rec));el.onkeydown=e=>{if(e.key==='Enter')el.click()}});updateRecommendationTrack()}
+function drawRecommendations(){const root=$('recommendation-strip');root.innerHTML=recommendedBooks.length?recommendedBooks.map((b,i)=>{let v=b.volumeInfo,cover=v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail;return `<div class="rec-item" data-rec="${i}" role="button" tabindex="0"><div class="rec-cover">${cover?`<img src="${esc(cover.replace(/^http:/,'https:'))}" loading="lazy" alt="">`:'📖'}</div><div class="rec-title">${esc(v.title)}</div><div class="rec-author">${esc(v.authors?.[0]||'Autor não informado')}</div>${v.recommendationReason?`<div class="rec-reason">${esc(v.recommendationReason)}</div>`:''}</div>`}).join(''):'<div class="notice">Nenhuma sugestão encontrada. Experimente outros gêneros.</div>';root.querySelectorAll('[data-rec]').forEach(el=>{el.onclick=()=>showRecommendedBook(Number(el.dataset.rec));el.onkeydown=e=>{if(e.key==='Enter')el.click()}});updateRecommendationTrack()}
 // A busca da Open Library retorna obras (muitas com títulos e capas em inglês).
 // Para recomendações, confirmar uma edição em português e usar seus metadados.
 const editionCache=new Map();
@@ -1390,36 +1393,38 @@ async function portugueseEdition(doc){
  }catch(err){return null}
 }
 
-async function aiRecommendationQueries(){
- const library=books.filter(b=>b.title).slice(0,45).map(b=>`${b.title} — ${b.author||''} — ${b.genre||''}`).join('\n');
- const result=await aiRequest({style:'recommend',library,genres:recPrefs.genres.join(', ')});
- const raw=result.summary.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
- const parsed=JSON.parse(raw);
- return Array.isArray(parsed.queries)?parsed.queries.filter(q=>typeof q==='string'&&q.length>2&&q.length<90).slice(0,6):[];
-}
 async function loadAIRecommendations(){
  if(recBusy)return;const root=$('recommendation-strip');if(!root)return;
- recBusy=true;root.innerHTML='<div class="notice">A IA está preparando sugestões para pesquisar nos catálogos...</div>';
+ recBusy=true;root.innerHTML='<div class="notice">Consultando livros em alta e selecionando novidades com IA...</div>';
  try{
-  const queries=await aiRecommendationQueries(),owned=new Set(books.map(b=>normText(b.title))),history=new Set(recommendationHistory());
-  if(!queries.length)throw Error('A IA não retornou sugestões de pesquisa.');
-  const results=[];
-  for(const q of queries){
-   const data=await fetchCatalog('https://openlibrary.org/search.json?'+new URLSearchParams({q,language:'por',limit:'12',fields:'key,title,author_name,cover_i,first_publish_year,language'}),11000);
-   for(const doc of (data.docs||[])){
-    if(!doc.key||!doc.title||owned.has(normText(doc.title)))continue;
-    const k=normText(doc.title)+'|'+normText(doc.author_name?.[0]);
-    if(history.has(k)||results.some(x=>x.key===k))continue;
-    results.push({key:k,doc});if(results.length>=25)break;
+  const feed=await fetchCatalog('https://openlibrary.org/trending/weekly.json?limit=100',14000);
+  const works=(feed.works||[]).filter(w=>w.key&&w.title).slice(0,90);
+  if(!works.length)throw Error('A lista atual de tendências está indisponível.');
+  const candidates=works.map(w=>({key:w.key,title:w.title,authors:(w.author_name||w.authors?.map(a=>a.name)||[]).slice(0,2),subjects:(w.subject||[]).slice(0,6),cover:w.cover_i||w.cover_id||null}));
+  const owned=new Set(books.map(b=>normText(b.title)));
+  const history=new Set(recommendationHistory());
+  const library=books.filter(b=>b.title).slice(0,45).map(b=>`${b.title} — ${b.author||''} — ${b.genre||''}`).join('\n');
+  const result=await aiRequest({style:'recommend',library,genres:recPrefs.genres.join(', '),candidates});
+  const raw=result.summary.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
+  const parsed=JSON.parse(raw);
+  const ids=Array.isArray(parsed.keys)?parsed.keys.filter(x=>typeof x==='string'):[];
+  const chosen=ids.map(key=>candidates.find(c=>c.key===key)).filter(Boolean);
+  // Somente obras selecionadas pela IA: nunca completar com resultados genéricos.
+  const pool=chosen.filter(c=>!owned.has(normText(c.title)));
+  const docs=pool.map(c=>({key:c.key,title:c.title,author_name:c.authors,cover_i:c.cover,subject:c.subjects}));
+  const resultBooks=[];
+  for(let i=0;i<docs.length&&resultBooks.length<12;i+=8){
+   const batch=await Promise.all(docs.slice(i,i+8).map(portugueseEditionUnrestricted));
+   for(const book of batch){if(!book)continue;const key=recKey(book.volumeInfo);
+    if(history.has(key)||resultBooks.some(x=>recKey(x.volumeInfo)===key))continue;
+    book.volumeInfo.recommendationReason='Em alta na Open Library';resultBooks.push(book);
    }
-   if(results.length>=25)break;
   }
-  const candidates=await Promise.all(results.slice(0,20).map(x=>portugueseEditionUnrestricted(x.doc)));
-  recommendedBooks=candidates.filter(Boolean).slice(0,15);
-  if(!recommendedBooks.length)throw Error('Nenhuma edição em português foi confirmada no catálogo.');
-  localStorage.setItem('biblioteca_rec_seen_v2',JSON.stringify([...recommendationHistory(),...recommendedBooks.map(x=>recKey(x.volumeInfo))].slice(-450)));
+  if(!resultBooks.length)throw Error('Não encontramos edições em português entre as tendências selecionadas pela IA.');
+  recommendedBooks=resultBooks;
+  localStorage.setItem('biblioteca_rec_seen_v2',JSON.stringify([...recommendationHistory(),...resultBooks.map(x=>recKey(x.volumeInfo))].slice(-450)));
   drawRecommendations();
- }catch(e){root.innerHTML=`<div class="notice">${esc(e.message||'Não foi possível gerar sugestões.')} <button class="btn tiny ghost" onclick="loadRecommendations(true)">Usar sugestões tradicionais</button></div>`}
+ }catch(e){console.warn('Sugestões IA:',e);root.innerHTML=`<div class="notice">${esc(e.message||'Tendências indisponíveis agora.')} <button class="btn tiny ghost" onclick="loadAIRecommendations()">Tentar novamente</button></div>`}
  finally{recBusy=false}
 }
 
@@ -1806,7 +1811,7 @@ async function buildSummaryEpub(book, chapters, planKeys){
  keys.forEach((key,i)=>{
   const label=chapters.find(ch=>ch.href===key)?.label||`Capitulo ${i+1}`;
   const ready=!!String(saved[key]?.text||'').trim();
-  const paragraphs=ready?String(saved[key].text).trim().split(/\n\s*\n/).map(part=>'<p>'+xml(part).replace(/\n/g,'<br/>')+'</p>').join(''):'<p>Preparando resumo deste capítulo…</p>'; 
+  const paragraphs=ready?String(saved[key].text).trim().split(/\n\s*\n/).map(part=>'<p>'+xml(part).replace(/\n/g,'<br/>')+'</p>').join('')+(saved[key].structural?'<p><em>Esta seção contém apenas a identificação da parte; não há texto narrativo para resumir.</em></p>':''):'<p>Preparando resumo deste capítulo…</p>'; 
   zip.file(`OEBPS/chapter${i+1}.xhtml`,`<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>${xml(label)}</title><meta charset="utf-8"/><style>body{line-height:1.65}p{margin:0 0 1em}</style></head><body><h2>${xml(label)}</h2>${paragraphs}</body></html>`);
   sections.push({key,label,href:`chapter${i+1}.xhtml`,id:`ch${i+1}`,ready});
  });
@@ -1820,10 +1825,11 @@ async function buildSummaryEpub(book, chapters, planKeys){
 
 // Leitor unico: resumos gerados em EPUB temporario e exibidos no mesmo reader.
 // Nenhum EPUB original e substituido ou gravado na loja de arquivos.
-let readerContentMode='original',readerSummarySections=[];
+let readerContentMode='original',readerSummarySections=[];let readerReturnHomeAfterReading=false;
 function updateReaderModeAction(){
  const button=$('reader-mode-action');if(!button)return;
  const summary=readerContentMode==='summary';
+ button.classList.toggle('hide',!summary);
  button.innerHTML=summary?'<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3 6 1.5 1.5L7 4.5M3 12l1.5 1.5L7 10.5M3 18l1.5 1.5L7 16.5"/></svg>':'✧';
  button.title=summary?'Plano de leitura':'Resumos narrativos';button.setAttribute('aria-label',button.title);
 }
@@ -1857,14 +1863,17 @@ async function openSummaryInReader(id,options={}){
   // A changed summary must not reopen at a stale CFI.
   const signature=JSON.stringify(built.sections.map(section=>[section.key,b.narrativeSummaries?.[section.key]?.text||'']));
   if(b.summaryReaderSignature!==signature){
+   // A posição global do EPUB temporário muda quando um capítulo é gerado.
+   // Guardar o capítulo real do plano antes de invalidar o CFI antigo.
+   if(!b.summaryReaderTargetKey&&b.summaryReadingProgress?.href)b.summaryReaderTargetKey=b.summaryReadingProgress.href;
    b.summaryReaderCfi=null;b.summaryReaderPosition=null;b.summaryReaderPositionTotal=null;
    b.summaryReaderSignature=signature;
    await tx('books','readwrite','put',b);
   }
-  const targetKey=b.summaryReaderTargetKey;
+  const targetKey=b.summaryReaderTargetKey||b.summaryReadingProgress?.href;
   if(targetKey){delete b.summaryReaderTargetKey;await tx('books','readwrite','put',b)}
   const target=built.sections.find(section=>section.key===targetKey);
-  await openReader(id,{mode:'summary',data:built.data,targetHref:target?.href,seamless:!!options.seamless,entryOrigin:options.entryOrigin});
+  await openReader(id,{mode:'summary',data:built.data,targetHref:target?.href,seamless:!!options.seamless,entryOrigin:options.entryOrigin,restoreChapterProgress:!!target&&b.summaryReadingProgress?.href===target.key?{...b.summaryReadingProgress}:null});
  }catch(e){if(temp)try{temp.destroy()}catch(_){};console.error(e);toast(e.message||'Não foi possível abrir o resumo no leitor.');}
 }
 function summarySectionAtLocation(loc){
@@ -1877,16 +1886,21 @@ function summarySectionAtLocation(loc){
 }
 function summaryCheckPendingLocation(loc){
  const section=summarySectionAtLocation(loc);
- if(section&&!section.ready&&!summaryPendingBusy&&summaryPendingFailedKey!==section.key){
+ if(section&&(!section.ready||books.find(b=>b.id===activeId)?.summaryRegenerateKeys?.includes(section.key))&&!summaryPendingBusy&&summaryPendingFailedKey!==section.key){
   // Never require a separate tap or a confirmation dialog.
   setTimeout(()=>{if(readerContentMode==='summary'&&summarySectionAtLocation(rendition?.currentLocation())?.key===section.key)summaryGeneratePending(section.key)},0);
  }
 }
 let summaryPendingBusy=false,summaryPendingFailedKey=null;
-async function summaryGeneratePending(key){
+function summaryRetryStyle(key,style){
+ if(!['deep','short','essential'].includes(style))return;
+ closeReaderPopup();summaryPendingFailedKey=null;summaryGeneratePending(key,style);
+}
+
+async function summaryGeneratePending(key,overrideStyle=null){
  if(summaryPendingBusy||readerContentMode!=='summary'||!activeId||summaryPendingFailedKey===key)return;
  const id=activeId,b=books.find(x=>x.id===id),section=readerSummarySections.find(x=>x.key===key);
- if(!b||!section||section.ready)return;
+ if(!b||!section||(section.ready&&!b.summaryRegenerateKeys?.includes(key)))return;
  const plan=narrativePlanData(b);
  if(!plan?.chapters?.includes(key))return toast('Este capítulo não está no plano de leitura.');
  summaryPendingBusy=true;summaryPendingFailedKey=null;
@@ -1899,13 +1913,25 @@ async function summaryGeneratePending(key){
   // O plano salvo já autoriza a geração automática dos capítulos selecionados.
   const original=await narrativeExtract({id,epub:obj.book,chapters,index});
   if(readerContentMode!=='summary'||activeId!==id)return;
-  const result=await aiRequest({style:plan.style||'short',chapter:original,title:b.title,author:b.author||'',chapter_label:chapters[index].label});
+  const lines=original.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  const headingOnly=(/^(parte|part|livro|book|seção|section)\s+([ivxlcdm]+|\d+)/i.test(chapters[index].label||'')&&
+    lines.length<=3&&original.length<240&&lines.every(x=>x.length<120)) ||
+    (lines.length===0);
+  if(headingOnly){
+   b.narrativeSummaries={...(b.narrativeSummaries||{}),[key]:{text:original.trim()||chapters[index].label,structural:true,updated:new Date().toISOString()}};
+   b.summaryReaderTargetKey=key;
+   b.summaryRegenerateKeys=(b.summaryRegenerateKeys||[]).filter(k=>k!==key);
+   await tx('books','readwrite','put',b);
+   await openSummaryInReader(id,{seamless:true});return;
+  }
+  const result=await aiRequest({style:overrideStyle||plan.style||'short',chapter:original,title:b.title,author:b.author||'',chapter_label:chapters[index].label});
   const summary=String(result.summary||'').trim();
   if(summary.length<40)throw Error('A IA retornou um resumo vazio ou curto demais.');
-  if(!b.narrativeSummaries?.[key]?.text){
-   b.narrativeSummaries={...(b.narrativeSummaries||{}),[key]:{text:summary,originalWords:narrativeWords(original),updated:new Date().toISOString()}};
+  if(!b.narrativeSummaries?.[key]?.text||b.summaryRegenerateKeys?.includes(key)){
+   b.narrativeSummaries={...(b.narrativeSummaries||{}),[key]:{text:summary,style:overrideStyle||plan.style,originalWords:narrativeWords(original),updated:new Date().toISOString()}};
    b.narrativeOriginalWords={...(b.narrativeOriginalWords||{}),[key]:narrativeWords(original)};
    b.summaryReaderTargetKey=key;
+   b.summaryRegenerateKeys=(b.summaryRegenerateKeys||[]).filter(k=>k!==key);
    await tx('books','readwrite','put',b);
   }else b.summaryReaderTargetKey=key;
   if(readerContentMode==='summary'&&activeId===id){
@@ -1916,15 +1942,33 @@ async function summaryGeneratePending(key){
   summaryPendingFailedKey=key;console.error('Geração sob demanda:',e);
   if(readerContentMode==='summary'&&activeId===id){
    if(marker)marker.textContent='Não foi possível gerar o capítulo';
-   showReaderPopup(`<h3>Não foi possível preparar o resumo</h3><p>${esc(e.message||'Tente novamente.')}</p><div class="popup-actions"><button class="btn primary" onclick="closeReaderPopup();summaryPendingFailedKey=null;summaryGeneratePending(decodeURIComponent('${encodeURIComponent(key)}'))">Tentar novamente</button><button class="btn" onclick="closeReaderPopup()">Continuar lendo</button></div>`);
+   const isStyleError=e.status===422||(/parâmetro|parâmetros|limite de saída|limite de tokens|extensão do resumo/i.test(String(e.message||''))&&![401,403,408,429,500,502,503,504].includes(e.status));
+   const otherStyles=[['deep','Aprofundado'],['short','Condensado'],['essential','Essencial']].filter(x=>x[0]!==(overrideStyle||plan.style));
+   const alt=isStyleError?`<p class="notice">Você pode tentar outro estilo apenas neste capítulo, sem alterar o plano.</p>${otherStyles.map(x=>`<button class="btn" onclick="summaryRetryStyle(decodeURIComponent('${encodeURIComponent(key)}'),'${x[0]}')">Gerar como ${x[1]}</button>`).join('')}`:'';
+   showReaderPopup(`<h3>Não foi possível preparar o resumo</h3><p>${esc(e.message||'Tente novamente.')}</p><div class="popup-actions"><button class="btn primary" onclick="closeReaderPopup();summaryPendingFailedKey=null;summaryGeneratePending(decodeURIComponent('${encodeURIComponent(key)}'))">Tentar novamente</button>${alt}<button class="btn" onclick="closeReaderPopup()">Continuar lendo</button></div>`);
   }
  }finally{if(temp)try{temp.destroy()}catch(_){};summaryPendingBusy=false}
 }
 
 async function openReader(id,options={}){readerConsult=null;$('reader-consult').classList.add('hide');if(!window.ePub){toast('É preciso internet para carregar o motor EPUB nesta versão.');return}let b=books.find(x=>x.id===id);if(!b)return;let f=options.mode==='summary'?{data:options.data}:await tx('files','readonly','get',id);if(!f){toast('Arquivo EPUB não encontrado neste aparelho.');return}const seamless=!!options.seamless&&!$('reader').classList.contains('hide');
+ if(!seamless)readerReturnHomeAfterReading=true;
  if(!seamless)readerEntryOrigin=options.entryOrigin||( !$('modal').classList.contains('hide')?'detail':currentTab==='home'?'home':'tab');
  if(seamless){readerSession++;clearTimeout(saveTimer);clearReaderSwipe();hideSelection();try{rendition?.destroy()}catch(_){};try{epubBook?.destroy()}catch(_){};rendition=null;epubBook=null;$('epub-view').innerHTML='';}
- readerContentMode=options.mode==='summary'?'summary':'original';if(readerContentMode==='original')readerSummarySections=[];updateReaderModeAction();if(!seamless)showBookOpening(b);activeId=id;const session=++readerSession;readerLocationsReady=false;if(!seamless)pushAppHistory('reader');if(!seamless)$('reader').classList.add('reader-opening');$('reader').classList.remove('hide');startReadingClock();$('reader-title').textContent=b.title+(readerContentMode==='summary'?' · Resumo':'');setReaderCoverColor(b.cover);$('reader-author').textContent=b.author||'';$('reader-theme').value=settings.theme;$('font-size').value=settings.font;$('reader-font-family').value=settings.family||'original';$('reader-dim').value=100-(settings.dim||0);settings.paragraph=b.paragraphSpacing||'original';try{epubBook=ePub(f.data instanceof ArrayBuffer?f.data.slice(0):f.data);rendition=epubBook.renderTo('epub-view',{width:'100%',height:'100%',flow:'paginated',spread:'none'});initReaderSwipe();applyReaderSettings();try{await rendition.display(readerContentMode==='summary'?(options.targetHref||b.summaryReaderCfi||undefined):(b.narrativeSyncHref||b.cfi||undefined))}catch(displayError){if(readerContentMode!=='summary'||!b.summaryReaderCfi)throw displayError;b.summaryReaderCfi=null;await rendition.display();}if(readerContentMode==='original'&&b.narrativeSyncHref){delete b.narrativeSyncHref;await tx('books','readwrite','put',b)}finishBookOpening();renderReaderHighlights();const openedBook=epubBook,openedId=id,openedMode=readerContentMode;
+ readerContentMode=options.mode==='summary'?'summary':'original';if(readerContentMode==='original')readerSummarySections=[];updateReaderModeAction();if(!seamless)showBookOpening(b);activeId=id;const session=++readerSession;readerLocationsReady=false;if(!seamless)pushAppHistory('reader');if(!seamless)$('reader').classList.add('reader-opening');$('reader').classList.remove('hide');startReadingClock();$('reader-title').textContent=b.title+(readerContentMode==='summary'?' · Resumo':'');setReaderCoverColor(b.cover);$('reader-author').textContent=b.author||'';$('reader-theme').value=settings.theme;$('font-size').value=settings.font;$('reader-font-family').value=settings.family||'original';$('reader-dim').value=100-(settings.dim||0);settings.paragraph=b.paragraphSpacing||'original';try{epubBook=ePub(f.data instanceof ArrayBuffer?f.data.slice(0):f.data);rendition=epubBook.renderTo('epub-view',{width:'100%',height:'100%',flow:'paginated',spread:'none'});initReaderSwipe();applyReaderSettings();try{await rendition.display(readerContentMode==='summary'?(options.targetHref||b.summaryReaderCfi||undefined):(b.narrativeSyncHref||b.cfi||undefined))}catch(displayError){if(readerContentMode!=='summary'||!b.summaryReaderCfi)throw displayError;b.summaryReaderCfi=null;await rendition.display();}if(readerContentMode==='original'&&b.narrativeSyncHref){delete b.narrativeSyncHref;await tx('books','readwrite','put',b)}if(readerContentMode==='summary'&&options.restoreChapterProgress&&rendition){
+   const savedPage=Math.max(1,Number(options.restoreChapterProgress.page)||1);
+   // A posição do capítulo é independente do total de capítulos já resumidos.
+   // Navega somente até a página gravada, sem ultrapassar o capítulo.
+   const key=options.restoreChapterProgress.href;
+   for(let page=1;page<Math.min(savedPage,500);page++){
+    const current=summarySectionAtLocation(rendition.currentLocation());
+    if(current?.key!==key)break;
+    const displayed=Number(rendition.currentLocation()?.start?.displayed?.page)||page;
+    if(displayed>=savedPage)break;
+    await rendition.next();
+    if(summarySectionAtLocation(rendition.currentLocation())?.key!==key){await rendition.prev();break;}
+   }
+  }
+  finishBookOpening();renderReaderHighlights();const openedBook=epubBook,openedId=id,openedMode=readerContentMode;
  // Um mapa de posições por arquivo EPUB, guardado separadamente dos livros.
  // Reutilizá-lo evita recalcular posições em cada sessão do leitor.
  (async()=>{try{
@@ -1953,6 +1997,11 @@ async function openReader(id,options={}){readerConsult=null;$('reader-consult').
  if(readerContentMode==='summary')summaryCheckPendingLocation(rendition.currentLocation());rendition.on('selected',(cfi,contents)=>{if(readerCompletedSegments)readerCompletedSegments=null;selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');readerAssistControls();positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();recordBookAccess(b);await tx('books','readwrite','put',b);await refresh()}catch(e){finishBookOpening(true);console.error(e);toast('Falha ao abrir o leitor');closeReader()}}
 let footnoteReturnCfi=null;
 function handleEpubFootnote(event,contents){const link=event.target?.closest?.('a[href]');if(!link||!rendition)return;const href=link.getAttribute('href')||'';if(!href||/^https?:|^mailto:/i.test(href))return;const targetId=decodeURIComponent(href.split('#')[1]||'');if(!targetId)return;const label=(link.textContent||'').trim();const isNote=/^(\[?\d{1,3}\]?|[¹²³⁴⁵⁶⁷⁸⁹⁰]+)$/.test(label)||/noteref|footnote/i.test(link.getAttribute('epub:type')||link.getAttribute('role')||link.className||'');if(!isNote)return;const target=contents.document.getElementById(targetId);if(!target)return;event.preventDefault();event.stopPropagation();const text=(target.innerText||target.textContent||'').trim();if(!text)return;showReaderPopup(`<h3>Nota ${esc(label)}</h3><div class="footnote-text">${esc(text)}</div><div class="popup-actions"><button class="btn" onclick="closeReaderPopup()">Voltar à leitura</button></div>`)}
+function summaryProgressFooter(b){
+ const keys=narrativePlanData(b)?.chapters||[];
+ const index=keys.indexOf(b?.summaryReadingProgress?.href);
+ return `${narrativePlanPercent(b)??0}% · ${index>=0?index+1:1} de ${keys.length}`;
+}
 function updateLocation(loc){
  if(!loc||!activeId)return;
  const b=books.find(x=>x.id===activeId);if(!b)return;
@@ -1964,8 +2013,19 @@ function updateLocation(loc){
    if(!readerConsult&&Number.isInteger(index)&&index>=0&&total>0){if(readerContentMode==='summary'){b.summaryReaderPosition=index+1;b.summaryReaderPositionTotal=total;}else{b.position=index+1;b.positionTotal=total;}}
   }catch(error){console.warn('Posição não disponível',error)}
  }
- if(!summaryPendingBusy)$('reader-progress').textContent=readerContentMode==='summary'?'Resumo · posição '+(b.summaryReaderPosition||'—')+' de '+(b.summaryReaderPositionTotal||'—'):readingPositionText(b);
- const pg=loc.start?.displayed?.page,totalPages=loc.start?.displayed?.total;
+ if(!summaryPendingBusy)$('reader-progress').textContent=readerContentMode==='summary'?summaryProgressFooter(b):readingPositionText(b);
+ if(readerContentMode==='summary'&&!readerConsult){
+  const section=summarySectionAtLocation(loc);
+  if(section){
+   const page=Number(loc.start?.displayed?.page)||1,total=Number(loc.start?.displayed?.total)||1;
+   const fraction=total>1?Math.max(0,Math.min(1,(page-1)/(total-1))):0;
+   b.summaryReadingProgress={href:section.key,fraction,page,total,updated:new Date().toISOString()};
+  }
+ }
+  if(readerContentMode==='summary'&&!summaryPendingBusy)$('reader-progress').textContent=summaryProgressFooter(b);
+  const pg=loc.start?.displayed?.page,totalPages=loc.start?.displayed?.total;
+ const progressTrack=$('summary-footer-track'),progressFill=$('summary-footer-fill');
+ if(progressTrack){progressTrack.classList.toggle('hide',readerContentMode!=='summary');if(readerContentMode==='summary')progressFill.style.width=(narrativePlanPercent(b)??0)+'%';}
  const section=loc.start?.index;
  const pageText=Number.isFinite(pg)&&pg>0?'Página '+pg+(Number.isFinite(totalPages)&&totalPages>0?' de '+totalPages:''):'Posição de leitura';
  const chapter=readerContentMode==='summary'?(readerSummarySections[section]?.label||chapterNameAt(section)):chapterNameAt(section);
@@ -2047,7 +2107,7 @@ function attachReaderSwipe(doc){
 }
 function clearReaderSwipe(){for(const l of swipeListeners){l.doc.removeEventListener('touchstart',l.start);l.doc.removeEventListener('touchend',l.end);l.doc.removeEventListener('touchcancel',l.cancel);l.doc.removeEventListener('click',l.click);l.doc.removeEventListener('selectionchange',l.selectionChange);if(l.doc!==document)l.doc.removeEventListener('pointerdown',dismissReaderSettings);l.doc.removeEventListener('pointerup',l.dismissSelection)}swipeListeners=[]}
 function initReaderSwipe(){clearReaderSwipe();attachReaderSwipe(document.querySelector('.reader-main'));if(rendition){rendition.hooks.content.register(c=>attachReaderSwipe(c.document));for(const c of rendition.getContents?.()||[])attachReaderSwipe(c.document)}}
-function closeReader(fromHistory=false){readerAssistedSegments=null;readerCompletedSegments=null;readerAssistControls();finishBookOpening(true);if(!fromHistory&&history.state?.bibliotecaScreen==='reader'){history.back();return}readerSession++;readerLocationsReady=false;stopReadingClock();closeReaderPopup();clearReaderSwipe();clearTimeout(saveTimer);if(readerConsult){restoreConsultRecord();readerConsult=null;$('reader-consult').classList.add('hide')}let b=books.find(x=>x.id===activeId);if(b)tx('books','readwrite','put',b).catch(console.error);try{rendition?.destroy()}catch(e){}try{epubBook?.destroy()}catch(e){}rendition=null;epubBook=null;readerContentMode='original';readerSummarySections=[];updateReaderModeAction();if(readerEntryOrigin==='home'&&!$('modal').classList.contains('hide'))closeModal(true);$('epub-view').innerHTML='';$('reader').classList.add('hide');$('reader-settings').classList.add('hide');hideSelection();refresh()}
+function closeReader(fromHistory=false){readerAssistedSegments=null;readerCompletedSegments=null;readerAssistControls();finishBookOpening(true);if(!fromHistory&&history.state?.bibliotecaScreen==='reader'){history.back();return}readerSession++;readerLocationsReady=false;stopReadingClock();closeReaderPopup();clearReaderSwipe();clearTimeout(saveTimer);if(readerConsult){restoreConsultRecord();readerConsult=null;$('reader-consult').classList.add('hide')}let b=books.find(x=>x.id===activeId);if(b)tx('books','readwrite','put',b).catch(console.error);try{rendition?.destroy()}catch(e){}try{epubBook?.destroy()}catch(e){}rendition=null;epubBook=null;readerContentMode='original';readerSummarySections=[];updateReaderModeAction();if(readerReturnHomeAfterReading){readerReturnHomeAfterReading=false;closeModal(true);switchTab('home',false)}else if(readerEntryOrigin==='home'&&!$('modal').classList.contains('hide'))closeModal(true);$('epub-view').innerHTML='';$('reader').classList.add('hide');$('reader-settings').classList.add('hide');hideSelection();refresh()}
 function toggleReaderSettings(){$('reader-settings').classList.toggle('hide')}
 function dismissReaderSettings(){const panel=$('reader-settings');if(panel&&!panel.classList.contains('hide'))panel.classList.add('hide')}
 document.addEventListener('pointerdown',e=>{const panel=$('reader-settings');if(panel&&!panel.classList.contains('hide')&&!panel.contains(e.target)&&!e.target.closest('[onclick*="toggleReaderSettings"]'))panel.classList.add('hide')});
@@ -2174,12 +2234,30 @@ async function runReaderSearch(){
 async function openReaderSearchHit(i){const h=readerSearchHits[i];if(!h)return;closeReaderPopup();await readerConsultJump(h.cfi)}
 function readerPopupMessage(title,body){showReaderPopup(`<h3>${esc(title)}</h3><p>${esc(body)}</p><div class="popup-actions"><button class="btn" onclick="closeReaderPopup()">Voltar à leitura</button></div>`)}
 
+function summaryPreviouslyReadContext(b){
+ const keys=narrativePlanData(b)?.chapters||[];
+ const current=summarySectionAtLocation(rendition?.currentLocation())?.key;
+ const index=keys.indexOf(current);
+ if(index<=0)return '';
+ // Só capítulos anteriores ao atual, cuja leitura já foi alcançada.
+ return keys.slice(0,index).map(key=>b?.narrativeSummaries?.[key]?.text||'').filter(Boolean).join('\n\n').slice(-8500);
+}
+function readerExplainContext(){
+ if(!selectionDoc)return '';
+ try{
+  const sel=selectionDoc.getSelection?.();if(!sel?.rangeCount)return '';
+  const r=sel.getRangeAt(0),prior=selectionDoc.createRange();
+  prior.selectNodeContents(selectionDoc.body);prior.setEnd(r.endContainer,r.endOffset);
+  return prior.toString().slice(-6500);
+ }catch(_){return ''}
+}
 const READER_AI_LABELS={explain:'Explicar com IA',historical:'Contexto histórico com IA',translate:'Tradução com IA'};
 async function readerAskAI(style){
- const passage=selectedText.trim();if(!passage)return;hideSelection();
+ const passage=selectedText.trim();if(!passage)return;const context=style==='explain'?readerExplainContext():'';hideSelection();
  const b=books.find(x=>x.id===activeId);
+ const permittedContext=style==='explain'&&readerContentMode==='summary'?[summaryPreviouslyReadContext(b),context].filter(Boolean).join('\n\n').slice(-8500):context;
  showReaderPopup(`<h3>${esc(READER_AI_LABELS[style])}</h3><p class="notice">Consultando IA...</p>`);
- try{const data=await aiRequest({style,chapter:passage,title:b?.title||'',author:b?.author||'',chapter_label:$('reader-current-chapter')?.textContent||''});
+ try{const data=await aiRequest({style,chapter:passage,title:b?.title||'',author:b?.author||'',chapter_label:$('reader-current-chapter')?.textContent||'',context:permittedContext,reading_mode:readerContentMode});
  readerPopupMessage(READER_AI_LABELS[style],data.summary)}catch(e){readerPopupMessage(READER_AI_LABELS[style],e.message||'Consulta indisponível')}
 }
 async function narrativeAskAI(style){
@@ -2647,10 +2725,33 @@ function narrativePlanEditor(){
  const c=narrativeContext;if(!c)return;
  const b=books.find(x=>x.id===c.id),plan=narrativePlanData(b);
  c.view='plan';c.planDraft=new Set(plan?.chapters||[]);
- c.planStyleDraft=plan?.style||'short';
+ c.planStyleDraft=plan?.style||'';
  const currentKey=readerContentMode==='summary'&&activeId===c.id?readerSummarySections[rendition?.currentLocation()?.start?.index]?.key:b.narrativeReadingProgress?.href;
  const options=c.chapters.map((ch,i)=>`<label class="mb-plan-chapter" ${ch.href===currentKey?'data-current="true"':''}><input type="checkbox" ${c.planDraft.has(ch.href)?'checked':''} onchange="narrativePlanToggle(${i},this.checked)"><span>${esc(ch.label)}${ch.href===currentKey?' <b class="mb-plan-current">· Atual</b>':''}</span><small>${b.narrativeSummaries?.[ch.href]?.text?'Resumo salvo':'Pendente'}</small></label>`).join('');
- narrativePresent(`<div class="row between"><h2>Plano de leitura dos resumos</h2><button class="btn tiny ghost" onclick="narrativeCancelPlanEditor()">✕</button></div><p class="notice">Escolha os capítulos que deseja ler e o estilo para resumos futuros. Esta etapa não gera textos nem altera os resumos existentes.</p><label class="field"><label>Estilo para futuras gerações</label><select id="mb-plan-style" onchange="narrativeContext.planStyleDraft=this.value"><option value="deep" ${c.planStyleDraft==='deep'?'selected':''}>Narrativo aprofundado</option><option value="short" ${c.planStyleDraft==='short'?'selected':''}>Narrativo condensado</option><option value="essential" ${c.planStyleDraft==='essential'?'selected':''}>Narrativo essencial</option></select></label><div class="row between"><strong>Capítulos do plano</strong><small id="mb-plan-count">${c.planDraft.size} selecionado(s)</small></div><div class="row wrap" style="margin:10px 0"><button class="btn tiny" onclick="narrativePlanAll()">Selecionar todos</button><button class="btn tiny" onclick="narrativePlanNone()">Limpar seleção</button></div><div class="ai-chapter-list mb-plan-list">${options}</div><div class="narrative-actions"><button class="btn primary" onclick="narrativePlanSave()">Salvar plano</button><button class="btn" onclick="narrativeCancelPlanEditor()">Cancelar</button></div>`);
+ narrativePresent(`<div class="row between"><h2>Plano de leitura dos resumos</h2><button class="btn tiny ghost" onclick="narrativeCancelPlanEditor()">✕</button></div><p class="notice">Escolha os capítulos que deseja ler e o estilo para resumos futuros. Esta etapa não gera textos nem altera os resumos existentes.</p><label class="field"><label>Estilo para futuras gerações</label><select id="mb-plan-style" onchange="narrativeContext.planStyleDraft=this.value"><option value="" ${!c.planStyleDraft?'selected':''} disabled>Selecione o estilo do resumo</option><option value="deep" ${c.planStyleDraft==='deep'?'selected':''}>Narrativo aprofundado</option><option value="short" ${c.planStyleDraft==='short'?'selected':''}>Narrativo condensado</option><option value="essential" ${c.planStyleDraft==='essential'?'selected':''}>Narrativo essencial</option></select></label><div class="row between"><strong>Capítulos do plano</strong><small id="mb-plan-count">${c.planDraft.size} selecionado(s)</small></div><div class="row wrap" style="margin:10px 0"><button class="btn tiny" onclick="narrativePlanAll()">Selecionar todos</button><button class="btn tiny" onclick="narrativePlanNone()">Limpar seleção</button></div><div class="ai-chapter-list mb-plan-list">${options}</div><button class="btn full" onclick="narrativeManageSummaries()">Gerenciar resumos salvos e refazer capítulos</button><div class="narrative-actions"><button class="btn primary" onclick="narrativePlanSave()">Salvar plano</button><button class="btn" onclick="narrativeCancelPlanEditor()">Cancelar</button></div>`);
+}
+function narrativeManageSummaries(){
+ const c=narrativeContext,b=books.find(x=>x.id===c?.id);if(!c||!b)return;
+ const saved=b.narrativeSummaries||{},pending=new Set(b.summaryRegenerateKeys||[]);
+ const rows=c.chapters.map((ch,i)=>saved[ch.href]?.text?`<label class="mb-plan-chapter"><input type="checkbox" class="mb-regen-select" value="${i}" ${pending.has(ch.href)?'checked':''}><span>${esc(ch.label)}</span><small>${pending.has(ch.href)?'Aguardando nova geração':'Resumo salvo'}</small></label>`:'').filter(Boolean).join('');
+ c.view='manage-summaries';
+ narrativePresent(`<div class="row between"><h2>Gerenciar resumos</h2><button class="btn tiny ghost" onclick="narrativePlanEditor()">✕</button></div><p class="notice">Marque os capítulos que deseja refazer. Eles serão gerados somente quando você os abrir. Os textos atuais ficam preservados até a nova versão estar pronta.</p><div class="ai-chapter-list mb-plan-list">${rows||'<p class="notice">Nenhum resumo salvo.</p>'}</div><div class="narrative-actions"><button class="btn primary" onclick="narrativeSaveRegenerateMarks()">Salvar marcações para refazer</button><button class="btn" onclick="narrativeDeleteManagedSummaries()">Excluir resumos selecionados</button><button class="btn" onclick="narrativePlanEditor()">Voltar</button></div><p class="notice">Excluir apaga o texto selecionado. Ao abrir novamente o capítulo incluído no plano, o leitor poderá gerar um novo resumo automaticamente.</p>`);
+}
+async function narrativeSaveRegenerateMarks(){
+ const c=narrativeContext,b=books.find(x=>x.id===c?.id);if(!c||!b)return;
+ b.summaryRegenerateKeys=[...document.querySelectorAll('.mb-regen-select:checked')].map(el=>c.chapters[Number(el.value)]?.href).filter(Boolean);
+ await tx('books','readwrite','put',b);toast('Capítulos marcados. A nova geração acontecerá quando você os abrir.');narrativePlanEditor();
+}
+async function narrativeDeleteManagedSummaries(){
+ const c=narrativeContext,b=books.find(x=>x.id===c?.id);if(!c||!b)return;
+ const keys=[...document.querySelectorAll('.mb-regen-select:checked')].map(el=>c.chapters[Number(el.value)]?.href).filter(key=>key&&b.narrativeSummaries?.[key]?.text);
+ if(!keys.length)return toast('Selecione os capítulos que deseja excluir.');
+ if(!confirm(`Excluir ${keys.length} resumo(s) selecionado(s)?\n\nOs textos, destaques, anotações e marcadores desses resumos serão apagados. O livro original e os demais resumos serão preservados.`))return;
+ for(const key of keys){delete b.narrativeSummaries[key];if(b.narrativeMarks)delete b.narrativeMarks[key];if(b.narrativePageBookmarks)delete b.narrativePageBookmarks[key];if(b.narrativeOriginalWords)delete b.narrativeOriginalWords[key];}
+ b.summaryRegenerateKeys=(b.summaryRegenerateKeys||[]).filter(key=>!keys.includes(key));
+ b.summaryReaderSignature=null;b.summaryReaderCfi=null;
+ await tx('books','readwrite','put',b);
+ toast(keys.length+' resumo(s) excluído(s).');narrativeManageSummaries();
 }
 function narrativeCancelPlanEditor(){const c=narrativeContext;if(!c)return;if(c.summaryPlanFromReader){narrativeContext=null;if(c.temporary)try{c.epub.destroy()}catch(_){};closeReaderPopup()}else if(c.openSummaryAfterPlan){narrativeContext=null;if(c.temporary)try{c.epub.destroy()}catch(_){};openDetail(c.id)}else narrativeDraw()}
 function narrativePlanToggle(i,checked){const c=narrativeContext,ch=c?.chapters[i];if(!ch)return;checked?c.planDraft.add(ch.href):c.planDraft.delete(ch.href);const el=$('mb-plan-count');if(el)el.textContent=c.planDraft.size+' selecionado(s)'}
@@ -2659,10 +2760,11 @@ function narrativePlanNone(){const c=narrativeContext;if(!c)return;c.planDraft=n
 function narrativePlanEditorRefresh(){const c=narrativeContext;if(!c)return;document.querySelectorAll('.mb-plan-chapter').forEach((el,i)=>{const input=el.querySelector('input');if(input)input.checked=c.planDraft.has(c.chapters[i]?.href)});const count=$('mb-plan-count');if(count)count.textContent=c.planDraft.size+' selecionado(s)'}
 async function narrativePlanSave(){
  const c=narrativeContext;if(!c)return;
+ if(!c.planStyleDraft)return toast('Selecione um estilo de resumo antes de salvar o plano.');
  if(!c.planDraft?.size)return toast('Selecione pelo menos um capítulo para o plano.');
  const b=books.find(x=>x.id===c.id);if(!b)return;
  const chapters=c.chapters.filter(ch=>c.planDraft.has(ch.href)).map(ch=>ch.href);
- b.narrativeReadingPlan={chapters,style:c.planStyleDraft||'short',updated:new Date().toISOString()};
+ b.narrativeReadingPlan={chapters,style:c.planStyleDraft,updated:new Date().toISOString()};
  await tx('books','readwrite','put',b);
  toast('Plano de leitura salvo. Seus resumos e posições foram preservados.');
  if(c.summaryPlanFromReader){
@@ -2681,18 +2783,19 @@ async function narrativePlanSave(){
 // Pacote A: modo principal e entrada do plano a partir da página inicial.
 function narrativePrimaryMode(b){return b?.primaryReadingMode==='summary'?'summary':'original'}
 function narrativePlanPercent(b){
- const plan=narrativePlanData(b),keys=plan?.chapters||[];
+ const keys=narrativePlanData(b)?.chapters||[];
  if(!keys.length)return null;
- // O leitor compartilhado tem prioridade sobre a posição do leitor antigo.
- // Percentual do EPUB de resumos disponível somente depois da geração das localizações.
- const position=Number(b.summaryReaderPosition),total=Number(b.summaryReaderPositionTotal);
- if(Number.isFinite(position)&&Number.isFinite(total)&&total>0&&position>0)
-  return Math.max(0,Math.min(100,Math.round(100*(position-1)/Math.max(1,total-1))));
- const pos=b.narrativeReadingProgress,idx=keys.indexOf(pos?.href);
- if(idx<0)return 0;
- const fraction=Math.max(0,Math.min(1,Number(pos.offset)||0));
- return Math.round(100*(idx+fraction)/keys.length);
+ const progress=b?.summaryReadingProgress;
+ const idx=keys.indexOf(progress?.href);
+ if(idx>=0){
+  const fraction=Math.max(0,Math.min(1,Number(progress.fraction)||0));
+  return Math.max(0,Math.min(100,Math.round(100*(idx+fraction)/keys.length)));
+ }
+ const old=b?.narrativeReadingProgress,oldIndex=keys.indexOf(old?.href);
+ if(oldIndex>=0)return Math.round(100*(oldIndex+Math.max(0,Math.min(1,Number(old.offset)||0)))/keys.length);
+ return 0;
 }
+
 async function narrativeSetPrimaryMode(id,mode){
  const b=books.find(x=>x.id===id);if(!b)return;
  b.primaryReadingMode=mode==='summary'?'summary':'original';
@@ -2797,7 +2900,7 @@ async function narrativePlanGenerateCurrent(){
   const text=String(result.summary||'').trim();
   if(text.length<40)throw Error('A IA retornou um resumo vazio ou curto demais.');
   // Nunca substituir um resumo que tenha sido salvo durante a operação.
-  if(!b.narrativeSummaries?.[key]?.text){
+  if(!b.narrativeSummaries?.[key]?.text||b.summaryRegenerateKeys?.includes(key)){
    b.narrativeSummaries={...(b.narrativeSummaries||{}),[key]:{text,originalWords:narrativeWords(original),updated:new Date().toISOString()}};
    b.narrativeOriginalWords={...(b.narrativeOriginalWords||{}),[key]:narrativeWords(original)};
    await tx('books','readwrite','put',b);
@@ -2913,7 +3016,8 @@ async function narrativeExtract(c){
   if(end&&i===end.section.index)break;
  }
  const output=parts.join('\n\n').trim();
- if(output.length<60)throw Error('O capítulo extraído está vazio ou incompleto. Verifique o índice do EPUB.');
+ if(!output&&/^(parte|part|livro|book|seção|section)\s+([ivxlcdm]+|\d+)/i.test(current.label||''))return current.label;
+ if(output.length<60&&!/^(parte|part|livro|book|seção|section)\s+([ivxlcdm]+|\d+)/i.test(current.label||''))throw Error('O capítulo extraído está vazio ou incompleto. Verifique o índice do EPUB.');
  return output;
 }
 async function narrativeClipboard(text){
@@ -3296,13 +3400,13 @@ const AI_WORKER_URL='https://minha-biblioteca-ia.arthurnreis.workers.dev';
 const AI_TOKEN_KEY='minha_biblioteca_ia_token',AI_USAGE_KEY='minha_biblioteca_ia_usage_v1';
 function aiToken(){return localStorage.getItem(AI_TOKEN_KEY)||''}
 function aiConfigureToken(){const value=prompt('Token de acesso à IA (não é a chave da OpenAI):',aiToken());if(value===null)return;if(!value.trim()){if(confirm('Remover o token deste dispositivo?'))localStorage.removeItem(AI_TOKEN_KEY);return}localStorage.setItem(AI_TOKEN_KEY,value.trim());toast('Token de acesso configurado neste dispositivo.')}
-async function aiRequest(payload){let token=aiToken();if(!token){aiConfigureToken();token=aiToken();if(!token)throw Error('Configure o token de acesso à IA nas Configurações.')}let response;try{response=await fetch(AI_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(payload)})}catch(e){throw Error('Sem conexão com a IA. Verifique a internet e tente novamente.')}let data;try{data=await response.json()}catch(e){throw Error('O servidor retornou uma resposta inválida.')}if(!response.ok)throw Error(data.error||('Erro na IA (HTTP '+response.status+').'));if(!data.summary||typeof data.summary!=='string')throw Error('A IA não retornou um texto válido.');if(data.usage)aiRecordUsage(data.usage,['deep','short','essential'].includes(payload.style)?'summary':payload.style);return data}
+async function aiRequest(payload){let token=aiToken();if(!token){aiConfigureToken();token=aiToken();if(!token)throw Error('Configure o token de acesso à IA nas Configurações.')}let response;try{response=await fetch(AI_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(payload)})}catch(e){throw Error('Sem conexão com a IA. Verifique a internet e tente novamente.')}let data;try{data=await response.json()}catch(e){throw Error('O servidor retornou uma resposta inválida.')}if(!response.ok){const err=Error(data.error||('Erro na IA (HTTP '+response.status+').'));err.status=response.status;err.style=payload.style;throw err;}if(!data.summary||typeof data.summary!=='string')throw Error('A IA não retornou um texto válido.');if(data.usage)aiRecordUsage(data.usage,['deep','short','essential'].includes(payload.style)?'summary':payload.style);return data}
 function aiRecordUsage(usage,type){const all=aiUsage();all.push({date:new Date().toISOString(),type,model:usage.model||'',input:Number(usage.input_tokens)||0,output:Number(usage.output_tokens)||0,cost:typeof usage.estimated_usd==='number'?usage.estimated_usd:null});try{localStorage.setItem(AI_USAGE_KEY,JSON.stringify(all.slice(-5000)))}catch(e){console.warn('Histórico de consumo não foi salvo:',e)}}
 function aiUsage(){try{return JSON.parse(localStorage.getItem(AI_USAGE_KEY)||'[]')}catch(e){return []}}
 function aiShowUsage(){const items=aiUsage(),month=new Date().toISOString().slice(0,7),sum=a=>a.reduce((v,x)=>v+(x.cost||0),0),known=items.filter(x=>x.cost!==null);const text=`Operações: ${items.length} · Tokens enviados: ${items.reduce((a,x)=>a+x.input,0).toLocaleString('pt-BR')} · Tokens gerados: ${items.reduce((a,x)=>a+x.output,0).toLocaleString('pt-BR')}<br>Estimativa do mês: US$ ${sum(known.filter(x=>x.date.startsWith(month))).toFixed(4)} · Total estimado: US$ ${sum(known).toFixed(4)}${known.length<items.length?'<br>Algumas operações não possuem custo calculado.':''}<br><small>Histórico local deste dispositivo; não representa o saldo oficial da OpenAI.</small>`;const el=$('ai-usage-settings');if(el)el.innerHTML=text;else alert(text.replace(/<br>/g,'\n').replace(/<[^>]+>/g,''))}
 function aiEstimate(text,style){const input=Math.ceil(text.length/3.4)+650;const output=Math.ceil(input*(style==='essential'?.22:style==='short'?.38:.65));return {input,output}}
 function aiCostEstimate(input,output){return (input*0.75+output*4.5)/1000000}
-async function narrativeGenerateAI(){const c=narrativeContext;if(!c||c.aiRunning)return;if(!c.style)return toast('Selecione o tipo de resumo antes de continuar.');const selected=[...c.selected].sort((a,b)=>a-b);if(!selected.length)return toast('Selecione pelo menos um capítulo.');const existing=selected.filter(i=>narrativeSaved()[c.chapters[i].href]?.text);let todo=selected.filter(i=>!narrativeSaved()[c.chapters[i].href]?.text);if(selected.length===1&&existing.length){if(!confirm('Este capítulo já possui resumo. Deseja substituí-lo? Destaques e anotações vinculados poderão ser removidos.'))return;todo=selected;}if(!todo.length)return toast('Todos os capítulos selecionados já possuem resumo.');c.aiRunning=true;c.aiStop=false;c.aiQueue=todo;c.aiPosition=0;c.aiDone=0;c.aiCost=0;c.aiError='';try{narrativeProgress('Analisando capítulos selecionados...');const texts=[];let estimatedIn=0,estimatedOut=0;for(const i of todo){if(c.aiStop)return narrativeProgress('Geração cancelada.');const text=await narrativeExtract({...c,index:i});texts.push({i,text});const e=aiEstimate(text,c.style);estimatedIn+=e.input;estimatedOut+=e.output;}const approximate=aiCostEstimate(estimatedIn,estimatedOut);const message=`Gerar ${todo.length} resumo(s) em ${c.style==='deep'?'Narrativo aprofundado':c.style==='short'?'Narrativo condensado':'Narrativo essencial'}?\n\n${existing.length&&selected.length>1?existing.length+' capítulo(s) com resumo serão ignorados.\n':''}Estimativa ilustrativa: US$ ${approximate.toFixed(4)}. O valor real depende dos tokens e dos preços vigentes.\n\nCada capítulo será salvo antes de avançar. Se houver erro, a sequência será interrompida.`;if(!confirm(message)){narrativeDraw();return;}for(let j=0;j<texts.length;j++){if(c.aiStop){narrativeProgress('Geração interrompida. Resumos anteriores preservados.');return;}const {i,text}=texts[j],ch=c.chapters[i];c.aiPosition=j+1;narrativeProgress('Gerando '+ch.label+'...');const b=books.find(x=>x.id===c.id);const result=await aiRequest({style:c.style,chapter:text,title:b.title,author:b.author||'',chapter_label:ch.label});if(!result.summary.trim()||result.summary.trim().length<40)throw Error('A IA retornou um resumo vazio ou curto demais.');const ow=narrativeWords(text),sw=narrativeWords(result.summary),ratio=sw/Math.max(1,ow),limits=c.style==='short'?[.34,.66]:c.style==='essential'?[.23,.47]:[.50,.96];/* A validação de segurança já é feita pelo Worker; não rejeitar novamente com faixas divergentes. */if(narrativeSaved()[ch.href]?.text&&todo.length>1)continue;if(narrativeSaved()[ch.href]?.text&&b.narrativeMarks?.[ch.href]?.length){delete b.narrativeMarks[ch.href]}b.narrativeSummaries={...(b.narrativeSummaries||{}),[ch.href]:{text:result.summary.trim(),originalWords:narrativeWords(text),updated:new Date().toISOString()}};b.narrativeOriginalWords={...(b.narrativeOriginalWords||{}),[ch.href]:narrativeWords(text)};await tx('books','readwrite','put',b);c.aiDone++;c.aiCost+=Number(result.usage?.estimated_usd)||0;narrativeProgress('Resumo salvo: '+ch.label);}
+async function narrativeGenerateAI(){const c=narrativeContext;if(!c||c.aiRunning)return;if(!c.style)return toast('Selecione o tipo de resumo antes de continuar.');const selected=[...c.selected].sort((a,b)=>a-b);if(!selected.length)return toast('Selecione pelo menos um capítulo.');const existing=selected.filter(i=>narrativeSaved()[c.chapters[i].href]?.text);let todo=selected.filter(i=>!narrativeSaved()[c.chapters[i].href]?.text);if(selected.length===1&&existing.length){if(!confirm('Este capítulo já possui resumo. Deseja substituí-lo? Destaques e anotações vinculados poderão ser removidos.'))return;todo=selected;}if(!todo.length)return toast('Todos os capítulos selecionados já possuem resumo.');c.aiRunning=true;c.aiStop=false;c.aiQueue=todo;c.aiPosition=0;c.aiDone=0;c.aiCost=0;c.aiError='';try{narrativeProgress('Analisando capítulos selecionados...');const texts=[];let estimatedIn=0,estimatedOut=0;for(const i of todo){if(c.aiStop)return narrativeProgress('Geração cancelada.');const text=await narrativeExtract({...c,index:i});texts.push({i,text});const e=aiEstimate(text,c.style);estimatedIn+=e.input;estimatedOut+=e.output;}/* Geração autorizada pelo usuário no plano: sem confirmação de custo. */for(let j=0;j<texts.length;j++){if(c.aiStop){narrativeProgress('Geração interrompida. Resumos anteriores preservados.');return;}const {i,text}=texts[j],ch=c.chapters[i];c.aiPosition=j+1;narrativeProgress('Gerando '+ch.label+'...');const b=books.find(x=>x.id===c.id);const result=await aiRequest({style:c.style,chapter:text,title:b.title,author:b.author||'',chapter_label:ch.label});if(!result.summary.trim()||result.summary.trim().length<40)throw Error('A IA retornou um resumo vazio ou curto demais.');const ow=narrativeWords(text),sw=narrativeWords(result.summary),ratio=sw/Math.max(1,ow),limits=c.style==='short'?[.34,.66]:c.style==='essential'?[.23,.47]:[.50,.96];/* A validação de segurança já é feita pelo Worker; não rejeitar novamente com faixas divergentes. */if(narrativeSaved()[ch.href]?.text&&todo.length>1)continue;if(narrativeSaved()[ch.href]?.text&&b.narrativeMarks?.[ch.href]?.length){delete b.narrativeMarks[ch.href]}b.narrativeSummaries={...(b.narrativeSummaries||{}),[ch.href]:{text:result.summary.trim(),originalWords:narrativeWords(text),updated:new Date().toISOString()}};b.narrativeOriginalWords={...(b.narrativeOriginalWords||{}),[ch.href]:narrativeWords(text)};await tx('books','readwrite','put',b);c.aiDone++;c.aiCost+=Number(result.usage?.estimated_usd)||0;narrativeProgress('Resumo salvo: '+ch.label);}
  c.selected.clear();if(todo.length===1){c.index=todo[0];c.resumePending=null;narrativeRead()}else{narrativeDraw();alert('Geração concluída! '+c.aiDone+' resumo(s) salvo(s). Custo calculado estimado: US$ '+c.aiCost.toFixed(4));}
  }catch(e){c.aiError='Geração interrompida: '+(e.message||'erro desconhecido')+'. '+c.aiDone+' resumo(s) já salvo(s).';narrativeProgress(c.aiError);}finally{c.aiRunning=false;if(c.view==='progress')narrativeProgress(c.aiError|| (c.aiStop?'Geração interrompida. Resumos anteriores preservados.':'Processamento encerrado.'));}}
 function narrativeProgress(message){const c=narrativeContext;if(!c)return;c.view='progress';const total=c.aiQueue?.length||0;const percent=total?Math.round(c.aiDone/total*100):0;narrativePresent(`<div class="row between"><h2>✧ Geração de resumos</h2>${c.aiRunning?'<button class="btn tiny ghost" onclick="narrativeStopAI()">Interromper</button>':''}</div><div class="ai-progress"><strong>${esc(message)}</strong><p class="notice">${c.aiDone} de ${total} salvos · ${percent}%</p><progress value="${c.aiDone}" max="${Math.max(1,total)}"></progress></div><p class="notice">Mantenha o aplicativo aberto durante a geração. Os resumos concluídos ficam salvos.</p>${!c.aiRunning?'<button class="btn full" onclick="narrativeDraw()">Voltar aos capítulos</button>':''}`)}
