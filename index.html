@@ -310,6 +310,17 @@ html{color-scheme:light}body{background:linear-gradient(145deg,#faf9ff 0%,#f7fbf
 
 /* v6.9.47 — controles flutuantes nunca são parte do texto selecionável. */
 .reader .selection-actions,.reader .selection-actions *,#narrative-selection-menu,#narrative-selection-menu *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none}
+
+/* v6.9.48 — controles de descoberta e tons neutros na Jornada. */
+#tab-home .home-discover-tools{gap:10px;min-width:0}
+#tab-home .home-discover-tools>span{flex:1;min-width:0}
+#tab-home .home-discover-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex:0 0 auto}
+#tab-home .home-discover-actions .icon-refresh{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;min-width:30px;padding:0;border-radius:50%;font-size:15px;font-weight:700;line-height:1;background:#e7e7e4!important;color:#383838!important;border:1px solid #c5c7c4!important}
+#tab-home .home-discover-actions .icon-refresh:first-child{font-size:11px;letter-spacing:-.03em}
+.journey .goal-bar i{background:#686b70!important}
+.journey .journey-bar-track i{background:#8a8d91!important}
+.activity-calendar .day{background:rgba(110,113,118,.09)!important}
+.activity-calendar .day.active{background:#767a7e!important;color:white!important}
 </style><style>
 .reader-consult{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px;background:#e8e4dd;color:#35332f;border-top:1px solid #bbb4a8;font-size:12px;z-index:3}
 .reader-consult button{font-size:12px!important;padding:8px 10px!important;background:#fff!important;border:1px solid #bdb5a9!important;border-radius:9px!important;color:#35332f!important}
@@ -996,7 +1007,7 @@ body{background:#e9e9e7!important;color:#292929}
   <div class="home-discovery-body">
    <div id="read-later-section" class="home-section later-section hide"><div id="read-later-strip" class="recommendation-strip"></div></div>
    <div id="home-discover-panel" class="hide">
-    <div class="home-discover-tools"><span>Ideias para a próxima leitura</span><button type="button" class="btn tiny" onclick="loadAIRecommendations()" title="Sugestões personalizadas com IA">✧ Sugestões IA</button><button class="icon-refresh" onclick="loadRecommendations(true)" title="Outras sugestões" aria-label="Atualizar sugestões">↻</button></div>
+    <div class="home-discover-tools"><span>Ideias para a próxima leitura</span><div class="home-discover-actions"><button type="button" class="icon-refresh" onclick="loadAIRecommendations()" title="Sugestões personalizadas com IA" aria-label="Sugestões com IA">IA</button><button type="button" class="icon-refresh" onclick="loadRecommendations(true)" title="Outras sugestões baseadas na biblioteca" aria-label="Atualizar sugestões">↻</button></div></div>
     <div id="recommendation-strip" class="recommendation-strip"><div class="notice">Buscando sugestões baseadas nos seus livros...</div></div><div class="rec-track"><span id="rec-thumb"></span></div><div id="external-book-links" class="external-book-links"></div>
    </div>
   </div>
