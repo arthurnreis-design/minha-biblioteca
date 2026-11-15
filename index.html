@@ -991,8 +991,33 @@ body{background:#e9e9e7!important;color:#292929}
 .detail-chapter-page-row span{min-width:0;overflow-wrap:anywhere}.detail-chapter-page-row strong{white-space:nowrap}
 @media(max-width:550px){#tab-home .reading-feature .reading-meta .reading-kicker{margin-bottom:5px!important}#tab-home .reading-extra{gap:4px;margin-top:5px}#tab-home .reading-extra .reading-estimated-pages{font-size:11px}}
 </style>
+<style id="mb6949-library-compact">
+/* v6.9.49: ajustes apenas da coleção; preserva cartões e controles existentes. */
+.top-home-shortcut{display:none;position:absolute;right:64px;top:inherit;align-items:center;justify-content:center;width:39px;height:39px;border:1px solid var(--line);border-radius:12px;background:transparent;color:#383838;font:700 25px/1 inherit;cursor:pointer}
+.top-home-shortcut.visible{display:flex}
+.top{position:relative}
+#tab-library>.section-head{margin-top:3px!important;margin-bottom:8px!important}
+#tab-library .library-modes{margin-top:5px!important;margin-bottom:6px!important}
+#tab-library .library-modes button{padding-top:9px!important;padding-bottom:9px!important}
+#tab-library .library-search-wrap{margin-top:5px!important;margin-bottom:5px!important}
+#tab-library .library-tools{margin-top:5px!important;margin-bottom:9px!important}
+#tab-library #library-group-actions:empty{display:none!important}
+@media(min-width:700px){
+ #tab-library>.section-head{margin-bottom:10px!important}
+ #tab-library .library-modes button{padding-top:10px!important;padding-bottom:10px!important}
+ #tab-library .library-search-wrap .search{min-height:44px!important;padding-top:10px!important;padding-bottom:10px!important}
+ #tab-library .library-tools select{min-height:43px!important;padding-top:9px!important;padding-bottom:9px!important}
+}
+@media(max-width:550px){
+ .top-home-shortcut{right:50px;width:34px;height:34px;font-size:22px}
+ #tab-library>.section-head{gap:6px!important}
+ #tab-library .library-header-actions{gap:4px!important}
+ #tab-library .library-header-actions .add-book{padding:8px 9px!important;min-height:35px!important}
+ #tab-library .library-modes button{padding:8px 10px!important;font-size:12px!important}
+}
+</style>
 </head><body>
-<div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
+<div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-home-shortcut" id="top-home-shortcut" onclick="switchTab('home')" aria-label="Início" title="Início">⌂</button><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
 <section id="tab-home" class="home-screen">
  <div class="section-head"><div><div class="eyebrow">Sua estante pessoal</div><h2>Continue lendo</h2></div></div>
@@ -1059,8 +1084,9 @@ function switchTab(t,remember=true){
  if(remember&&t!==currentTab){tabHistory.push(currentTab);pushAppHistory('tab-next');try{history.replaceState({bibliotecaScreen:'tab',tab:t},'',location.href)}catch(e){}}
  currentTab=t;
  ['home','library','notes','explore','stats','settings'].forEach(x=>{$('tab-'+x).classList.toggle('hide',x!==t);const nav=$('nav-'+x);if(nav)nav.classList.toggle('active',x===t)});
- $('page-back').classList.toggle('visible',t!=='home');
- if(t==='library'||t==='settings'){const section=$('tab-'+t);if(section&&!section.querySelector('.mb-home-shortcut'))section.insertAdjacentHTML('afterbegin','<div class="mb-home-shortcut"><button class="btn tiny ghost" onclick="switchTab(\'home\')" aria-label="Ir à página inicial">⌂ Início</button></div>');}
+ $('page-back').classList.toggle('visible',t!=='home'&&t!=='library');
+ $('top-home-shortcut').classList.toggle('visible',t==='library');
+ if(t==='settings'){const section=$('tab-'+t);if(section&&!section.querySelector('.mb-home-shortcut'))section.insertAdjacentHTML('afterbegin','<div class="mb-home-shortcut"><button class="btn tiny ghost" onclick="switchTab(\'home\')" aria-label="Ir à página inicial">⌂ Início</button></div>');}
  if(t==='stats')renderStats();if(t==='notes'){renderAllReadingNotes();setNotesView(notesView)}
 }
 function goBack(){if(!$('modal').classList.contains('hide')){closeModal();return}if(!$('reader').classList.contains('hide')){closeReader();return}if(currentTab!=='home'&&history.state?.bibliotecaScreen==='tab'){history.back();return}switchTab('home',false)}

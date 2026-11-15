@@ -1,8 +1,5 @@
-VERSÃO DE TESTE v6.9.48 — ETAPA VISUAL PARCIAL
-
-Mantém correções aprovadas na v6.9.47.
-Ajustes novos: dois botões circulares equivalentes (IA e atualizar) em Descobrir livros; barras de metas, gráfico e calendário de atividade em cinza neutro.
-
-NÃO INCLUI novo leitor de resumos, seleção assistida entre páginas, metas múltiplas, mudanças do Worker nem demais itens do checklist.
-
-Teste em cópia; não substituir a versão em uso antes de validar.
+Minha Biblioteca v6.9.49 — Teste da coleção compacta
+Base: v6.9.48 aprovada.
+Mudanças: menos espaçamento no cabeçalho/busca/filtros da coleção; botão Início no cabeçalho ao abrir coleção; Voltar redundante oculto apenas na coleção.
+Sem alterações no banco de dados, nos leitores ou no Worker.
+Teste no celular e no tablet antes de substituir a versão diária.
