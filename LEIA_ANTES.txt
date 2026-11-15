@@ -1,11 +1,7 @@
-MINHA BIBLIOTECA — PACOTE A — CANDIDATO PARA TESTE
+MINHA BIBLIOTECA — ATUALIZAÇÃO INTEGRADA (CANDIDATA A TESTES)
 
-Este pacote reúne o leitor de resumos e as revisões de seleção, marcações, marcadores e progresso.
-
-STATUS: CANDIDATO PARA TESTE, NÃO APROVADO.
-Verificações realizadas: sintaxe JavaScript, IDs HTML únicos e integridade dos arquivos essenciais.
-Não foram realizados testes funcionais completos no Android, EPUB.js, IndexedDB ou integração com IA.
-
-RECOMENDAÇÃO: faça backup/exportação dos dados antes de substituir a versão aprovada v6.9.53. Se possível, teste em instalação separada, sem dados importantes.
-
-ATENÇÃO: o leitor usa dependências externas JSZip e EPUB.js por CDN; algumas funções exigem conexão.
+Leitor EPUB compartilhado para livro e resumos; posições e marcações independentes.
+Correções: progresso de resumo calculado pela posição do leitor compartilhado; menu de seleção e responsividade.
+A integração de Explicar com IA contextual no Cloudflare Worker foi deliberadamente deixada para a etapa posterior solicitada pelo usuário.
+IMPORTANTE: a funcionalidade depende de epub.js e JSZip via CDN; teste em seu dispositivo e faça backup antes de substituir a versão aprovada.
+Não houve teste completo de interação no Samsung Internet.

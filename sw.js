@@ -1,4 +1,4 @@
-const CACHE='minha-biblioteca-pacote-a-candidato-20261114';
+const CACHE='minha-biblioteca-integrada-teste-20261115';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys()){if(key.startsWith('minha-biblioteca-')&&key!==CACHE)await caches.delete(key)}await self.clients.claim()})()));
