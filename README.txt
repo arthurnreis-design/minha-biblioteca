@@ -1,5 +1,2 @@
-Minha Biblioteca v6.9.49 — Teste da coleção compacta
-Base: v6.9.48 aprovada.
-Mudanças: menos espaçamento no cabeçalho/busca/filtros da coleção; botão Início no cabeçalho ao abrir coleção; Voltar redundante oculto apenas na coleção.
-Sem alterações no banco de dados, nos leitores ou no Worker.
-Teste no celular e no tablet antes de substituir a versão diária.
+Minha Biblioteca v6.9.50 — Correção da coleção
+Corrigida inserção do botão Início no cabeçalho, remoção de Voltar e do atalho Início duplicado na coleção, e redução de espaçamento. Sem mudanças nos dados, leitores ou Worker. Testar em tablet e celular.

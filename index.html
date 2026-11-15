@@ -991,30 +991,20 @@ body{background:#e9e9e7!important;color:#292929}
 .detail-chapter-page-row span{min-width:0;overflow-wrap:anywhere}.detail-chapter-page-row strong{white-space:nowrap}
 @media(max-width:550px){#tab-home .reading-feature .reading-meta .reading-kicker{margin-bottom:5px!important}#tab-home .reading-extra{gap:4px;margin-top:5px}#tab-home .reading-extra .reading-estimated-pages{font-size:11px}}
 </style>
-<style id="mb6949-library-compact">
-/* v6.9.49: ajustes apenas da coleção; preserva cartões e controles existentes. */
-.top-home-shortcut{display:none;position:absolute;right:64px;top:inherit;align-items:center;justify-content:center;width:39px;height:39px;border:1px solid var(--line);border-radius:12px;background:transparent;color:#383838;font:700 25px/1 inherit;cursor:pointer}
-.top-home-shortcut.visible{display:flex}
+<style id="mb6950-library-fix">
+/* A coleção não deve exibir um segundo atalho Início nem o botão Voltar. */
 .top{position:relative}
-#tab-library>.section-head{margin-top:3px!important;margin-bottom:8px!important}
-#tab-library .library-modes{margin-top:5px!important;margin-bottom:6px!important}
-#tab-library .library-modes button{padding-top:9px!important;padding-bottom:9px!important}
-#tab-library .library-search-wrap{margin-top:5px!important;margin-bottom:5px!important}
-#tab-library .library-tools{margin-top:5px!important;margin-bottom:9px!important}
-#tab-library #library-group-actions:empty{display:none!important}
-@media(min-width:700px){
- #tab-library>.section-head{margin-bottom:10px!important}
- #tab-library .library-modes button{padding-top:10px!important;padding-bottom:10px!important}
- #tab-library .library-search-wrap .search{min-height:44px!important;padding-top:10px!important;padding-bottom:10px!important}
- #tab-library .library-tools select{min-height:43px!important;padding-top:9px!important;padding-bottom:9px!important}
-}
-@media(max-width:550px){
- .top-home-shortcut{right:50px;width:34px;height:34px;font-size:22px}
- #tab-library>.section-head{gap:6px!important}
- #tab-library .library-header-actions{gap:4px!important}
- #tab-library .library-header-actions .add-book{padding:8px 9px!important;min-height:35px!important}
- #tab-library .library-modes button{padding:8px 10px!important;font-size:12px!important}
-}
+.top-home-shortcut{display:none;align-items:center;justify-content:center;margin-left:auto;margin-right:8px;width:39px;height:39px;border:1px solid #cdd0cf;border-radius:12px;background:transparent;color:#383838;font:700 25px/1 system-ui;cursor:pointer}
+.top-home-shortcut.visible{display:flex}
+body:has(#tab-library:not(.hide)) #page-back{display:none!important}
+#tab-library .mb-home-shortcut{display:none!important}
+/* Elimina a área reservada anteriormente para Voltar e o Início duplicado. */
+body:has(#tab-library:not(.hide)) .top{margin-bottom:12px!important}
+#tab-library>.section-head{margin-top:0!important;margin-bottom:8px!important}
+#tab-library .library-modes{margin-top:6px!important;margin-bottom:6px!important}
+#tab-library .library-search-wrap{margin-top:6px!important;margin-bottom:6px!important}
+#tab-library .library-tools{margin-top:6px!important;margin-bottom:8px!important}
+@media(max-width:550px){.top-home-shortcut{width:35px;height:35px;font-size:22px;margin-right:6px}}
 </style>
 </head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-home-shortcut" id="top-home-shortcut" onclick="switchTab('home')" aria-label="Início" title="Início">⌂</button><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
@@ -1086,6 +1076,7 @@ function switchTab(t,remember=true){
  ['home','library','notes','explore','stats','settings'].forEach(x=>{$('tab-'+x).classList.toggle('hide',x!==t);const nav=$('nav-'+x);if(nav)nav.classList.toggle('active',x===t)});
  $('page-back').classList.toggle('visible',t!=='home'&&t!=='library');
  $('top-home-shortcut').classList.toggle('visible',t==='library');
+ if(t==='library'){const oldShortcut=$('tab-library').querySelector('.mb-home-shortcut');if(oldShortcut)oldShortcut.remove();}
  if(t==='settings'){const section=$('tab-'+t);if(section&&!section.querySelector('.mb-home-shortcut'))section.insertAdjacentHTML('afterbegin','<div class="mb-home-shortcut"><button class="btn tiny ghost" onclick="switchTab(\'home\')" aria-label="Ir à página inicial">⌂ Início</button></div>');}
  if(t==='stats')renderStats();if(t==='notes'){renderAllReadingNotes();setNotesView(notesView)}
 }
