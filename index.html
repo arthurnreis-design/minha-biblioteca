@@ -1022,7 +1022,7 @@ body:has(#tab-library:not(.hide)) .app>.top{flex:0 0 auto}
  #tab-library .library-scroll{padding-bottom:18px}
 }
 </style>
-</head><body>
+<style id="mb6952-plan">.mb-plan-list{max-height:min(52vh,430px);overflow-y:auto}.mb-plan-chapter{display:flex;gap:10px;align-items:center;padding:10px 7px;border-bottom:1px solid var(--line);font-size:14px}.mb-plan-chapter input{flex-shrink:0}.mb-plan-chapter span{flex:1}.mb-plan-chapter small{font-size:11px;color:var(--muted)}</style></head><body>
 <div class="app"><header class="top"><div><h1>Minha Biblioteca</h1></div><button class="top-home-shortcut" id="top-home-shortcut" onclick="switchTab('home')" aria-label="Início" title="Início">⌂</button><button class="top-settings" onclick="switchTab('settings')" aria-label="Ajustes" title="Ajustes">⚙</button></header>
 <button class="page-back" id="page-back" onclick="goBack()">‹ Voltar</button>
 <section id="tab-home" class="home-screen">
@@ -2371,6 +2371,32 @@ async function narrativeDeleteSelectedSummaries(){
  toast(keys.length+' resumo(s) excluído(s)');narrativeSummariesScreen();
 }
 function narrativeSelectSaved(i){const c=narrativeContext;if(!c)return;c.index=i;c.openPreviousAtEnd=false;c.resumePending=null;c.markJumpReturnPage=null;narrativeRead()}
+
+// v6.9.52 — plano de leitura independente da seleção para geração em lote.
+// A primeira fase só grava preferências; não dispara requisições à IA.
+function narrativePlanData(book){const plan=book?.narrativeReadingPlan;return plan&&Array.isArray(plan.chapters)?plan:null}
+function narrativePlanEditor(){
+ const c=narrativeContext;if(!c)return;
+ const b=books.find(x=>x.id===c.id),plan=narrativePlanData(b);
+ c.view='plan';c.planDraft=new Set(plan?.chapters||[]);
+ c.planStyleDraft=plan?.style||'short';
+ const options=c.chapters.map((ch,i)=>`<label class="mb-plan-chapter"><input type="checkbox" ${c.planDraft.has(ch.href)?'checked':''} onchange="narrativePlanToggle(${i},this.checked)"><span>${esc(ch.label)}</span>${b.narrativeSummaries?.[ch.href]?.text?'<small>Resumo salvo</small>':''}</label>`).join('');
+ narrativePresent(`<div class="row between"><h2>Plano de leitura dos resumos</h2><button class="btn tiny ghost" onclick="narrativeDraw()">✕</button></div><p class="notice">Escolha os capítulos que deseja ler e o estilo para resumos futuros. Esta etapa não gera textos nem altera os resumos existentes.</p><label class="field"><label>Estilo para futuras gerações</label><select id="mb-plan-style" onchange="narrativeContext.planStyleDraft=this.value"><option value="deep" ${c.planStyleDraft==='deep'?'selected':''}>Narrativo aprofundado</option><option value="short" ${c.planStyleDraft==='short'?'selected':''}>Narrativo condensado</option><option value="essential" ${c.planStyleDraft==='essential'?'selected':''}>Narrativo essencial</option></select></label><div class="row between"><strong>Capítulos do plano</strong><small id="mb-plan-count">${c.planDraft.size} selecionado(s)</small></div><div class="row wrap" style="margin:10px 0"><button class="btn tiny" onclick="narrativePlanAll()">Selecionar todos</button><button class="btn tiny" onclick="narrativePlanNone()">Limpar seleção</button></div><div class="ai-chapter-list mb-plan-list">${options}</div><div class="narrative-actions"><button class="btn primary" onclick="narrativePlanSave()">Salvar plano</button><button class="btn" onclick="narrativeDraw()">Cancelar</button></div>`);
+}
+function narrativePlanToggle(i,checked){const c=narrativeContext,ch=c?.chapters[i];if(!ch)return;checked?c.planDraft.add(ch.href):c.planDraft.delete(ch.href);const el=$('mb-plan-count');if(el)el.textContent=c.planDraft.size+' selecionado(s)'}
+function narrativePlanAll(){const c=narrativeContext;if(!c)return;c.planDraft=new Set(c.chapters.map(ch=>ch.href));narrativePlanEditorRefresh()}
+function narrativePlanNone(){const c=narrativeContext;if(!c)return;c.planDraft=new Set();narrativePlanEditorRefresh()}
+function narrativePlanEditorRefresh(){const c=narrativeContext;if(!c)return;document.querySelectorAll('.mb-plan-chapter').forEach((el,i)=>{const input=el.querySelector('input');if(input)input.checked=c.planDraft.has(c.chapters[i]?.href)});const count=$('mb-plan-count');if(count)count.textContent=c.planDraft.size+' selecionado(s)'}
+async function narrativePlanSave(){
+ const c=narrativeContext;if(!c)return;
+ if(!c.planDraft?.size)return toast('Selecione pelo menos um capítulo para o plano.');
+ const b=books.find(x=>x.id===c.id);if(!b)return;
+ const chapters=c.chapters.filter(ch=>c.planDraft.has(ch.href)).map(ch=>ch.href);
+ b.narrativeReadingPlan={chapters,style:c.planStyleDraft||'short',updated:new Date().toISOString()};
+ await tx('books','readwrite','put',b);
+ toast('Plano de leitura salvo. Seus resumos e posições foram preservados.');
+ narrativeDraw();
+}
 function narrativeDraw(){
  const c=narrativeContext;if(!c)return;c.view='list';
  const b=books.find(x=>x.id===c.id),saved=narrativeSaved(),indices=narrativeSavedIndices(),hidden=new Set(narrativeHidden());
@@ -2379,6 +2405,7 @@ function narrativeDraw(){
  c.selected=new Set([...c.selected].filter(i=>pending.includes(i)));
  const list=pending.map(i=>`<div class="ai-chapter-row"><label><input type="checkbox" ${c.selected.has(i)?'checked':''} onchange="narrativeToggleChapter(${i},this.checked)"><span>${esc(c.chapters[i].label)}</span></label><button class="btn tiny ghost" onclick="narrativeOpenPending(${i})">Abrir</button><button class="btn tiny ghost chapter-hide" title="Ocultar capítulo" onclick="narrativeHideChapter(${i})">Ocultar</button></div>`).join('');
  const html=`<div class="row between"><h2>✧ Resumos narrativos</h2><button class="btn tiny ghost" onclick="narrativeClose()">✕</button></div><p class="notice">${esc(b?.title||'Livro')} · ${indices.length} resumo(s) salvo(s)${narrativeTotalReduction(b)!==null?' · Redução estimada: '+narrativeTotalReduction(b)+'%':''}</p>
+ <button class="btn full" onclick="narrativePlanEditor()">☷ ${narrativePlanData(b)?'Editar plano de leitura':'Criar plano de leitura'}</button><p class="notice" style="margin:6px 0 10px">O plano fica salvo neste livro. A geração automática por capítulo será ativada em uma próxima etapa.</p>
  <button class="btn full" onclick="narrativeSummariesScreen()">📖 Ver capítulos resumidos (${indices.length})</button>
  <label class="field"><label>Tipo de resumo</label><select id="ai-narrative-style" onchange="narrativeContext.style=this.value"><option value="">Selecione o tipo de resumo...</option><option value="deep" ${c.style==='deep'?'selected':''}>Narrativo aprofundado</option><option value="short" ${c.style==='short'?'selected':''}>Narrativo condensado</option><option value="essential" ${c.style==='essential'?'selected':''}>Narrativo essencial</option></select></label>
  <div class="row between"><strong>Capítulos para resumir</strong><small id="ai-selected-count">${c.selected.size} selecionado(s)</small></div><div class="row wrap" style="margin:9px 0"><button class="btn tiny" onclick="narrativeSelectAll()">Selecionar pendentes</button><button class="btn tiny" onclick="narrativeClearChapters()">Limpar seleção</button><button class="btn tiny ghost" onclick="narrativeHiddenScreen()">◉ Ver ocultos (${hidden.size})</button></div>

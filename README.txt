@@ -1,5 +1,4 @@
-Minha Biblioteca v6.9.51 — Coleção com controles fixos
-Base: v6.9.50 aprovada.
-Na aba Biblioteca, o cabeçalho, as abas, a pesquisa e os filtros permanecem visíveis. Somente a grade/lista de livros tem rolagem independente.
-Nenhuma alteração no banco de dados, nos leitores ou no Worker.
-Teste tablet e celular, incluindo busca, categorias e rolagem.
+Minha Biblioteca v6.9.52 — Plano de leitura (etapa 1)
+Base: v6.9.51 aprovada.
+Na área Resumos narrativos, o novo botão Criar/Editar plano de leitura permite selecionar capítulos e estilo, persistidos no registro local do livro. Não gera capítulos automaticamente nesta versão. Não altera resumos existentes nem a seleção antiga de geração em lote.
+Teste criação, edição e persistência após fechar e reabrir o aplicativo.
