@@ -1791,7 +1791,7 @@ async function buildSummaryEpub(book, chapters, planKeys){
  keys.forEach((key,i)=>{
   const label=chapters.find(ch=>ch.href===key)?.label||`Capitulo ${i+1}`;
   const ready=!!String(saved[key]?.text||'').trim();
-  const paragraphs=ready?String(saved[key].text).trim().split(/\n\s*\n/).map(part=>'<p>'+xml(part).replace(/\n/g,'<br/>')+'</p>').join(''):'<p>Resumo ainda não gerado. Ao abrir este capítulo, você poderá confirmar a geração sob demanda.</p>'; 
+  const paragraphs=ready?String(saved[key].text).trim().split(/\n\s*\n/).map(part=>'<p>'+xml(part).replace(/\n/g,'<br/>')+'</p>').join(''):'<p>Preparando resumo deste capítulo…</p>'; 
   zip.file(`OEBPS/chapter${i+1}.xhtml`,`<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>${xml(label)}</title><meta charset="utf-8"/><style>body{line-height:1.65}p{margin:0 0 1em}</style></head><body><h2>${xml(label)}</h2>${paragraphs}</body></html>`);
   sections.push({key,label,href:`chapter${i+1}.xhtml`,id:`ch${i+1}`,ready});
  });
@@ -1852,6 +1852,21 @@ async function openSummaryInReader(id,options={}){
   await openReader(id,{mode:'summary',data:built.data,targetHref:target?.href,seamless:!!options.seamless});
  }catch(e){if(temp)try{temp.destroy()}catch(_){};console.error(e);toast(e.message||'Não foi possível abrir o resumo no leitor.');}
 }
+function summarySectionAtLocation(loc){
+ if(readerContentMode!=='summary'||!loc)return null;
+ const href=String(loc.start?.href||loc.end?.href||'').split('#')[0];
+ const match=readerSummarySections.find(x=>href&&(href===x.href||href.endsWith('/'+x.href)));
+ if(match)return match;
+ const index=loc.start?.index;
+ return Number.isInteger(index)?readerSummarySections[index]||null:null;
+}
+function summaryCheckPendingLocation(loc){
+ const section=summarySectionAtLocation(loc);
+ if(section&&!section.ready&&!summaryPendingBusy&&summaryPendingFailedKey!==section.key){
+  // Never require a separate tap or a confirmation dialog.
+  setTimeout(()=>{if(readerContentMode==='summary'&&summarySectionAtLocation(rendition?.currentLocation())?.key===section.key)summaryGeneratePending(section.key)},0);
+ }
+}
 let summaryPendingBusy=false,summaryPendingFailedKey=null;
 async function summaryGeneratePending(key){
  if(summaryPendingBusy||readerContentMode!=='summary'||!activeId||summaryPendingFailedKey===key)return;
@@ -1860,7 +1875,7 @@ async function summaryGeneratePending(key){
  const plan=narrativePlanData(b);
  if(!plan?.chapters?.includes(key))return toast('Este capítulo não está no plano de leitura.');
  summaryPendingBusy=true;summaryPendingFailedKey=null;
- const marker=$('reader-progress');if(marker)marker.textContent='Gerando resumo do próximo capítulo…';
+ const marker=$('reader-progress');if(marker)marker.textContent='Gerando resumo do próximo capítulo…';toast('Gerando resumo do próximo capítulo…');
  let temp=null;
  try{
   const obj=await narrativeLoadBook(id);temp=obj.temporary?obj.book:null;
@@ -1912,14 +1927,14 @@ async function openReader(id,options={}){readerConsult=null;$('reader-consult').
    if(readerSession!==session||epubBook!==openedBook||activeId!==openedId)return;
    readerLocationsReady=true;
    const current=rendition?.currentLocation();if(current)updateLocation(current);
- }catch(error){console.warn('Não foi possível preparar as posições do EPUB',error);if(readerSession===session)$('reader-progress').textContent='Posição indisponível'}})();rendition.on('relocated',loc=>{if(readerSession!==session)return;applyParagraphSpacing();updateLocation(loc);if(readerContentMode==='summary'){const section=readerSummarySections[loc?.start?.index];if(section&&!section.ready&&!summaryPendingBusy&&!narrativeContext?.planGenerating)setTimeout(()=>summaryGeneratePending(section.key),0)}setTimeout(()=>{if(readerSession===session)renderReaderHighlights()},80)});rendition.hooks.content.register(contents=>{try{contents.document.addEventListener('click',event=>handleEpubFootnote(event,contents),true);setTimeout(applyParagraphSpacing,0)}catch(e){}
+ }catch(error){console.warn('Não foi possível preparar as posições do EPUB',error);if(readerSession===session)$('reader-progress').textContent='Posição indisponível'}})();rendition.on('relocated',loc=>{if(readerSession!==session)return;applyParagraphSpacing();updateLocation(loc);if(readerContentMode==='summary')summaryCheckPendingLocation(loc);setTimeout(()=>{if(readerSession===session)renderReaderHighlights()},80)});rendition.hooks.content.register(contents=>{try{contents.document.addEventListener('click',event=>handleEpubFootnote(event,contents),true);setTimeout(applyParagraphSpacing,0)}catch(e){}
  try{const d=contents.document;if(d&&!d.getElementById('biblioteca-responsive-epub')){const st=d.createElement('style');st.id='biblioteca-responsive-epub';st.textContent='img,svg,video{max-width:100%;height:auto} pre{white-space:pre-wrap;overflow-wrap:anywhere}';(d.head||d.documentElement).appendChild(st)}}catch(e){}
 
   try{
    setTimeout(renderReaderHighlights,30);setTimeout(applyParagraphSpacing,35);contents.document.documentElement.style.webkitTapHighlightColor='transparent';contents.document.body.style.webkitTapHighlightColor='transparent';// Preserva o menu nativo de seleção do Samsung Internet.
   }catch(e){}
  });
- rendition.on('selected',(cfi,contents)=>{if(readerCompletedSegments)readerCompletedSegments=null;selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');readerAssistControls();positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();recordBookAccess(b);await tx('books','readwrite','put',b);await refresh()}catch(e){finishBookOpening(true);console.error(e);toast('Falha ao abrir o leitor');closeReader()}}
+ if(readerContentMode==='summary')summaryCheckPendingLocation(rendition.currentLocation());rendition.on('selected',(cfi,contents)=>{if(readerCompletedSegments)readerCompletedSegments=null;selectedCfi=cfi;try{selectedText=contents.window.getSelection().toString().trim()}catch(e){selectedText=''}if(selectedText){selectionDoc=contents.document;$('selection-actions').classList.remove('hide');readerAssistControls();positionSelectionMenu(contents)} });b.status=b.status==='want'?'reading':b.status;b.started=b.started||new Date().toISOString();b.lastRead=new Date().toISOString();recordBookAccess(b);await tx('books','readwrite','put',b);await refresh()}catch(e){finishBookOpening(true);console.error(e);toast('Falha ao abrir o leitor');closeReader()}}
 let footnoteReturnCfi=null;
 function handleEpubFootnote(event,contents){const link=event.target?.closest?.('a[href]');if(!link||!rendition)return;const href=link.getAttribute('href')||'';if(!href||/^https?:|^mailto:/i.test(href))return;const targetId=decodeURIComponent(href.split('#')[1]||'');if(!targetId)return;const label=(link.textContent||'').trim();const isNote=/^(\[?\d{1,3}\]?|[¹²³⁴⁵⁶⁷⁸⁹⁰]+)$/.test(label)||/noteref|footnote/i.test(link.getAttribute('epub:type')||link.getAttribute('role')||link.className||'');if(!isNote)return;const target=contents.document.getElementById(targetId);if(!target)return;event.preventDefault();event.stopPropagation();const text=(target.innerText||target.textContent||'').trim();if(!text)return;showReaderPopup(`<h3>Nota ${esc(label)}</h3><div class="footnote-text">${esc(text)}</div><div class="popup-actions"><button class="btn" onclick="closeReaderPopup()">Voltar à leitura</button></div>`)}
 function updateLocation(loc){
@@ -1933,7 +1948,7 @@ function updateLocation(loc){
    if(!readerConsult&&Number.isInteger(index)&&index>=0&&total>0){if(readerContentMode==='summary'){b.summaryReaderPosition=index+1;b.summaryReaderPositionTotal=total;}else{b.position=index+1;b.positionTotal=total;}}
   }catch(error){console.warn('Posição não disponível',error)}
  }
- $('reader-progress').textContent=readerContentMode==='summary'?'Resumo · posição '+(b.summaryReaderPosition||'—')+' de '+(b.summaryReaderPositionTotal||'—'):readingPositionText(b);
+ if(!summaryPendingBusy)$('reader-progress').textContent=readerContentMode==='summary'?'Resumo · posição '+(b.summaryReaderPosition||'—')+' de '+(b.summaryReaderPositionTotal||'—'):readingPositionText(b);
  const pg=loc.start?.displayed?.page,totalPages=loc.start?.displayed?.total;
  const section=loc.start?.index;
  const pageText=Number.isFinite(pg)&&pg>0?'Página '+pg+(Number.isFinite(totalPages)&&totalPages>0?' de '+totalPages:''):'Posição de leitura';
@@ -2759,13 +2774,6 @@ async function narrativePlanGenerateCurrent(){
  try{
   const original=await narrativeExtract({...c,index:c.index});
   if(narrativeContext!==c||!c.planMode)return;
-  const estimate=aiEstimate(original,plan.style);
-  const approx=aiCostEstimate(estimate.input,estimate.output);
-  if(!confirm(`Gerar o resumo de "${ch.label}" em ${plan.style==='deep'?'Narrativo aprofundado':plan.style==='essential'?'Narrativo essencial':'Narrativo condensado'}?\n\nEstimativa ilustrativa: US$ ${approx.toFixed(4)}.\n\nSomente este capítulo será enviado à IA.`)){
-    c.view='plan-paused';
-    narrativePresent(`<h2>Geração pausada</h2><p class="notice">${esc(ch.label)} ainda não tem resumo salvo.</p><div class="narrative-actions"><button class="btn primary" onclick="narrativePlanOpenCurrent()">Gerar este capítulo</button><button class="btn" onclick="narrativeDraw()">Voltar</button></div>`);
-    return;
-  }
   const result=await aiRequest({style:plan.style,chapter:original,title:b.title,author:b.author||'',chapter_label:ch.label});
   const text=String(result.summary||'').trim();
   if(text.length<40)throw Error('A IA retornou um resumo vazio ou curto demais.');
