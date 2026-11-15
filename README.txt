@@ -1,9 +1,7 @@
-Minha Biblioteca v6.9.46 — Exclusão múltipla de resumos narrativos
+VERSÃO DE TESTE v6.9.47 — ETAPA 1 (PARCIAL)
 
-Publique index.html, sw.js, manifest.webmanifest e os ícones na mesma pasta do GitHub Pages.
+Correções iniciais do menu de seleção no leitor de resumos: fechamento ao desfazer a seleção, ocultação durante ajuste e prevenção de seleção dos botões.
 
-Na ficha do livro: Resumos narrativos > Ver capítulos resumidos > Selecionar. Marque os resumos que deseja apagar ou use Selecionar todos. Confirme em Excluir selecionados.
+NÃO INCLUI ainda seleção assistida entre páginas, novo leitor de resumos, planos sob demanda, mudanças em estatísticas ou alterações do Worker.
 
-A exclusão afeta somente os resumos do livro atual e suas anotações/marcadores relacionados. Não apaga o EPUB nem o progresso de leitura do livro.
-
-Worker Cloudflare: não precisa alterar.
+Não substituir a versão de produção antes de testar no dispositivo.
